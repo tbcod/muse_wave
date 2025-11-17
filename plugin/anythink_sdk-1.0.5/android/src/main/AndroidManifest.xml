@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.anythink.flutter">
+
+    <application>
+        <activity
+            android:name="com.anythink.flutter.view.SimpleWebViewActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+    </application>
+</manifest>
