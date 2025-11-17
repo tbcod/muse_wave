@@ -33,14 +33,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:video_player_media_kit/video_player_media_kit.dart';
+// import 'package:video_player_media_kit/video_player_media_kit.dart';
 
 import 'lang/my_tr.dart';
 import 'tool/log.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  VideoPlayerMediaKit.ensureInitialized(android: true);
+  // VideoPlayerMediaKit.ensureInitialized(android: true);
   await Get.putAsync(() => Application().init());
   runApp(const MyApp());
 }

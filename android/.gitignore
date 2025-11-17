@@ -17,4 +17,5 @@ key.properties
 /app/build.gradle.kts
 /app/*.json
 /settings.gradle.kts
+/.kotlin/
 
