@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/view/player_bottom_bar.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 
@@ -61,6 +62,15 @@ class UserMain extends GetView<UserMainController> {
                 currentIndex: controller.nowIndex.value,
                 backgroundColor: Colors.white,
                 onTap: (index) {
+                  if (controller.nowIndex.value == index) {
+                    return;
+                  }
+                  if (controller.nowIndex.value == 1 && index == 0) {
+                    if (Get.isRegistered<UserHomeController>()) {
+                      Get.find<UserHomeController>().bindYoutubeMusicData(source: "click_bottomtab");
+                    }
+                  }
+
                   controller.nowIndex.value = index;
                   controller.pageC.jumpToPage(index);
 
@@ -109,23 +119,25 @@ class UserMain extends GetView<UserMainController> {
           ],
         ),
 
-        body: Container(
-          child: Obx(
-            () => PageView(
-              controller: controller.pageC,
-              physics: NeverScrollableScrollPhysics(),
-              children:
-                  controller.bottomList.map((e) {
-                    if (e["name"] == "Home".tr) {
-                      return const KeepStateView(child: UserHome());
-                    } else if (e["name"] == "Library".tr) {
-                      return const KeepStateView(child: UserLibrary());
-                    } else if (e["name"] == "Setting".tr) {
-                      return const KeepStateView(child: UserSetting());
-                    } else {
-                      return Container();
-                    }
-                  }).toList(),
+        body: PlayerBottomBarView(
+          child: Container(
+            child: Obx(
+              () => PageView(
+                controller: controller.pageC,
+                physics: NeverScrollableScrollPhysics(),
+                children:
+                    controller.bottomList.map((e) {
+                      if (e["name"] == "Home".tr) {
+                        return const KeepStateView(child: UserHome());
+                      } else if (e["name"] == "Library".tr) {
+                        return const KeepStateView(child: UserLibrary());
+                      } else if (e["name"] == "Setting".tr) {
+                        return const KeepStateView(child: UserSetting());
+                      } else {
+                        return Container();
+                      }
+                    }).toList(),
+              ),
             ),
           ),
         ),

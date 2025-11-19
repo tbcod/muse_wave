@@ -12,7 +12,7 @@ class FormatMyData {
   List getMusicList(List oldList) {
     var list = [];
 
-    AppLog.e(oldList.first);
+    // AppLog.e(oldList.first);
     for (var item in oldList) {
       try {
         var title =

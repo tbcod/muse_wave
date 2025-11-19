@@ -1,4 +1,4 @@
-class Env {
-  static String appName = "MuseWave";
-  static bool isUser = false;
-}
+// class Env {
+//   static String appName = "MuseWave";
+//   static bool isUser = false;
+// }

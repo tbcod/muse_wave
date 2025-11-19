@@ -19,8 +19,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../static/app_color.dart';
 import '../../../static/db_key.dart';
 import '../../../tool/log.dart';
 import '../../../tool/toast.dart';

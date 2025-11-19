@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:muse_wave/muse_config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -226,11 +227,10 @@ class UserSetting extends GetView<UserSettingController> {
           AppLog.e(AdUtils.instance.loadedAdMap);
           AppLog.e(AdUtils.instance.adJson);
 
-          if (Env.isUser) {
+          if (MuseConfig.isUser) {
             return;
           }
-          // TbaUtils.instance.postUserData({"mm_new_user": "old"});
-          // TbaUtils.instance.postUserData({"mm_type_so": "ytm"});
+
           Get.dialog(
             BaseDialog(
               title: "Tip",

@@ -26,6 +26,6 @@ class EventUtils {
 
   void postEventApi(String id, {Map<String, dynamic>? data}) async {
     var result = await TbaUtils.instance.postEvent(id, data);
-    AppLog.e("上报结果:${result.toJson()}");
+    // AppLog.e("上报结果:${result.toJson()}");
   }
 }

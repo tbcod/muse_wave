@@ -1,12 +1,11 @@
 import 'package:logger/logger.dart';
-
-import '../static/env.dart';
+import 'package:muse_wave/muse_config.dart';
 
 class AppLog {
   static var logger = Logger(filter: LoggerFilter());
 
   static bool get isLog {
-    return !Env.isUser;
+    return !MuseConfig.isUser;
   }
 
   static set level(Level value) {

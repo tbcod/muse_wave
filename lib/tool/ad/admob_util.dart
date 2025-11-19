@@ -89,8 +89,9 @@ class AdmobUtils {
                 ad_format: "banner",
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
-                precision_type: precision.name,
-                  positionKey: positionKey
+                ad_sence: key
+                // precision_type: precision.name,
+                //   positionKey: positionKey
               );
             },
           ),
@@ -158,8 +159,9 @@ class AdmobUtils {
                 ad_format: "native",
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
-                precision_type: precision.name,
-                  positionKey: positionKey
+                ad_sence: key
+                // precision_type: precision.name,
+                //   positionKey: positionKey
               );
             },
           ),

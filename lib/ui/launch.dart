@@ -2,11 +2,10 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/muse_config.dart';
 import 'package:muse_wave/ui/main_page.dart';
 import 'package:muse_wave/view/base_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../static/env.dart';
 import '../tool/ad/ad_util.dart';
 import '../tool/log.dart';
 import '../tool/tba/c_util.dart';
@@ -43,7 +42,7 @@ class LaunchPage extends GetView<LaunchPageController> {
                   ),
                 ),
                 SizedBox(width: 12.w),
-                Text(Env.appName, style: TextStyle(fontSize: 16.w)),
+                Text(MuseConfig.appName, style: TextStyle(fontSize: 16.w)),
               ],
             ),
 
@@ -155,9 +154,9 @@ class LaunchPageController extends GetxController {
     AdUtils.instance.loadAd(
       "open",
       onLoad: (adId, isOk, e) {
-        AppLog.e("启动页加载广告结果$isOk");
+        AppLog.e("启动页加载广告结果$isOk, $adId");
         AppLog.e("$adId");
-        AppLog.e("${e}");
+        // AppLog.e("${e}");
 
         if (showAdNum != 0) {
           return;
@@ -188,7 +187,7 @@ class LaunchPageController extends GetxController {
                 isAdShow = true;
               },
             ),
-            load_pos: 'open',
+            adScene: AdScene.openCool,
           );
         }
       },
@@ -225,7 +224,7 @@ class LaunchPageController extends GetxController {
       // Get.off(const MainPage());
       // return;
 
-      if (!Env.isUser) {
+      if (!MuseConfig.isUser) {
         //TODO 测试A
         // Get.off(const MainPage(), routeName: "/MainPage");
         // return;

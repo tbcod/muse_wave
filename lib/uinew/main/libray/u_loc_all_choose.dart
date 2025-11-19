@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:muse_wave/uinew/main/libray/u_loc_add_song.dart';
+import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../static/db_key.dart';
 import '../../../tool/download/download_util.dart';
@@ -38,15 +39,17 @@ class UserLoaAllChoose extends GetView<UserLoaAllChooseController> {
             ),
           ),
         ),
-        body: Obx(
-          () => ListView.separated(
-            itemBuilder: (BuildContext context, int index) {
-              return getItem(controller.allList[index]);
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return SizedBox(height: 10.w);
-            },
-            itemCount: controller.allList.length,
+        body: PlayerBottomBarView(
+          child: Obx(
+            () => ListView.separated(
+              itemBuilder: (BuildContext context, int index) {
+                return getItem(controller.allList[index]);
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return SizedBox(height: 10.w);
+              },
+              itemCount: controller.allList.length,
+            ),
           ),
         ),
       ),

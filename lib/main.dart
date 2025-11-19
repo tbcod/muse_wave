@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:appsflyer_sdk/appsflyer_sdk.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:dio/dio.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -16,17 +18,17 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive/hive.dart';
 import 'package:muse_wave/static/db_key.dart';
-import 'package:muse_wave/static/env.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ad/admob_util.dart';
 import 'package:muse_wave/tool/ad/max_util.dart';
 import 'package:muse_wave/tool/ad/topon_util.dart';
+import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/history_util.dart';
 import 'package:muse_wave/tool/like/like_util.dart';
+import 'package:muse_wave/tool/remote_utils.dart';
 import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:muse_wave/tool/tba/tba_util.dart';
 import 'package:muse_wave/ui/launch.dart';
-import 'package:muse_wave/uinew/main/home/u_play.dart';
 import 'package:muse_wave/uinew/main/u_home.dart';
 import 'package:muse_wave/uinew/main/u_library.dart';
 import 'package:path_provider/path_provider.dart';
@@ -36,6 +38,7 @@ import 'package:timezone/timezone.dart' as tz;
 // import 'package:video_player_media_kit/video_player_media_kit.dart';
 
 import 'lang/my_tr.dart';
+import 'muse_config.dart';
 import 'tool/log.dart';
 
 void main() async {
@@ -47,6 +50,7 @@ void main() async {
 
 class MyApp extends GetView {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     // bindData();
@@ -75,19 +79,19 @@ class MyApp extends GetView {
 
             child = botToastBuilder(c, child);
             return child;
-          }, //1. call BotToastInit
-          navigatorObservers: [
-            BotToastNavigatorObserver(),
-          ], //2. registered route observer
+          },
+          //1. call BotToastInit
+          navigatorObservers: [BotToastNavigatorObserver()],
+          //2. registered route observer
           theme: ThemeData(
             scaffoldBackgroundColor: Color(0xfff9f9f9),
-            splashColor: Colors.transparent, // 点击时的高亮效果设置为透明
-            highlightColor: Colors.transparent, // 长按时的扩散效果设置为透明
+            splashColor: Colors.transparent,
+            // 点击时的高亮效果设置为透明
+            highlightColor: Colors.transparent,
 
+            // 长按时的扩散效果设置为透明
             textTheme: TextTheme(bodyMedium: TextStyle(height: 1.2)),
-            bottomSheetTheme: BottomSheetThemeData(
-              modalBarrierColor: Colors.red.withOpacity(0.43),
-            ),
+            bottomSheetTheme: BottomSheetThemeData(modalBarrierColor: Colors.red.withOpacity(0.43)),
             appBarTheme: AppBarTheme(
               systemOverlayStyle: getWhiteBarStyle(),
               foregroundColor: Colors.black,
@@ -95,21 +99,13 @@ class MyApp extends GetView {
               titleSpacing: 0,
               elevation: 0,
               centerTitle: true,
-              titleTextStyle: TextStyle(
-                fontSize: 18.w,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
+              titleTextStyle: TextStyle(fontSize: 18.w, color: Colors.black, fontWeight: FontWeight.bold),
               backgroundColor: Colors.transparent,
             ),
           ),
-          title: Env.appName,
+          title: MuseConfig.appName,
           home: LaunchPage(),
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
+          localizationsDelegates: const [GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
           locale: MyTranslations.locale,
           fallbackLocale: MyTranslations.fallbackLocale,
           translations: MyTranslations(),
@@ -120,8 +116,7 @@ class MyApp extends GetView {
 
           routingCallback: (Routing? routing) async {
             //路由跳转
-            if (routing?.current == "/MainPage" ||
-                routing?.current == "/UserMain") {
+            if (routing?.current == "/MainPage" || routing?.current == "/UserMain") {
               Get.find<Application>().isMainPage.value = true;
             } else {
               Get.find<Application>().isMainPage.value = false;
@@ -134,8 +129,7 @@ class MyApp extends GetView {
 }
 
 class AppController extends SuperController {
-  static final RouteObserver<PageRoute> routeObserver =
-      RouteObserver<PageRoute>();
+  static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   @override
   void onInit() async {
@@ -144,21 +138,22 @@ class AppController extends SuperController {
   }
 
   bindData() async {
+
     TbaUtils.instance.postSession();
-    var sp = await SharedPreferences.getInstance();
-    var isPostInstall = sp.getBool("isPostInstall") ?? false;
+    // var sp = await SharedPreferences.getInstance();
+    var isPostInstall = museSp.getBool("isPostInstall");
 
     AppLog.e("是否已经安装上报:$isPostInstall");
 
     if (!isPostInstall) {
       // var isNewUser = false;
       //安装时间
-      await sp.setInt("installTimeMs", DateTime.now().millisecondsSinceEpoch);
+      await museSp.setInt("installTimeMs", DateTime.now().millisecondsSinceEpoch);
       //安装上报
       TbaUtils.instance.postInstall().then((value) {
         AppLog.e("安装上报:${value.toJson()}");
-        sp.setBool("isPostInstall", true);
-        TbaUtils.instance.postUserData({"mw_new_user": "new"});
+        museSp.setBool("isPostInstall", true);
+        TbaUtils.instance.postUserData({"new_user": "new"});
       });
     } else {
       //已经安装过了，先判断是否已经上报次留
@@ -180,14 +175,17 @@ class AppController extends SuperController {
 
       //判断是否新用户
       var isNewUser = false;
-      var installTimeMs = sp.getInt("installTimeMs") ?? 0;
-      var tempD = DateTime.fromMillisecondsSinceEpoch(
-        installTimeMs,
-      ).difference(DateTime.now());
-      isNewUser = tempD.inHours < 24;
-      TbaUtils.instance.postUserData({
-        "mw_new_user": isNewUser ? "new" : "old",
-      });
+      var installTimeMs = museSp.getInt("installTimeMs");
+      // var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs).difference(DateTime.now());
+      // isNewUser = tempD.inHours < 24;
+      // TbaUtils.instance.postUserData({"mw_new_user": isNewUser ? "new" : "old"});
+      if (installTimeMs > 0) {
+        var tempD = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(installTimeMs));
+        isNewUser = tempD.inHours < 24;
+        TbaUtils.instance.postUserData({"new_user": isNewUser ? "new" : "old"});
+      } else {
+        TbaUtils.instance.postUserData({"new_user": "new"});
+      }
     }
 
     AppStateEventNotifier.startListening();
@@ -199,47 +197,22 @@ class AppController extends SuperController {
 
         //判断新老用户
         var isNewUser = false;
-        var installTimeMs = sp.getInt("installTimeMs") ?? 0;
-        var tempD = DateTime.fromMillisecondsSinceEpoch(
-          installTimeMs,
-        ).difference(DateTime.now());
-        isNewUser = tempD.inHours < 24;
-        TbaUtils.instance.postUserData({
-          "mw_new_user": isNewUser ? "new" : "old",
-        });
-
-        AdUtils.instance.showAd("open", load_pos: "hotOpen");
+        var installTimeMs = museSp.getInt("installTimeMs");
+        if (installTimeMs > 0) {
+          var tempD = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(installTimeMs));
+          isNewUser = tempD.inHours < 24;
+          TbaUtils.instance.postUserData({"new_user": isNewUser ? "new" : "old"});
+        } else {
+          TbaUtils.instance.postUserData({"new_user": "new"});
+        }
+        TbaUtils.instance.checkUnFinishedEvent();
+        AdUtils.instance.showAd("open", adScene: AdScene.openHot);
       } else if (state == AppState.background) {
         Get.find<Application>().isAppBack = true;
+        TbaUtils.instance.checkUnFinishedEvent();
         AppLog.e("后台");
-        // if (Get.find<UserPlayInfoController>().player?.value.isPlaying ??
-        //     false) {
-        //   //后台播放
-        //   Get.find<UserPlayInfoController>().playNext();
-        //   EventUtils.instance.addEvent("background_play");
-        // }
-
-        //判断是否在播放
-        // AppLog.e(Get.find<UserPlayInfoController>().player?.value.isPlaying);
-        // try {
-        //   if (Get.find<UserPlayInfoController>().player?.value.isPlaying ??
-        //       false) {
-        //     await Future.delayed(Duration(milliseconds: 100));
-        //     await Get.find<UserPlayInfoController>().player?.play();
-        //     await Future.delayed(Duration(milliseconds: 100));
-        //     await Get.find<UserPlayInfoController>().player?.play();
-        //     await Future.delayed(Duration(milliseconds: 100));
-        //     await Get.find<UserPlayInfoController>().player?.play();
-        //     EventUtils.instance.addEvent("background_play");
-        //   }
-        // } catch (e) {
-        //   print(e);
-        // }
       }
     });
-
-    // TbaUtils.instance.postUserData({"mm_new_user": "old"});
-    // TbaUtils.instance.postUserData({"mm_type_so": "ytm"});
   }
 
   @override
@@ -271,13 +244,12 @@ class Application extends GetxService {
   var isAppBack = false;
 
   Future initNetPush() async {
-    if (!Env.isUser) {
+    if (!MuseConfig.isUser) {
       return;
     }
 
     AppLog.e("开始初始化推送");
-    NotificationSettings settings =
-        await FirebaseMessaging.instance.requestPermission();
+    NotificationSettings settings = await FirebaseMessaging.instance.requestPermission();
     AppLog.e(settings.authorizationStatus.name);
 
     if (settings.authorizationStatus != AuthorizationStatus.authorized) {
@@ -295,8 +267,7 @@ class Application extends GetxService {
       print(e);
     }
 
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
       //点击消息进入
@@ -318,25 +289,17 @@ class Application extends GetxService {
   }
 
   Future initLocPush() async {
-    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-    final InitializationSettings initializationSettings =
-        InitializationSettings(
-          iOS: DarwinInitializationSettings(),
-          android: AndroidInitializationSettings("ic_launcher"),
-        );
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    final InitializationSettings initializationSettings = InitializationSettings(iOS: DarwinInitializationSettings(), android: AndroidInitializationSettings("ic_launcher"));
 
-    var d =
-        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    var d = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
 
     if (d != null) {
       EventUtils.instance.addEvent("push_click");
     }
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (
-        NotificationResponse notificationResponse,
-      ) async {
+      onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
         // 处理用户点击通知后的回调逻辑，例如打开对应的页面等，按需编写逻辑
         EventUtils.instance.addEvent("push_click");
       },
@@ -376,27 +339,21 @@ class Application extends GetxService {
 
     await FlutterLocalNotificationsPlugin().zonedSchedule(
       nId,
-      "Music Muse",
+      MuseConfig.appName,
       "${"Listen now".tr}\n${item["title"]}",
       tzDate,
       NotificationDetails(
-        iOS: DarwinNotificationDetails(
-          presentBadge: true,
-          badgeNumber: 1,
-          presentAlert: true,
-          presentBanner: true,
-          presentSound: true,
-        ),
+        iOS: DarwinNotificationDetails(presentBadge: true, badgeNumber: 1, presentAlert: true, presentBanner: true, presentSound: true),
         android: AndroidNotificationDetails("google play", "android"),
       ),
       matchDateTimeComponents: DateTimeComponents.time,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       androidScheduleMode: AndroidScheduleMode.exact,
     );
   }
 
   Future<void> initSdk() async {
+    RemoteUtil.shareInstance.init();
     await Firebase.initializeApp();
     AppLog.e("firebase初始化完成");
     //异步，否则会卡在启动
@@ -406,34 +363,73 @@ class Application extends GetxService {
   }
 
   initFireBaseOther() async {
-    //测试环境异常上报
-    if (!Env.isUser) {
-      FlutterError.onError = (errorDetails) {
-        FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-      };
-      // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-      PlatformDispatcher.instance.onError = (error, stack) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    bool isIgnoreError(Object error) {
+      if (error is DioException || error is HttpException || error is SocketException) {
         return true;
-      };
+      }
+
+      final errorStr = error.toString();
+      if (errorStr.contains('SocketException') ||
+          errorStr.contains('HttpException') ||
+          errorStr.contains('Error loading artUri') ||
+          errorStr.contains('Failed host lookup') ||
+          errorStr.contains('OS Error: nodename nor servname') ||
+          errorStr.contains('HandshakeException') ||
+          errorStr.contains('Invalid statusCode: 404')) {
+        return true;
+      }
+      if (errorStr.contains('RenderFlex overflowed')) {
+        return true;
+      }
+      return false;
     }
 
-    if (Env.isUser) {
-      AdUtils.instance.adJson = AdUtils.instance.adJsonRelease;
-      if (GetPlatform.isIOS) {
-        AdUtils.instance.adJson = AdUtils.instance.adJsonIosRelease;
+    FlutterError.onError = (errorDetails) {
+      if (isIgnoreError(errorDetails.exception)) {
+        AppLog.e("异常【不上报】：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
+      } else {
+        AppLog.e("异常上报：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
+        FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
       }
-      var adData = await AdUtils.instance.initJsonByFireBase();
-      AppLog.e("广告配置");
-      AppLog.e(adData);
-    } else {
-      if (GetPlatform.isIOS) {
-        AdUtils.instance.adJson = AdUtils.instance.adJsonIos;
+    };
+    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    PlatformDispatcher.instance.onError = (error, stack) {
+      if (isIgnoreError(error)) {
+        AppLog.e("异常【不上报】PlatformDispatcher type:${error.runtimeType}, $error");
+      } else {
+        AppLog.e("异常上报：PlatformDispatcher onError:$error,$stack");
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       }
-      var adData = await AdUtils.instance.initJsonByFireBase();
-      AppLog.e("广告配置");
-      AppLog.e(adData);
-    }
+      return true;
+    };
+    RemoteUtil.shareInstance.initFirebaseRemoteSdk();
+
+    //测试环境异常上报
+    // FlutterError.onError = (errorDetails) {
+    //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    // };
+    // // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    // PlatformDispatcher.instance.onError = (error, stack) {
+    //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    //   return true;
+    // };
+    //
+    // if (MuseConfig.isUser) {
+    //   AdUtils.instance.adJson = AdUtils.instance.adJsonRelease;
+    //   if (GetPlatform.isIOS) {
+    //     AdUtils.instance.adJson = AdUtils.instance.adJsonIosRelease;
+    //   }
+    //   var adData = await AdUtils.instance.initJsonByFireBase();
+    //   AppLog.e("广告配置");
+    //   AppLog.e(adData);
+    // } else {
+    //   if (GetPlatform.isIOS) {
+    //     AdUtils.instance.adJson = AdUtils.instance.adJsonIos;
+    //   }
+    //   var adData = await AdUtils.instance.initJsonByFireBase();
+    //   AppLog.e("广告配置");
+    //   AppLog.e(adData);
+    // }
   }
 
   initAd() {
@@ -481,8 +477,7 @@ class Application extends GetxService {
   }
 
   Future<Application> init() async {
-    PaintingBinding.instance.imageCache.maximumSizeBytes =
-        1024 * 1024 * 1024 * 5; //设置缓存为5GB，避免图片太多经常重新加载
+    PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 1024 * 5; //设置缓存为5GB，避免图片太多经常重新加载
     //竖屏
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     //沉浸状态栏
@@ -495,18 +490,19 @@ class Application extends GetxService {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
+    await MuseSP.instance.init();
 
-    final sp = await SharedPreferences.getInstance();
+    // final sp = await SharedPreferences.getInstance();
     //设置设备的uuid,每次重新安装后不一样
-    userAppUuid = sp.getString("userAppUuid") ?? "";
+    userAppUuid = museSp.getString("userAppUuid") ?? "";
     if (userAppUuid.isEmpty) {
       userAppUuid = const Uuid().v4();
-      await sp.setString("userAppUuid", userAppUuid);
+      await museSp.setString("userAppUuid", userAppUuid);
     }
 
     //设置语言
-    var lastLangCode = sp.getString("lastLangCode") ?? "";
-    var lastLangCountryCode = sp.getString("lastLangCountryCode") ?? "";
+    var lastLangCode = museSp.getString("lastLangCode") ?? "";
+    var lastLangCountryCode = museSp.getString("lastLangCountryCode") ?? "";
     if (lastLangCode.isNotEmpty) {
       MyTranslations.locale = Locale(lastLangCode, lastLangCountryCode);
     }
@@ -515,13 +511,7 @@ class Application extends GetxService {
 
     // //设置下拉刷新
     EasyRefresh.defaultHeaderBuilder = () {
-      return const ClassicHeader(
-        iconTheme: IconThemeData(color: Color(0xff8569FF)),
-        showMessage: false,
-        showText: false,
-        infiniteHitOver: true,
-        processedDuration: Duration.zero,
-      );
+      return const ClassicHeader(iconTheme: IconThemeData(color: Color(0xff8569FF)), showMessage: false, showText: false, infiniteHitOver: true, processedDuration: Duration.zero);
     };
 
     EasyRefresh.defaultFooterBuilder = () {
@@ -545,15 +535,13 @@ class Application extends GetxService {
   }
 
   AppsflyerSdk? appsflyerSdk;
+
   initAppsflyer() async {
-    if (!Env.isUser) {
+    if (!MuseConfig.isUser) {
       return;
     }
 
-    AppsFlyerOptions appsFlyerOptions = AppsFlyerOptions(
-      afDevKey: Env.isUser ? "XrT2fnS7Vhxh9w3YLjHtGS" : "",
-      showDebug: !Env.isUser,
-    );
+    AppsFlyerOptions appsFlyerOptions = AppsFlyerOptions(afDevKey: MuseConfig.isUser ? "XrT2fnS7Vhxh9w3YLjHtGS" : "", showDebug: !MuseConfig.isUser);
     appsflyerSdk = AppsflyerSdk(appsFlyerOptions);
     var appsflyerData = await appsflyerSdk?.initSdk(
       registerConversionDataCallback: true,

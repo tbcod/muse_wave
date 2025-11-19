@@ -101,5 +101,17 @@ const Map<String, String> frFR = {
       "Accédez immédiatement à vos chansons favorites en cliquant ici.",
   "loadMoreFailStr": "Aucune connexion réseau, veuillez réessayer.",
   "noMoreStr": "Plus de contenu.",
-  "noNetPlayStr": "Aucune connexion réseau, vérifiez l'état de votre réseau"
+  "noNetPlayStr": "Aucune connexion réseau, vérifiez l'état de votre réseau",
+  "addedDownloadQueue": "Ajouté à la file de téléchargement",
+  "downloadCompleted": "Téléchargement terminé",
+  "downloadFailed": "Échec du téléchargement",
+  "pops": "Options de confidentialité",
+  "popDetail": "Voulez-vous réinitialiser vos paramètres d'autorisation de confidentialité ?",
+  "success": "Succès !",
+  "reset": "Réinitialiser",
+  "Songs": "Titres",
+  "Videos": "Vidéos",
+  "Albums": "Albums",
+  "Artists": "Artistes",
+  "playlists": "Playlists de la communauté"
 };

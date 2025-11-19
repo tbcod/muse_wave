@@ -22,7 +22,7 @@ class MyDialogUtils {
 
   showRateDialog({bool isPlayPage = false}) async {
     if (AdUtils.instance.adIsShowing) {
-      AppLog.e("广告已显示，不显示好评");
+      // AppLog.e("广告已显示，不显示好评");
       return;
     }
 
@@ -34,7 +34,7 @@ class MyDialogUtils {
     if (lastInstallDate.year == nowD.year &&
         lastInstallDate.month == nowD.month &&
         lastInstallDate.day == nowD.day) {
-      AppLog.e("安装当天不显示");
+      // AppLog.e("安装当天不显示");
       //安装当天不显示
       return;
     }
@@ -60,8 +60,8 @@ class MyDialogUtils {
             .inHours;
     if (lastHours < 24) {
       // AppLog.e(lastHours);
-      AppLog.e("${DateTime.fromMillisecondsSinceEpoch(ms)}\n${DateTime.now()}");
-      AppLog.e("今天已经弹过，不显示好评弹窗");
+      // AppLog.e("${DateTime.fromMillisecondsSinceEpoch(ms)}\n${DateTime.now()}");
+      // AppLog.e("今天已经弹过，不显示好评弹窗");
       return;
     }
 
@@ -85,7 +85,7 @@ class MyDialogUtils {
     // 1-非强制
     // 2-强制
 
-    await FirebaseRemoteConfig.instance.fetchAndActivate();
+    // await FirebaseRemoteConfig.instance.fetchAndActivate();
 
     var importCode = FirebaseRemoteConfig.instance.getInt("musicmuse_import");
 

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:muse_wave/uinew/main/libray/u_loc_playlist.dart';
+import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../static/db_key.dart';
 import '../../../view/base_view.dart';
@@ -70,18 +71,20 @@ class UserLocAddSong extends GetView<UserLocAddSongController> {
             ),
           ],
         ),
-        body: Container(
-          child: Obx(() {
-            return ListView.separated(
-              itemBuilder: (_, i) {
-                return getItem(i);
-              },
-              separatorBuilder: (_, i) {
-                return SizedBox(height: 10.w);
-              },
-              itemCount: controller.list.length,
-            );
-          }),
+        body: PlayerBottomBarView(
+          child: Container(
+            child: Obx(() {
+              return ListView.separated(
+                itemBuilder: (_, i) {
+                  return getItem(i);
+                },
+                separatorBuilder: (_, i) {
+                  return SizedBox(height: 10.w);
+                },
+                itemCount: controller.list.length,
+              );
+            }),
+          ),
         ),
       ),
     );

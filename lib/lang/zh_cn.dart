@@ -86,5 +86,17 @@ const Map<String, String> zhCN = {
   "downloadGuideStr": "点击此处可立即访问您喜爱的曲目。",
   "loadMoreFailStr": "无网络，请重试。",
   "noMoreStr": "无更多内容。",
-  "noNetPlayStr": "无网络，请检查您的网络状态"
+  "noNetPlayStr": "无网络，请检查您的网络状态",
+  "addedDownloadQueue": "已添加到下载队列",
+  "downloadCompleted": "下载完成",
+  "downloadFailed": "下载失败",
+  "pops": "隐私选项",
+  "popDetail": "是否要重置您的隐私授权设置？",
+  "success": "成功！",
+  "reset": "重置",
+  "Songs": "歌曲",
+  "Videos": "视频",
+  "Albums": "专辑",
+  "Artists": "音乐人",
+  "playlists": "播放列表"
 };

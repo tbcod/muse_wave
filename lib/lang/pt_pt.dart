@@ -97,5 +97,17 @@ const Map<String, String> ptPT = {
       "Acesse suas músicas favoritas imediatamente com um clique aqui.",
   "loadMoreFailStr": "Sem rede, tente novamente.",
   "noMoreStr": "Não há mais conteúdo.",
-  "noNetPlayStr": "Sem rede, verifique o status da sua rede"
+  "noNetPlayStr": "Sem rede, verifique o status da sua rede",
+  "addedDownloadQueue": "Adicionado à fila de download",
+  "downloadCompleted": "Download concluído",
+  "downloadFailed": "Falha no download",
+  "pops": "Opções de privacidade",
+  "popDetail": "Deseja redefinir as configurações de autorização de privacidade?",
+  "success": "Sucesso!",
+  "reset": "Redefinir",
+  "Songs": "Músicas",
+  "Videos": "Vídeos",
+  "Albums": "Álbuns",
+  "Artists": "Artistas",
+  "playlists": "Playlists da comunidade"
 };

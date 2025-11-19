@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../tool/log.dart';
@@ -12,7 +11,7 @@ class BaseApi extends GetConnect {
     httpClient.baseUrl = baseHost;
     allowAutoSignedCert = true;
     withCredentials = true;
-    httpClient.timeout = const Duration(seconds: 30);
+    httpClient.timeout = const Duration(seconds: 12);
   }
 
   Future<BaseModel> httpRequest(
@@ -29,9 +28,9 @@ class BaseApi extends GetConnect {
   }) async {
     CancelFunc? cancelFunc;
 
-    AppLog.v(
-      "请求前url: ${(httpClient.baseUrl ?? "") + url} , method: $method , header: $headers , param：$body",
-    );
+    // AppLog.v(
+    //   "请求前url: ${(httpClient.baseUrl ?? "") + url} , method: $method , header: $headers , param：$body",
+    // );
 
     // var connectivityResult = await Connectivity().checkConnectivity();
     // if (connectivityResult != ConnectivityResult.wifi &&
@@ -82,13 +81,13 @@ class BaseApi extends GetConnect {
 
       // return response;
       // debugPrint(jsonEncode(body));
-      AppLog.d(
-        "url: ${response.request?.url} ,\n method: $method ,\n header: ${response.request?.headers} ,\n param：${jsonEncode(body)}",
-      );
-      AppLog.w(response.statusText);
-      AppLog.w(response.statusCode);
+      // AppLog.d(
+      //   "url: ${response.request?.url} ,\n method: $method ,\n header: ${response.request?.headers} ,\n param：${jsonEncode(body)}",
+      // );
+      // AppLog.w(response.statusText);
+      // AppLog.w(response.statusCode);
       if (response.isOk) {
-        AppLog.d("${response.request?.url} \n请求成功");
+        // AppLog.d("${response.request?.url} \n请求成功");
         // AppLog.d(response.body);
         // AppLog.d(
         //     "${response.request?.url} \n请求成功：\n${response.body},\ncode:${response.statusCode}");
@@ -125,9 +124,9 @@ class BaseApi extends GetConnect {
         }
         return data;
       } else {
-        AppLog.d(
-          "${response.request?.url} \n请求失败：\n${response.body},\ncode:${response.statusCode}",
-        );
+        // AppLog.d(
+        //   "${response.request?.url} \n请求失败：\n${response.body},\ncode:${response.statusCode}",
+        // );
         if (toastError) {
           ToastUtil.showToast(msg: "httpError".tr);
         }

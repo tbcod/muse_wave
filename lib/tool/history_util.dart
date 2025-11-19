@@ -1,10 +1,11 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:muse_wave/uinew/main/u_home.dart';
 
 import '../api/api_main.dart';
+import '../api/base_dio_api.dart';
 import '../static/db_key.dart';
-import '../uinew/main/u_home.dart';
+import 'bus.dart';
 
 class HistoryUtil {
   HistoryUtil._internal();
@@ -29,6 +30,7 @@ class HistoryUtil {
     if (songHistoryList.length > 21) {
       songHistoryList.removeLast();
     }
+    museSp.setBool("isSongHistoryChanged", true);
 
     saveData();
   }
@@ -72,9 +74,18 @@ class HistoryUtil {
     var box = await Hive.openBox(DBKey.myHistoryMusicData);
     songHistoryList.value = box.values.toList();
 
-    if (songHistoryList.isEmpty) {
+    // if (songHistoryList.isEmpty) {
+    //   //添加默认的12首歌
+    //   songHistoryList.value = decodeList(locSong);
+    //   saveData();
+    // }
+
+    bool isChanged = museSp.getBool("isSongHistoryChanged");
+    if (songHistoryList.isEmpty || !isChanged) {
       //添加默认的12首歌
-      songHistoryList.value = decodeList(locSong);
+      // songHistoryList.value = decodeList(locSong);
+      songHistoryList.value = listenNowListData();
+
       saveData();
     }
 

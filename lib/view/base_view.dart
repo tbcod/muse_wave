@@ -221,54 +221,67 @@ class NetImageView extends GetView {
   final String? errorAsset;
   final BoxFit fit;
   final Color? bgColor;
+  final double? radius;
+
   const NetImageView({
     Key? key,
     required this.imgUrl,
     this.width,
     this.height,
-    this.fit = BoxFit.contain,
+    this.fit = BoxFit.cover,
     this.errorAsset,
     this.bgColor,
+    this.radius,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: imgUrl,
-      width: width,
-      height: height,
-      fit: fit,
-      placeholder: (c, url) {
-        return errorAsset == null
-            ? Container(
-              color: bgColor ?? Colors.black.withOpacity(0.08),
-              // child: const Center(
-              //   child: Icon(Icons.error),
-              // ),
-            )
-            : Image.asset(errorAsset!, fit: BoxFit.cover);
+    return ClipRRect(
+      borderRadius:
+      radius == null ? BorderRadius.zero : BorderRadius.circular(radius!),
+      child: CachedNetworkImage(
+        imageUrl: imgUrl,
+        width: width,
+        height: height,
+        fit: fit,
+        placeholder: (c, url) {
+          return errorAsset == null
+              ? Container(
+            color: bgColor ?? Colors.black.withOpacity(0.08),
+            // child: const Center(
+            //   child: Icon(Icons.error),
+            // ),
+          )
+              : Image.asset(
+            errorAsset!,
+            fit: BoxFit.cover,
+          );
 
-        // return Container(
-        //   color: bgColor ?? Colors.black.withOpacity(0.08),
-        //   // child: const Center(
-        //   //   child: CircularProgressIndicator(),
-        //   // ),
-        // );
-      },
-      errorWidget: (c, url, error) {
-        // return Container(
-        //   color: bgColor ?? Colors.black.withOpacity(0.08),
-        // );
+          // return Container(
+          //   color: bgColor ?? Colors.black.withOpacity(0.08),
+          //   // child: const Center(
+          //   //   child: CircularProgressIndicator(),
+          //   // ),
+          // );
+        },
+        errorWidget: (c, url, error) {
+          // return Container(
+          //   color: bgColor ?? Colors.black.withOpacity(0.08),
+          // );
 
-        return errorAsset == null
-            ? Container(
-              color: bgColor ?? Colors.black.withOpacity(0.08),
-              // child: const Center(
-              //   child: Icon(Icons.error),
-              // ),
-            )
-            : Image.asset(errorAsset!, fit: BoxFit.cover);
-      },
+          return errorAsset == null
+              ? Container(
+            color: bgColor ?? Colors.black.withOpacity(0.08),
+            // child: const Center(
+            //   child: Icon(Icons.error),
+            // ),
+          )
+              : Image.asset(
+            errorAsset!,
+            fit: BoxFit.cover,
+          );
+        },
+      ),
     );
   }
 }
@@ -280,15 +293,16 @@ class NetAvatarView extends GetView {
   final double borderWidth;
   final Color borderColor;
   final Color bgColor;
-  const NetAvatarView({
-    Key? key,
-    required this.imgUrl,
-    this.size = 40,
-    this.borderWidth = 0,
-    this.borderColor = Colors.grey,
-    this.bgColor = Colors.grey,
-    this.errorAsset = "",
-  }) : super(key: key);
+
+  const NetAvatarView(
+      {Key? key,
+        required this.imgUrl,
+        this.size = 40,
+        this.borderWidth = 0,
+        this.borderColor = Colors.grey,
+        this.bgColor = Colors.grey,
+        this.errorAsset = ""})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -297,9 +311,15 @@ class NetAvatarView extends GetView {
       backgroundColor: borderColor,
       child: CircleAvatar(
         radius: size / 2 - borderWidth / 2,
-        backgroundImage: errorAsset.isEmpty ? null : AssetImage(errorAsset),
+        backgroundImage: errorAsset.isEmpty
+            ? null
+            : AssetImage(
+          errorAsset,
+        ),
         backgroundColor: bgColor,
-        foregroundImage: CachedNetworkImageProvider(imgUrl),
+        foregroundImage: CachedNetworkImageProvider(
+          imgUrl,
+        ),
         onForegroundImageError: (o, e) {},
       ),
     );
@@ -429,7 +449,7 @@ getDownloadAndMoreBtn(
               //下载中\下载暂停
               return InkWell(
                 onTap: () {
-                  DownloadUtils.instance.remove(videoId);
+                  DownloadUtils.instance.remove(videoId,state: state);
                 },
                 child: Container(
                   height: iconHeight,
@@ -453,7 +473,7 @@ getDownloadAndMoreBtn(
             } else if (state == 2) {
               return InkWell(
                 onTap: () {
-                  DownloadUtils.instance.remove(videoId);
+                  DownloadUtils.instance.remove(videoId,state: state);
                 },
                 child: Container(
                   height: iconHeight,

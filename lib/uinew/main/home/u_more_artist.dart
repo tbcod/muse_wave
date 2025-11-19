@@ -3,13 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_artist.dart';
+import 'package:muse_wave/uinew/main/u_home.dart';
+import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../api/api_main.dart';
+import '../../../api/base_dio_api.dart';
 import '../../../tool/like/like_util.dart';
 import '../../../tool/log.dart';
 import '../../../tool/tba/event_util.dart';
 import '../../../view/base_view.dart';
-import '../u_home.dart';
 
 class UserMoreArtist extends GetView<UserMoreArtistController> {
   const UserMoreArtist({super.key});
@@ -40,19 +42,21 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
           ),
           title: Text("Artist".tr),
         ),
-        body: Container(
-          child: controller.obxView(
-            (s) => ListView.separated(
-              padding: EdgeInsets.only(
-                bottom: Get.mediaQuery.padding.bottom + 60.w,
+        body: PlayerBottomBarView(
+          child: Container(
+            child: controller.obxView(
+              (s) => ListView.separated(
+                padding: EdgeInsets.only(
+                  bottom: Get.mediaQuery.padding.bottom + 60.w,
+                ),
+                itemBuilder: (_, i) {
+                  return getItem(i);
+                },
+                separatorBuilder: (_, i) {
+                  return SizedBox(height: 10.w);
+                },
+                itemCount: controller.list.length,
               ),
-              itemBuilder: (_, i) {
-                return getItem(i);
-              },
-              separatorBuilder: (_, i) {
-                return SizedBox(height: 10.w);
-              },
-              itemCount: controller.list.length,
             ),
           ),
         ),
@@ -66,7 +70,7 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
       onTap: () {
         AppLog.e(item);
         EventUtils.instance.addEvent("det_artist_show", data: {"form": "more"});
-        Get.to(UserArtistInfo(), arguments: item);
+        Get.to(()=>UserArtistInfo(), arguments: item);
       },
       child: Container(
         height: 70.w,

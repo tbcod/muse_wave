@@ -81,8 +81,9 @@ class MaxUtils {
                         ad_format: "native",
                         ad_pre_ecpm: ad.revenue.toString(),
                         currency: "",
-                        precision_type: ad.revenuePrecision,
-                        positionKey: positionKey,
+                        ad_sence: positionKey,
+                        // precision_type: ad.revenuePrecision,
+                        // positionKey: positionKey,
                       );
                     },
                   ),
@@ -201,8 +202,9 @@ class MaxUtils {
                     ad_format: "banner",
                     ad_pre_ecpm: ad.revenue.toString(),
                     currency: "",
-                    precision_type: ad.revenuePrecision,
-                    positionKey: positionKey,
+                    ad_sence: key
+                    // precision_type: ad.revenuePrecision,
+                    // positionKey: positionKey,
                   );
                 },
                 onAdExpandedCallback: (ad) {},

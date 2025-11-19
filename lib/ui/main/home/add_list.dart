@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:app_settings/app_settings.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

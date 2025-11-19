@@ -12,8 +12,7 @@ import 'package:anythink_sdk/at_platformview/at_native_platform_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-import '../../static/env.dart';
+import 'package:muse_wave/muse_config.dart';
 import '../../view/base_view.dart';
 import '../log.dart';
 import '../tba/tba_util.dart';
@@ -31,7 +30,7 @@ class TopOnUtils {
   StreamSubscription? rewardedStream;
 
   Future init() async {
-    if (Env.isUser) {
+    if (MuseConfig.isUser) {
       //正式环境
       ATInitManger.initAnyThinkSDK(
         appidStr: 'h67d906f010107',
@@ -98,8 +97,9 @@ class TopOnUtils {
           ad_format: "banner",
           ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
           currency: revenueData["currency"] ?? "USD",
-          precision_type: revenueData["precision"] ?? "",
-          positionKey: positionKey,
+          ad_sence: key,
+          // precision_type: revenueData["precision"] ?? "",
+          // positionKey: positionKey,
         );
       }
     });
@@ -171,8 +171,9 @@ class TopOnUtils {
           ad_format: "native",
           ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
           currency: revenueData["currency"] ?? "USD",
-          precision_type: revenueData["precision"] ?? "",
-          positionKey: positionKey,
+          ad_sence: key
+          // precision_type: revenueData["precision"] ?? "",
+          // positionKey: positionKey,
         );
       }
     });

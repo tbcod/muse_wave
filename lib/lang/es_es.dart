@@ -99,5 +99,17 @@ const Map<String, String> esES = {
       "Acceda a sus canciones favoritas de inmediato con un clic aquí.",
   "loadMoreFailStr": "Sin conexión de red, inténtelo de nuevo.",
   "noMoreStr": "No hay más contenido.",
-  "noNetPlayStr": "Sin conexión de red, compruebe el estado de su red"
+  "noNetPlayStr": "Sin conexión de red, compruebe el estado de su red",
+  "addedDownloadQueue": "Añadido a la cola de descarga",
+  "downloadCompleted": "Descarga completada",
+  "downloadFailed": "Error en la descarga",
+  "pops": "Opciones de privacidad",
+  "popDetail": "¿Desea restablecer la configuración de autorización de privacidad?",
+  "success": "¡Éxito!",
+  "reset": "Restablecer",
+  "Songs": "Canciones",
+  "Videos": "Vídeos",
+  "Albums": "Álbumes",
+  "Artists": "Artistas",
+  "playlists": "Listas de la comunidad"
 };

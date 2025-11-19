@@ -4,8 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_play.dart';
+import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../api/api_main.dart';
+import '../../../api/base_dio_api.dart';
 import '../../../tool/format_data.dart';
 import '../../../view/base_view.dart';
 
@@ -44,30 +46,32 @@ class UserMoreVideo extends GetView<UserMoreVideoController> {
           ),
           title: Text(barTitle),
         ),
-        body: controller.obxView(
-          (state) => Container(
-            child: Obx(() {
-              return EasyRefresh(
-                // onLoad: () async {
-                //   await controller.bindMoreData();
-                //   return controller.nextData.isEmpty
-                //       ? IndicatorResult.noMore
-                //       : IndicatorResult.success;
-                // },
-                child: ListView.separated(
-                  padding: EdgeInsets.only(
-                    bottom: Get.mediaQuery.padding.bottom + 100.w,
+        body: PlayerBottomBarView(
+          child: controller.obxView(
+            (state) => Container(
+              child: Obx(() {
+                return EasyRefresh(
+                  // onLoad: () async {
+                  //   await controller.bindMoreData();
+                  //   return controller.nextData.isEmpty
+                  //       ? IndicatorResult.noMore
+                  //       : IndicatorResult.success;
+                  // },
+                  child: ListView.separated(
+                    padding: EdgeInsets.only(
+                      bottom: Get.mediaQuery.padding.bottom + 100.w,
+                    ),
+                    itemBuilder: (_, i) {
+                      return getItem(i);
+                    },
+                    separatorBuilder: (_, i) {
+                      return SizedBox(height: 10.w);
+                    },
+                    itemCount: controller.list.length,
                   ),
-                  itemBuilder: (_, i) {
-                    return getItem(i);
-                  },
-                  separatorBuilder: (_, i) {
-                    return SizedBox(height: 10.w);
-                  },
-                  itemCount: controller.list.length,
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
         ),
       ),

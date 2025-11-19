@@ -22,8 +22,7 @@ const Map<String, String> deDE = {
   "Liked songs": "Gefallene Songs",
   "Local songs": "Lokale Songs",
   "Liked Artist": "Lieblingskünstler",
-  "Search for music/artist/playlist":
-      "Nach Musik/Künstler/Wiedergabeliste suchen",
+  "Search for music/artist/playlist": "Nach Musik/Künstler/Wiedergabeliste suchen",
   "History record": "Verlaufsdatum",
   "Delete": "Löschen",
   "More": "Mehr",
@@ -50,8 +49,7 @@ const Map<String, String> deDE = {
   "httpError": "Keine Netzwerkverbindung",
   "Delete successfully": "Erfolgreich gelöscht",
   "Upload successfully": "Erfolgreich hochgeladen",
-  "Please enter your feedback or email":
-      "Bitte geben Sie Ihr Feedback oder Ihre E-Mail-Adresse ein",
+  "Please enter your feedback or email": "Bitte geben Sie Ihr Feedback oder Ihre E-Mail-Adresse ein",
   "Email is Error": "E-Mail-Adresse ist fehlerhaft",
   "Feedback successful": "Feedback erfolgreich erhalten",
   "Feedback content": "Feedback-Inhalt",
@@ -62,8 +60,7 @@ const Map<String, String> deDE = {
   "Delete ok": "Erfolgreich gelöscht",
   "Add songs to playlist": "Songs zur Wiedergabeliste hinzufügen",
   "Choose playlist": "Wiedergabeliste wählen",
-  "No content now, Add songs you like":
-      "Derzeit kein Inhalt vorhanden, fügen Sie Ihre Lieblingssongs hinzu",
+  "No content now, Add songs you like": "Derzeit kein Inhalt vorhanden, fügen Sie Ihre Lieblingssongs hinzu",
   "Failed to get artist": "Fehler beim Abrufen des Künstlers",
   "videoId error": "Fehler in der Videoid",
   "Already in the list": "Bereits in der Liste",
@@ -71,35 +68,35 @@ const Map<String, String> deDE = {
   "Followed this singer": "Dieser Sänger wird verfolgt",
   "Followed this playlist": "Diese Wiedergabeliste wird verfolgt",
   "Followed this song": "Dieses Lied wird verfolgt",
-  "You have canceled following this singer":
-      "Sie haben die Verfolgung dieses Sängers abgebrochen",
-  "You have canceled following this playlist":
-      "Sie haben die Verfolgung dieser Wiedergabeliste abgebrochen",
-  "You have canceled following this song":
-      "Sie haben die Verfolgung dieses Liedes abgebrochen",
+  "You have canceled following this singer": "Sie haben die Verfolgung dieses Sängers abgebrochen",
+  "You have canceled following this playlist": "Sie haben die Verfolgung dieser Wiedergabeliste abgebrochen",
+  "You have canceled following this song": "Sie haben die Verfolgung dieses Liedes abgebrochen",
   "Please enter content": "Bitte geben Sie den Inhalt ein",
   "Please enter email": "Bitte geben Sie Ihre E-Mail-Adresse ein",
-  "Please enter a playlist name":
-      "Bitte geben Sie einen Namen für die Wiedergabeliste ein",
+  "Please enter a playlist name": "Bitte geben Sie einen Namen für die Wiedergabeliste ein",
   "deleteStr": "Möchten Sie den Verlaufseintrag löschen?",
   "addToPlaylistOk": "Zur Wiedergabeliste hinzugefügt",
   "alreadyAdd": "Dieses Lied befindet sich bereits in der Liste",
-  "noWifiStr":
-      "Das aktuelle Umfeld ist kein WLAN, achten Sie auf den Datenverbrauch",
+  "noWifiStr": "Das aktuelle Umfeld ist kein WLAN, achten Sie auf den Datenverbrauch",
   "noNetworkStr1": "Netzwerkunterbrechung, Download pausiert",
   "noNetworkStr2": "Keine Internetverbindung",
-  "otherAppDialogText1":
-      "Bitte beachten Sie, dass die aktuelle App nicht mehr unterstützt wird. Laden Sie unsere neue App herunter, um weiterhin alle Musikstücke zu genießen.",
-  "otherAppDialogText2":
-      "Die aktuelle App erhält keine Updates mehr. Für ein besseres Erlebnis empfehlen wir Ihnen, unsere neue App herunterzuladen.",
-  "playCopyrightStr":
-      "Aus Urheberrechtsgründen kann das aktuelle Lied nicht abgespielt werden",
-  "ratingStr":
-      "Ihre Unterstützung ist unsere größte Motivation zum Fortschritt!",
-  "downloadGuideStr":
-      "Klicken Sie hier, um sofort auf Ihre Lieblingssongs zuzugreifen.",
+  "otherAppDialogText1": "Bitte beachten Sie, dass die aktuelle App nicht mehr unterstützt wird. Laden Sie unsere neue App herunter, um weiterhin alle Musikstücke zu genießen.",
+  "otherAppDialogText2": "Die aktuelle App erhält keine Updates mehr. Für ein besseres Erlebnis empfehlen wir Ihnen, unsere neue App herunterzuladen.",
+  "playCopyrightStr": "Aus Urheberrechtsgründen kann das aktuelle Lied nicht abgespielt werden",
+  "ratingStr": "Ihre Unterstützung ist unsere größte Motivation zum Fortschritt!",
+  "downloadGuideStr": "Klicken Sie hier, um sofort auf Ihre Lieblingssongs zuzugreifen.",
   "loadMoreFailStr": "Keine Netzwerkverbindung, bitte versuchen Sie es erneut.",
   "noMoreStr": "Kein weiterer Inhalt.",
-  "noNetPlayStr":
-      "Keine Netzwerkverbindung, überprüfen Sie den Status Ihres Netzwerks"
+  "noNetPlayStr": "Keine Netzwerkverbindung, überprüfen Sie den Status Ihres Netzwerks",
+  "downloadCompleted": "Download abgeschlossen",
+  "downloadFailed": "Download fehlgeschlagen",
+  "pops": "Datenschutzoptionen",
+  "popDetail": "Möchten Sie Ihre Datenschutzeinstellungen zurücksetzen?",
+  "success": "Erfolg!",
+  "reset": "Zurücksetzen",
+  "Songs": "Titel",
+  "Videos": "Videos",
+  "Albums": "Alben",
+  "Artists": "Künstler",
+  "playlists": "Playlists",
 };

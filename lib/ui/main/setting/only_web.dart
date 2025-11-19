@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/view/base_view.dart';
 import 'package:webview_flutter/webview_flutter.dart';

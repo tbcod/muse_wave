@@ -1,11 +1,11 @@
 name: muse_wave
 description: "A new Flutter project."
-version: 1.0.3+10300
+version: 1.0.4+10400
 
 environment:
   sdk: ^3.7.0
 dependency_overrides:
-  video_player_android: 2.7.12
+  video_player_android: 2.7.1
 dependencies:
   flutter_localizations:
     sdk: flutter
@@ -46,7 +46,7 @@ dependencies:
   connectivity_plus: ^6.0.3
   dio: ^5.7.0
   cached_network_image: ^3.3.1
-  video_player: ^2.9.3
+  video_player: 2.8.7
 #  video_player_media_kit: ^1.0.5
 #  media_kit_libs_android_video: ^1.0.5
 

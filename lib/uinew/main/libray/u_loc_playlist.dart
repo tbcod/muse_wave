@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/libray/u_loc_all_choose.dart';
+import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../generated/assets.dart';
 import '../../../tool/like/like_util.dart';
@@ -22,299 +23,301 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
     Get.lazyPut(() => UserLocPlayListInfoController());
     return Scaffold(
       backgroundColor: Color(0xfffafafa),
-      body: Obx(
-        () => NotificationListener<ScrollNotification>(
-          onNotification: (ScrollNotification notification) {
-            AppLog.e(notification.metrics.pixels);
+      body: PlayerBottomBarView(
+        child: Obx(
+          () => NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification notification) {
+              AppLog.e(notification.metrics.pixels);
 
-            var offset = notification.metrics.pixels;
-            controller.showTitle.value = offset > 100.w;
+              var offset = notification.metrics.pixels;
+              controller.showTitle.value = offset > 100.w;
 
-            return true;
-          },
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                backgroundColor: Color(0xfffafafa),
-                centerTitle: true,
-                pinned: true,
-                title: Obx(
-                  () =>
-                      controller.showTitle.value
-                          ? Text(
-                            controller.info["title"],
-                            style: TextStyle(fontSize: 16.w),
-                          )
-                          : Container(),
-                ),
-                leading: IconButton(
-                  onPressed: () {
-                    Get.back();
-                  },
-                  icon: Image.asset(
-                    "assets/oimg/icon_back.png",
-                    width: 24.w,
-                    height: 24.w,
+              return true;
+            },
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  backgroundColor: Color(0xfffafafa),
+                  centerTitle: true,
+                  pinned: true,
+                  title: Obx(
+                    () =>
+                        controller.showTitle.value
+                            ? Text(
+                              controller.info["title"],
+                              style: TextStyle(fontSize: 16.w),
+                            )
+                            : Container(),
+                  ),
+                  leading: IconButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: Image.asset(
+                      "assets/oimg/icon_back.png",
+                      width: 24.w,
+                      height: 24.w,
+                    ),
                   ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: Container(
-                  height: 142.w,
-                  width: double.infinity,
-                  color: Color(0xfffafafa),
-                  padding: EdgeInsets.symmetric(horizontal: 12.w),
-                  child: Row(
-                    children: [
-                      //封面
-                      Container(
-                        height: 142.w,
-                        width: 172.w,
-                        child: Stack(
-                          children: [
-                            //底部
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Container(
-                                width: 128.w,
-                                height: 128.w,
-                                margin: EdgeInsets.only(right: 20.w),
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: 142.w,
+                    width: double.infinity,
+                    color: Color(0xfffafafa),
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    child: Row(
+                      children: [
+                        //封面
+                        Container(
+                          height: 142.w,
+                          width: 172.w,
+                          child: Stack(
+                            children: [
+                              //底部
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Container(
+                                  width: 128.w,
+                                  height: 128.w,
+                                  margin: EdgeInsets.only(right: 20.w),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffE0E0EF),
+                                    borderRadius: BorderRadius.circular(8.w),
+                                  ),
+                                ),
+                              ),
+
+                              //封面
+                              Container(
+                                clipBehavior: Clip.hardEdge,
                                 decoration: BoxDecoration(
-                                  color: Color(0xffE0E0EF),
                                   borderRadius: BorderRadius.circular(8.w),
                                 ),
-                              ),
-                            ),
-
-                            //封面
-                            Container(
-                              clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8.w),
-                              ),
-                              child:
-                                  controller.info["cover"] != null
-                                      ? NetImageView(
-                                        imgUrl: controller.info["cover"],
-                                        width: 142.w,
-                                        height: 142.w,
-                                        fit: BoxFit.cover,
-                                        errorAsset: Assets.oimgIconDItem,
-                                      )
-                                      : Image.asset(
-                                        "assets/oimg/icon_d_item.png",
-                                      ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 24.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              controller.info["title"],
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 18.w,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 12.w),
-                            Text(
-                              "${controller.list.length} songs",
-                              style: TextStyle(
-                                fontSize: 12.w,
-                                color: Color(0xff121212),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              controller.list.isEmpty
-                  ? SliverToBoxAdapter(
-                    child: Container(height: 10.w, color: Color(0xfffafafa)),
-                  )
-                  : SliverPersistentHeader(
-                    pinned: true,
-                    delegate: MySliverDelegate(
-                      80.w,
-                      80.w,
-                      Container(
-                        height: 80.w,
-                        color: Color(0xfffafafa),
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  EventUtils.instance.addEvent(
-                                    "det_playlist_click",
-                                    data: {"detail_click": "play_all"},
-                                  );
-
-                                  Get.find<UserPlayInfoController>()
-                                      .setDataAndPlayItem(
-                                        controller.list,
-                                        controller.list.first,
-                                        clickType:
-                                            isFormHome ? "h_detail" : "library",
-                                      );
-                                  // Get.to(UserPlayInfo());
-                                },
-                                child: Container(
-                                  height: 42.w,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(21.w),
-                                    color: Color(0xff7453FF),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        "assets/oimg/icon_play.png",
-                                        width: 24.w,
-                                        height: 24.w,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(width: 8.w),
-                                      Text(
-                                        "Play".tr,
-                                        style: TextStyle(
-                                          fontSize: 16.w,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
+                                child:
+                                    controller.info["cover"] != null
+                                        ? NetImageView(
+                                          imgUrl: controller.info["cover"],
+                                          width: 142.w,
+                                          height: 142.w,
+                                          fit: BoxFit.cover,
+                                          errorAsset: Assets.oimgIconDItem,
+                                        )
+                                        : Image.asset(
+                                          "assets/oimg/icon_d_item.png",
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 24.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                controller.info["title"],
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 18.w,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                            ),
-                            SizedBox(width: 15.w),
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  //TODO 随机打乱
-
-                                  EventUtils.instance.addEvent(
-                                    "det_playlist_click",
-                                    data: {"detail_click": "shuffle"},
-                                  );
-
-                                  List playList = List.of(controller.list)
-                                    ..shuffle();
-
-                                  Get.find<UserPlayInfoController>()
-                                      .setDataAndPlayItem(
-                                        playList,
-                                        playList.first,
-                                        clickType:
-                                            isFormHome ? "h_detail" : "library",
-                                      );
-                                  // Get.to(UserPlayInfo());
-                                },
-                                child: Container(
-                                  height: 42.w,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(21.w),
-                                    border: Border.all(
-                                      color: Color(0xff7453FF),
-                                      width: 2.w,
-                                    ),
-                                    color: Colors.white,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        "assets/oimg/icon_shuffle1.png",
-                                        width: 24.w,
-                                        height: 24.w,
-                                        color: Color(0xff7453FF),
-                                      ),
-                                      SizedBox(width: 8.w),
-                                      Text(
-                                        "Shuffle".tr,
-                                        style: TextStyle(
-                                          fontSize: 16.w,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color(0xff7453FF),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                              SizedBox(height: 12.w),
+                              Text(
+                                "${controller.list.length} songs",
+                                style: TextStyle(
+                                  fontSize: 12.w,
+                                  color: Color(0xff121212),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-              SliverToBoxAdapter(
-                child: controller.obxView(
-                  (state) => ListView.separated(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    padding: EdgeInsets.only(
-                      bottom: Get.mediaQuery.padding.bottom + 60.w,
-                    ),
-                    itemBuilder: (_, i) {
-                      return getItem(i);
-                    },
-                    separatorBuilder: (_, i) {
-                      return SizedBox(height: 8.w);
-                    },
-                    itemCount: controller.list.length,
-                  ),
-                  onEmpty: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          "assets/img/icon_empty.png",
-                          width: 180.w,
-                          height: 180.w,
-                        ),
-                        SizedBox(height: 8.w),
-                        Text(
-                          "No content now, Add songs you like".tr,
-                          style: TextStyle(fontSize: 14.w, color: Colors.black),
-                        ),
-                        SizedBox(height: 32.w),
-                        InkWell(
-                          onTap: () {
-                            //添加歌曲
-                            Get.to(
-                              UserLoaAllChoose(),
-                              arguments: controller.info,
-                            );
-                          },
-                          child: Container(
-                            width: 88.w,
-                            height: 40.w,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black, width: 1),
-                              borderRadius: BorderRadius.circular(20.w),
-                            ),
-                            child: Center(child: Text("Add".tr)),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              ),
-            ],
+                controller.list.isEmpty
+                    ? SliverToBoxAdapter(
+                      child: Container(height: 10.w, color: Color(0xfffafafa)),
+                    )
+                    : SliverPersistentHeader(
+                      pinned: true,
+                      delegate: MySliverDelegate(
+                        80.w,
+                        80.w,
+                        Container(
+                          height: 80.w,
+                          color: Color(0xfffafafa),
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () {
+                                    EventUtils.instance.addEvent(
+                                      "det_playlist_click",
+                                      data: {"detail_click": "play_all"},
+                                    );
+
+                                    Get.find<UserPlayInfoController>()
+                                        .setDataAndPlayItem(
+                                          controller.list,
+                                          controller.list.first,
+                                          clickType:
+                                              isFormHome ? "h_detail" : "library",
+                                        );
+                                    // Get.to(UserPlayInfo());
+                                  },
+                                  child: Container(
+                                    height: 42.w,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(21.w),
+                                      color: Color(0xff7453FF),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          "assets/oimg/icon_play.png",
+                                          width: 24.w,
+                                          height: 24.w,
+                                          color: Colors.white,
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        Text(
+                                          "Play".tr,
+                                          style: TextStyle(
+                                            fontSize: 16.w,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 15.w),
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () {
+                                    //TODO 随机打乱
+
+                                    EventUtils.instance.addEvent(
+                                      "det_playlist_click",
+                                      data: {"detail_click": "shuffle"},
+                                    );
+
+                                    List playList = List.of(controller.list)
+                                      ..shuffle();
+
+                                    Get.find<UserPlayInfoController>()
+                                        .setDataAndPlayItem(
+                                          playList,
+                                          playList.first,
+                                          clickType:
+                                              isFormHome ? "h_detail" : "library",
+                                        );
+                                    // Get.to(UserPlayInfo());
+                                  },
+                                  child: Container(
+                                    height: 42.w,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(21.w),
+                                      border: Border.all(
+                                        color: Color(0xff7453FF),
+                                        width: 2.w,
+                                      ),
+                                      color: Colors.white,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          "assets/oimg/icon_shuffle1.png",
+                                          width: 24.w,
+                                          height: 24.w,
+                                          color: Color(0xff7453FF),
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        Text(
+                                          "Shuffle".tr,
+                                          style: TextStyle(
+                                            fontSize: 16.w,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xff7453FF),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                SliverToBoxAdapter(
+                  child: controller.obxView(
+                    (state) => ListView.separated(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: EdgeInsets.only(
+                        bottom: Get.mediaQuery.padding.bottom + 60.w,
+                      ),
+                      itemBuilder: (_, i) {
+                        return getItem(i);
+                      },
+                      separatorBuilder: (_, i) {
+                        return SizedBox(height: 8.w);
+                      },
+                      itemCount: controller.list.length,
+                    ),
+                    onEmpty: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            "assets/img/icon_empty.png",
+                            width: 180.w,
+                            height: 180.w,
+                          ),
+                          SizedBox(height: 8.w),
+                          Text(
+                            "No content now, Add songs you like".tr,
+                            style: TextStyle(fontSize: 14.w, color: Colors.black),
+                          ),
+                          SizedBox(height: 32.w),
+                          InkWell(
+                            onTap: () {
+                              //添加歌曲
+                              Get.to(
+                                UserLoaAllChoose(),
+                                arguments: controller.info,
+                              );
+                            },
+                            child: Container(
+                              width: 88.w,
+                              height: 40.w,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black, width: 1),
+                                borderRadius: BorderRadius.circular(20.w),
+                              ),
+                              child: Center(child: Text("Add".tr)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

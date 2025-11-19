@@ -1382,10 +1382,10 @@ class HomePageController extends GetxController
 
       //名字
       var musicName = "";
-      if (trackName?.isEmpty ?? true) {
+      if (trackName.isEmpty) {
         musicName = file.name;
       } else {
-        musicName = trackName!;
+        musicName = trackName;
       }
 
       var itemData = {

@@ -12,6 +12,7 @@ import 'package:muse_wave/uinew/main/home/u_yt_channel.dart';
 import 'package:uuid/uuid.dart';
 
 import '../api/api_main.dart';
+import '../api/base_dio_api.dart';
 import '../static/db_key.dart';
 import '../tool/download/download_util.dart';
 import '../tool/history_util.dart';
@@ -34,29 +35,19 @@ class MoreSheetUtil {
     return _instance;
   }
 
-  showVideoMoreSheet(
-    Map item, {
-    bool isPlayPage = false,
-    required String clickType,
-  }) async {
+  showVideoMoreSheet(Map item, {bool isPlayPage = false, required String clickType}) async {
     //不显示播放控件
     Get.find<UserPlayInfoController>().hideFloatingWidget();
 
     //判断当前播放是否是这首歌
 
-    var isCheck =
-        item["videoId"] ==
-        Get.find<UserPlayInfoController>().nowData["videoId"];
+    var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
 
     await Get.bottomSheet(
       Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffEAE8F9), Color(0xfffafafa)],
-          ),
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -78,26 +69,11 @@ class MoreSheetUtil {
                             width: 40.w,
                             height: 40.w,
                             clipBehavior: Clip.hardEdge,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(2.w),
-                            ),
-                            child: NetImageView(
-                              imgUrl: item["cover"],
-                              fit: BoxFit.cover,
-                            ),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
+                            child: NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
                           ),
                           SizedBox(width: 12.w),
-                          Expanded(
-                            child: Text(
-                              item["title"],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14.w,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
+                          Expanded(child: Text(item["title"], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500))),
                         ],
                       ),
                     ),
@@ -109,28 +85,16 @@ class MoreSheetUtil {
                     top: 12.w,
                     child: InkWell(
                       onTap: () {
-                        if (clickType == "net_playlist" ||
-                            clickType == "loc_playlist") {
-                          EventUtils.instance.addEvent(
-                            "det_playlist_click",
-                            data: {"detail_click": "return"},
-                          );
+                        if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                          EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "return"});
                         }
-                        if (clickType == "artist_more_song" ||
-                            clickType == "artist") {
-                          EventUtils.instance.addEvent(
-                            "det_artist_click",
-                            data: {"detail_click": "return"},
-                          );
+                        if (clickType == "artist_more_song" || clickType == "artist") {
+                          EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "return"});
                         }
 
                         Get.back();
                       },
-                      child: Image.asset(
-                        "assets/oimg/icon_sheet_close.png",
-                        width: 20.w,
-                        height: 20.w,
-                      ),
+                      child: Image.asset("assets/oimg/icon_sheet_close.png", width: 20.w, height: 20.w),
                     ),
                   ),
                 ],
@@ -143,32 +107,21 @@ class MoreSheetUtil {
             SizedBox(height: 24.w),
 
             //下载
-            if (FirebaseRemoteConfig.instance.getString(
-                  "musicmuse_off_switch",
-                ) ==
-                "on")
+            if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") == "on")
               Column(
                 children: [
                   Obx(() {
                     var videoId = item["videoId"];
 
-                    var state =
-                        DownloadUtils
-                            .instance
-                            .allDownLoadingData[videoId]?["state"] ??
-                        0;
+                    var state = DownloadUtils.instance.allDownLoadingData[videoId]?["state"] ?? 0;
 
-                    double progress =
-                        DownloadUtils
-                            .instance
-                            .allDownLoadingData[videoId]?["progress"] ??
-                        0;
+                    double progress = DownloadUtils.instance.allDownLoadingData[videoId]?["progress"] ?? 0;
 
                     if (state == 1 || state == 3) {
                       //下载中
                       return InkWell(
                         onTap: () {
-                          DownloadUtils.instance.remove(item["videoId"]);
+                          DownloadUtils.instance.remove(item["videoId"], state: state);
                         },
                         child: Container(
                           height: 40.w,
@@ -180,20 +133,10 @@ class MoreSheetUtil {
                                 width: 24.w,
                                 height: 24.w,
                                 // padding: EdgeInsets.all(5.w),
-                                child: CircularProgressIndicator(
-                                  value: progress,
-                                  strokeWidth: 1.5,
-                                  backgroundColor: Color(
-                                    0xffA995FF,
-                                  ).withOpacity(0.35),
-                                  color: Color(0xffA995FF),
-                                ),
+                                child: CircularProgressIndicator(value: progress, strokeWidth: 1.5, backgroundColor: Color(0xffA995FF).withOpacity(0.35), color: Color(0xffA995FF)),
                               ),
                               SizedBox(width: 16.w),
-                              Text(
-                                "Downloading".tr,
-                                style: TextStyle(fontSize: 14.w),
-                              ),
+                              Text("Downloading".tr, style: TextStyle(fontSize: 14.w)),
                             ],
                           ),
                         ),
@@ -202,7 +145,7 @@ class MoreSheetUtil {
                       //下载完成
                       return InkWell(
                         onTap: () {
-                          DownloadUtils.instance.remove(item["videoId"]);
+                          DownloadUtils.instance.remove(item["videoId"], state: state);
                         },
                         child: Container(
                           height: 40.w,
@@ -210,18 +153,9 @@ class MoreSheetUtil {
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: Row(
                             children: [
-                              Container(
-                                width: 24.w,
-                                height: 24.w,
-                                child: Image.asset(
-                                  "assets/oimg/icon_download_ok.png",
-                                ),
-                              ),
+                              Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_download_ok.png")),
                               SizedBox(width: 16.w),
-                              Text(
-                                "Downloaded".tr,
-                                style: TextStyle(fontSize: 14.w),
-                              ),
+                              Text("Downloaded".tr, style: TextStyle(fontSize: 14.w)),
                             ],
                           ),
                         ),
@@ -231,11 +165,7 @@ class MoreSheetUtil {
 
                       return InkWell(
                         onTap: () {
-                          DownloadUtils.instance.download(
-                            item["videoId"],
-                            item,
-                            clickType: clickType,
-                          );
+                          DownloadUtils.instance.download(item["videoId"], item, clickType: clickType);
                         },
                         child: Container(
                           height: 40.w,
@@ -243,18 +173,9 @@ class MoreSheetUtil {
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: Row(
                             children: [
-                              Container(
-                                width: 24.w,
-                                height: 24.w,
-                                child: Image.asset(
-                                  "assets/oimg/icon_download_black.png",
-                                ),
-                              ),
+                              Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_download_black.png")),
                               SizedBox(width: 16.w),
-                              Text(
-                                "Offline".tr,
-                                style: TextStyle(fontSize: 14.w),
-                              ),
+                              Text("Offline".tr, style: TextStyle(fontSize: 14.w)),
                             ],
                           ),
                         ),
@@ -277,19 +198,11 @@ class MoreSheetUtil {
                     LikeUtil.instance.unlikeVideo(item["videoId"]);
                   }
 
-                  if (clickType == "net_playlist" ||
-                      clickType == "loc_playlist") {
-                    EventUtils.instance.addEvent(
-                      "det_playlist_click",
-                      data: {"detail_click": "like_song"},
-                    );
+                  if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                    EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "like_song"});
                   }
-                  if (clickType == "artist_more_song" ||
-                      clickType == "artist") {
-                    EventUtils.instance.addEvent(
-                      "det_artist_click",
-                      data: {"detail_click": "like_song"},
-                    );
+                  if (clickType == "artist_more_song" || clickType == "artist") {
+                    EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "like_song"});
                   }
                 },
                 child: Container(
@@ -298,20 +211,9 @@ class MoreSheetUtil {
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Row(
                     children: [
-                      Container(
-                        width: 24.w,
-                        height: 24.w,
-                        child: Image.asset(
-                          isLike
-                              ? "assets/oimg/icon_like_on.png"
-                              : "assets/oimg/icon_like_off.png",
-                        ),
-                      ),
+                      Container(width: 24.w, height: 24.w, child: Image.asset(isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off.png")),
                       SizedBox(width: 16.w),
-                      Text(
-                        isLike ? "Remove from library".tr : "Add to Library".tr,
-                        style: TextStyle(fontSize: 14.w),
-                      ),
+                      Text(isLike ? "Remove from library".tr : "Add to Library".tr, style: TextStyle(fontSize: 14.w)),
                     ],
                   ),
                 ),
@@ -327,25 +229,13 @@ class MoreSheetUtil {
                   InkWell(
                     onTap: () {
                       //获取当前播放列表
-                      var isOk = Get.find<UserPlayInfoController>().addToNext(
-                        item,
-                      );
-                      ToastUtil.showToast(
-                        msg: isOk ? "Add ok".tr : "Already in the list".tr,
-                      );
-                      if (clickType == "net_playlist" ||
-                          clickType == "loc_playlist") {
-                        EventUtils.instance.addEvent(
-                          "det_playlist_click",
-                          data: {"detail_click": "play_next"},
-                        );
+                      var isOk = Get.find<UserPlayInfoController>().addToNext(item);
+                      ToastUtil.showToast(msg: isOk ? "Add ok".tr : "Already in the list".tr);
+                      if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                        EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "play_next"});
                       }
-                      if (clickType == "artist_more_song" ||
-                          clickType == "artist") {
-                        EventUtils.instance.addEvent(
-                          "det_artist_click",
-                          data: {"detail_click": "play_next"},
-                        );
+                      if (clickType == "artist_more_song" || clickType == "artist") {
+                        EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "play_next"});
                       }
                     },
                     child: Container(
@@ -354,16 +244,9 @@ class MoreSheetUtil {
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Row(
                         children: [
-                          Container(
-                            width: 24.w,
-                            height: 24.w,
-                            child: Image.asset("assets/oimg/icon_m_next.png"),
-                          ),
+                          Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_m_next.png")),
                           SizedBox(width: 16.w),
-                          Text(
-                            "Play next".tr,
-                            style: TextStyle(fontSize: 14.w),
-                          ),
+                          Text("Play next".tr, style: TextStyle(fontSize: 14.w)),
                         ],
                       ),
                     ),
@@ -374,26 +257,14 @@ class MoreSheetUtil {
                   InkWell(
                     onTap: () {
                       //获取当前播放列表
-                      var isOk = Get.find<UserPlayInfoController>().addToQueue(
-                        item,
-                      );
-                      ToastUtil.showToast(
-                        msg: isOk ? "Add ok".tr : "Already in the list".tr,
-                      );
+                      var isOk = Get.find<UserPlayInfoController>().addToQueue(item);
+                      ToastUtil.showToast(msg: isOk ? "Add ok".tr : "Already in the list".tr);
 
-                      if (clickType == "net_playlist" ||
-                          clickType == "loc_playlist") {
-                        EventUtils.instance.addEvent(
-                          "det_playlist_click",
-                          data: {"detail_click": "add_queue"},
-                        );
+                      if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                        EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "add_queue"});
                       }
-                      if (clickType == "artist_more_song" ||
-                          clickType == "artist") {
-                        EventUtils.instance.addEvent(
-                          "det_artist_click",
-                          data: {"detail_click": "add_queue"},
-                        );
+                      if (clickType == "artist_more_song" || clickType == "artist") {
+                        EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "add_queue"});
                       }
                     },
                     child: Container(
@@ -402,16 +273,9 @@ class MoreSheetUtil {
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Row(
                         children: [
-                          Container(
-                            width: 24.w,
-                            height: 24.w,
-                            child: Image.asset("assets/oimg/icon_playlist.png"),
-                          ),
+                          Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_playlist.png")),
                           SizedBox(width: 16.w),
-                          Text(
-                            "Add to queue".tr,
-                            style: TextStyle(fontSize: 14.w),
-                          ),
+                          Text("Add to queue".tr, style: TextStyle(fontSize: 14.w)),
                         ],
                       ),
                     ),
@@ -424,18 +288,11 @@ class MoreSheetUtil {
             InkWell(
               onTap: () {
                 //获取当前播放列表
-                if (clickType == "net_playlist" ||
-                    clickType == "loc_playlist") {
-                  EventUtils.instance.addEvent(
-                    "det_playlist_click",
-                    data: {"detail_click": "add_playlist"},
-                  );
+                if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                  EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "add_playlist"});
                 }
                 if (clickType == "artist_more_song" || clickType == "artist") {
-                  EventUtils.instance.addEvent(
-                    "det_artist_click",
-                    data: {"detail_click": "add_playlist"},
-                  );
+                  EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "add_playlist"});
                 }
 
                 showAddList(item);
@@ -446,16 +303,9 @@ class MoreSheetUtil {
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Row(
                   children: [
-                    Container(
-                      width: 24.w,
-                      height: 24.w,
-                      child: Image.asset("assets/oimg/icon_add_play.png"),
-                    ),
+                    Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_add_play.png")),
                     SizedBox(width: 16.w),
-                    Text(
-                      "Add to playlist".tr,
-                      style: TextStyle(fontSize: 14.w),
-                    ),
+                    Text("Add to playlist".tr, style: TextStyle(fontSize: 14.w)),
                   ],
                 ),
               ),
@@ -465,40 +315,24 @@ class MoreSheetUtil {
             //跳转到歌手
             InkWell(
               onTap: () async {
-                if (clickType == "net_playlist" ||
-                    clickType == "loc_playlist") {
-                  EventUtils.instance.addEvent(
-                    "det_playlist_click",
-                    data: {"detail_click": "go_artist"},
-                  );
+                if (clickType == "net_playlist" || clickType == "loc_playlist") {
+                  EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "go_artist"});
                 }
                 if (clickType == "artist_more_song" || clickType == "artist") {
-                  EventUtils.instance.addEvent(
-                    "det_artist_click",
-                    data: {"detail_click": "go_artist"},
-                  );
+                  EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "go_artist"});
                 }
 
                 if (clickType == "play_playlist" || clickType == "play") {
-                  EventUtils.instance.addEvent(
-                    "play_page_click",
-                    data: {
-                      "song_id": item["videoId"],
-                      "station": "view_artist",
-                    },
-                  );
+                  EventUtils.instance.addEvent("play_page_click", data: {"song_id": item["videoId"], "station": "view_artist"});
                 }
                 AppLog.e(item);
 
                 if (Get.find<Application>().typeSo == "yt") {
                   LoadingUtil.showLoading();
-                  var result1 = await ApiMain.instance.getVideoInfo(
-                    item["videoId"],
-                  );
+                  var result1 = await ApiMain.instance.getVideoInfo(item["videoId"]);
                   LoadingUtil.hideAllLoading();
 
-                  String channelId =
-                      result1.data["videoDetails"]?["channelId"] ?? "";
+                  String channelId = result1.data["videoDetails"]?["channelId"] ?? "";
                   String author = result1.data["videoDetails"]?["author"] ?? "";
                   if (channelId.isEmpty) {
                     ToastUtil.showToast(msg: "Failed to get artist".tr);
@@ -509,13 +343,7 @@ class MoreSheetUtil {
                   AppLog.e(channelId);
                   AppLog.e(author);
 
-                  Get.to(
-                    UserYoutubeChannel(),
-                    arguments: {
-                      "browseId": channelId,
-                      "title": item["subtitle"],
-                    },
-                  );
+                  Get.to(UserYoutubeChannel(), arguments: {"browseId": channelId, "title": item["subtitle"]});
 
                   return;
                 }
@@ -526,9 +354,7 @@ class MoreSheetUtil {
 
                 //请求获取歌手信息
                 LoadingUtil.showLoading();
-                var result = await ApiMain.instance.getVideoNext(
-                  item["videoId"],
-                );
+                var result = await ApiMain.instance.getVideoNext(item["videoId"]);
 
                 if (result.code == HttpCode.success) {
                   try {
@@ -541,10 +367,7 @@ class MoreSheetUtil {
 
                     await Future.delayed(Duration(milliseconds: 200));
 
-                    EventUtils.instance.addEvent(
-                      "det_artist_show",
-                      data: {"form": "song_more_go_to_artist"},
-                    );
+                    EventUtils.instance.addEvent("det_artist_show", data: {"form": "song_more_go_to_artist"});
 
                     if (isPlayPage) {
                       // if (!isPlayPage) {
@@ -553,10 +376,7 @@ class MoreSheetUtil {
 
                       //显示下方播放bar菜单
                       Get.find<UserPlayInfoController>().showFloatingWidget();
-                      await Get.to(
-                        UserArtistInfo(),
-                        arguments: {"browseId": browseId},
-                      );
+                      await Get.to(() => UserArtistInfo(), arguments: {"browseId": browseId});
 
                       Get.find<UserPlayInfoController>().hideFloatingWidget();
                       return;
@@ -587,11 +407,7 @@ class MoreSheetUtil {
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Row(
                   children: [
-                    Container(
-                      width: 24.w,
-                      height: 24.w,
-                      child: Image.asset("assets/oimg/icon_add_user.png"),
-                    ),
+                    Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_add_user.png")),
                     SizedBox(width: 16.w),
                     Text("Go to artist".tr, style: TextStyle(fontSize: 14.w)),
                   ],
@@ -622,11 +438,7 @@ class MoreSheetUtil {
       Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffEAE8F9), Color(0xfffafafa)],
-          ),
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -651,14 +463,7 @@ class MoreSheetUtil {
                               children: [
                                 Align(
                                   alignment: Alignment.centerRight,
-                                  child: Container(
-                                    width: 36.w,
-                                    height: 36.w,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(2.w),
-                                      color: Color(0xffE0E0EF),
-                                    ),
-                                  ),
+                                  child: Container(width: 36.w, height: 36.w, decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w), color: Color(0xffE0E0EF))),
                                 ),
 
                                 //默认封面
@@ -668,37 +473,20 @@ class MoreSheetUtil {
                                     width: 40.w,
                                     height: 40.w,
                                     clipBehavior: Clip.hardEdge,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(2.w),
-                                    ),
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
                                     child:
                                         item["cover"] == null
                                             ?
                                             //默认封面
-                                            Image.asset(
-                                              "assets/oimg/icon_d_item.png",
-                                            )
-                                            : NetImageView(
-                                              imgUrl: item["cover"],
-                                              fit: BoxFit.cover,
-                                            ),
+                                            Image.asset("assets/oimg/icon_d_item.png")
+                                            : NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           SizedBox(width: 12.w),
-                          Expanded(
-                            child: Text(
-                              item["title"],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14.w,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
+                          Expanded(child: Text(item["title"], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500))),
                         ],
                       ),
                     ),
@@ -712,11 +500,7 @@ class MoreSheetUtil {
                       onTap: () {
                         Get.back();
                       },
-                      child: Image.asset(
-                        "assets/oimg/icon_sheet_close.png",
-                        width: 20.w,
-                        height: 20.w,
-                      ),
+                      child: Image.asset("assets/oimg/icon_sheet_close.png", width: 20.w, height: 20.w),
                     ),
                   ),
                 ],
@@ -741,15 +525,7 @@ class MoreSheetUtil {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Row(
-                  children: [
-                    Container(
-                      width: 24.w,
-                      height: 24.w,
-                      child: Image.asset("assets/oimg/icon_rename.png"),
-                    ),
-                    SizedBox(width: 16.w),
-                    Text("Rename".tr, style: TextStyle(fontSize: 14.w)),
-                  ],
+                  children: [Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_rename.png")), SizedBox(width: 16.w), Text("Rename".tr, style: TextStyle(fontSize: 14.w))],
                 ),
               ),
             ),
@@ -798,15 +574,7 @@ class MoreSheetUtil {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Row(
-                  children: [
-                    Container(
-                      width: 24.w,
-                      height: 24.w,
-                      child: Image.asset("assets/oimg/icon_del.png"),
-                    ),
-                    SizedBox(width: 16.w),
-                    Text("Delete".tr, style: TextStyle(fontSize: 14.w)),
-                  ],
+                  children: [Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_del.png")), SizedBox(width: 16.w), Text("Delete".tr, style: TextStyle(fontSize: 14.w))],
                 ),
               ),
             ),
@@ -846,11 +614,7 @@ class MoreSheetUtil {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffEAE8F9), Color(0xfffafafa)],
-          ),
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           children: [
@@ -858,13 +622,7 @@ class MoreSheetUtil {
               margin: EdgeInsets.symmetric(horizontal: 16.w),
               child: Row(
                 children: [
-                  Text(
-                    "Add to playlist".tr,
-                    style: TextStyle(
-                      fontSize: 20.w,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  Text("Add to playlist".tr, style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.w500)),
                   // Spacer(),
                   // IconButton(
                   //     onPressed: () {
@@ -884,17 +642,7 @@ class MoreSheetUtil {
               child: Container(
                 height: 72.w,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      "assets/oimg/icon_add.png",
-                      width: 56.w,
-                      height: 56.w,
-                    ),
-                    SizedBox(width: 22.w),
-                    Text("New list".tr),
-                  ],
-                ),
+                child: Row(children: [Image.asset("assets/oimg/icon_add.png", width: 56.w, height: 56.w), SizedBox(width: 22.w), Text("New list".tr)]),
               ),
             ),
 
@@ -927,23 +675,13 @@ class MoreSheetUtil {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffEAE8F9), Color(0xfffafafa)],
-          ),
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Text(
-                "Create playlist".tr,
-                style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.w500),
-              ),
-            ),
+            Container(padding: EdgeInsets.symmetric(horizontal: 16.w), child: Text("Create playlist".tr, style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.w500))),
             SizedBox(height: 16.w),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -955,10 +693,7 @@ class MoreSheetUtil {
                 maxLines: 5,
                 maxLength: 100,
                 style: TextStyle(fontSize: 14.w),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.w),
-                  color: Colors.white,
-                ),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w), color: Colors.white),
               ),
             ),
             SizedBox(height: 32.w),
@@ -974,20 +709,8 @@ class MoreSheetUtil {
                       child: Container(
                         height: 48.w,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24.w),
-                          border: Border.all(
-                            color: Color(0xff824EFF).withOpacity(0.75),
-                            width: 2.w,
-                          ),
-                        ),
-                        child: Text(
-                          "Cancel".tr,
-                          style: TextStyle(
-                            fontSize: 14.w,
-                            color: Color(0xff824EFF).withOpacity(0.75),
-                          ),
-                        ),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.w), border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
+                        child: Text("Cancel".tr, style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75))),
                       ),
                     ),
                   ),
@@ -1019,14 +742,8 @@ class MoreSheetUtil {
                       child: Container(
                         height: 48.w,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Color(0xff824EFF).withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(24.w),
-                        ),
-                        child: Text(
-                          "Confirm".tr,
-                          style: TextStyle(fontSize: 14.w, color: Colors.white),
-                        ),
+                        decoration: BoxDecoration(color: Color(0xff824EFF).withOpacity(0.5), borderRadius: BorderRadius.circular(24.w)),
+                        child: Text("Confirm".tr, style: TextStyle(fontSize: 14.w, color: Colors.white)),
                       ),
                     ),
                   ),
@@ -1116,17 +833,7 @@ class MoreSheetUtil {
               height: 54.w,
               child: Stack(
                 children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      width: 48.w,
-                      height: 48.w,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2.w),
-                        color: Color(0xffE0E0EF),
-                      ),
-                    ),
-                  ),
+                  Align(alignment: Alignment.centerRight, child: Container(width: 48.w, height: 48.w, decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w), color: Color(0xffE0E0EF)))),
 
                   //默认封面
                   Align(
@@ -1135,18 +842,13 @@ class MoreSheetUtil {
                       width: 54.w,
                       height: 54.w,
                       clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.w),
-                      ),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.w)),
                       child:
                           item["cover"] == null
                               ?
                               //默认封面
                               Image.asset("assets/oimg/icon_d_item.png")
-                              : NetImageView(
-                                imgUrl: item["cover"],
-                                fit: BoxFit.cover,
-                              ),
+                              : NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
                     ),
                   ),
                 ],
@@ -1158,23 +860,9 @@ class MoreSheetUtil {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    item["title"],
-                    style: TextStyle(
-                      fontSize: 14.w,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(item["title"], style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
                   SizedBox(height: 12.w),
-                  Text(
-                    "${childList.length} songs",
-                    style: TextStyle(
-                      fontSize: 12.w,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ),
+                  Text("${childList.length} songs", style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5))),
                 ],
               ),
             ),
@@ -1183,11 +871,7 @@ class MoreSheetUtil {
               onTap: () {
                 MoreSheetUtil.instance.showPlaylistMoreSheet(item);
               },
-              child: Container(
-                width: 20.w,
-                height: 20.w,
-                child: Image.asset("assets/oimg/icon_more.png"),
-              ),
+              child: Container(width: 20.w, height: 20.w, child: Image.asset("assets/oimg/icon_more.png")),
             ),
           ],
         ),
@@ -1204,23 +888,13 @@ class MoreSheetUtil {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffEAE8F9), Color(0xfffafafa)],
-          ),
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Text(
-                "Rename playlist".tr,
-                style: TextStyle(fontSize: 20.w),
-              ),
-            ),
+            Container(padding: EdgeInsets.symmetric(horizontal: 16.w), child: Text("Rename playlist".tr, style: TextStyle(fontSize: 20.w))),
             SizedBox(height: 16.w),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -1232,10 +906,7 @@ class MoreSheetUtil {
                 maxLines: 5,
                 maxLength: 100,
                 style: TextStyle(fontSize: 14.w),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.w),
-                  color: Colors.white,
-                ),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w), color: Colors.white),
               ),
             ),
             SizedBox(height: 32.w),
@@ -1251,20 +922,8 @@ class MoreSheetUtil {
                       child: Container(
                         height: 48.w,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24.w),
-                          border: Border.all(
-                            color: Color(0xff824EFF).withOpacity(0.75),
-                            width: 2.w,
-                          ),
-                        ),
-                        child: Text(
-                          "Cancel".tr,
-                          style: TextStyle(
-                            fontSize: 14.w,
-                            color: Color(0xff824EFF).withOpacity(0.75),
-                          ),
-                        ),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.w), border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
+                        child: Text("Cancel".tr, style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75))),
                       ),
                     ),
                   ),
@@ -1286,8 +945,7 @@ class MoreSheetUtil {
 
                         //刷新数据
                         if (Get.isRegistered<UserLibraryController>()) {
-                          Get.find<UserLibraryController>()
-                              .bindMyPlayListData();
+                          Get.find<UserLibraryController>().bindMyPlayListData();
                         }
 
                         Get.back();
@@ -1295,14 +953,8 @@ class MoreSheetUtil {
                       child: Container(
                         height: 48.w,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Color(0xff824EFF).withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(24.w),
-                        ),
-                        child: Text(
-                          "Confirm".tr,
-                          style: TextStyle(fontSize: 14.w, color: Colors.white),
-                        ),
+                        decoration: BoxDecoration(color: Color(0xff824EFF).withOpacity(0.5), borderRadius: BorderRadius.circular(24.w)),
+                        child: Text("Confirm".tr, style: TextStyle(fontSize: 14.w, color: Colors.white)),
                       ),
                     ),
                   ),

@@ -5,8 +5,10 @@ import 'package:get/get.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_play.dart';
 import 'package:muse_wave/uinew/main/home/u_play_list.dart';
+import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../api/api_main.dart';
+import '../../../api/base_dio_api.dart';
 import '../../../tool/log.dart';
 import '../../../tool/tba/event_util.dart';
 import '../../../view/base_view.dart';
@@ -19,29 +21,31 @@ class UserChannelMore extends GetView<UserChannelMoreController> {
     Get.lazyPut(() => UserChannelMoreController());
     return Scaffold(
       appBar: AppBar(title: Text(Get.arguments["title"] ?? "")),
-      body: controller.obxView(
-        (s) => Obx(
-          () => EasyRefresh(
-            controller: controller.easyC,
-            onLoad: () async {
-              await controller.bindMoreData();
+      body: PlayerBottomBarView(
+        child: controller.obxView(
+          (s) => Obx(
+            () => EasyRefresh(
+              controller: controller.easyC,
+              onLoad: () async {
+                await controller.bindMoreData();
 
-              return controller.moreToken.isEmpty
-                  ? IndicatorResult.noMore
-                  : IndicatorResult.success;
-            },
-            child: GridView.builder(
-              padding: EdgeInsets.all(16.w),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 10.w,
-                crossAxisSpacing: 10.w,
-                mainAxisExtent: (Get.width - 42.w) / 2 + 50.w,
-              ),
-              itemBuilder: (_, i) {
-                return getItem(i);
+                return controller.moreToken.isEmpty
+                    ? IndicatorResult.noMore
+                    : IndicatorResult.success;
               },
-              itemCount: controller.list.length,
+              child: GridView.builder(
+                padding: EdgeInsets.all(16.w),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10.w,
+                  crossAxisSpacing: 10.w,
+                  mainAxisExtent: (Get.width - 42.w) / 2 + 50.w,
+                ),
+                itemBuilder: (_, i) {
+                  return getItem(i);
+                },
+                itemCount: controller.list.length,
+              ),
             ),
           ),
         ),

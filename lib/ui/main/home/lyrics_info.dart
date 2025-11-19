@@ -9,8 +9,6 @@ import 'package:hive/hive.dart';
 import 'package:muse_wave/generated/assets.dart';
 import 'package:muse_wave/ui/main/home/play.dart';
 import 'package:muse_wave/view/base_view.dart';
-
-import '../../../static/app_color.dart';
 import '../../../static/db_key.dart';
 import '../../../tool/log.dart';
 import 'add_lyrics.dart';

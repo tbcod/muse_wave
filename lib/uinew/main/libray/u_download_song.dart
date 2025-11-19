@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../tool/download/download_util.dart';
 import '../../../tool/like/like_util.dart';
@@ -45,18 +46,20 @@ class UserDownloadSong extends GetView<UserDownloadSongController> {
             //     icon: Icon(Icons.delete))
           ],
         ),
-        body: Obx(
-          () => ListView.separated(
-            padding: EdgeInsets.only(
-              bottom: Get.mediaQuery.padding.bottom + 60.w,
+        body: PlayerBottomBarView(
+          child: Obx(
+            () => ListView.separated(
+              padding: EdgeInsets.only(
+                bottom: Get.mediaQuery.padding.bottom + 60.w,
+              ),
+              itemBuilder: (_, i) {
+                return getMusicItem(controller.list[i]["infoData"]);
+              },
+              separatorBuilder: (_, i) {
+                return SizedBox(height: 10.w);
+              },
+              itemCount: controller.list.length,
             ),
-            itemBuilder: (_, i) {
-              return getMusicItem(controller.list[i]["infoData"]);
-            },
-            separatorBuilder: (_, i) {
-              return SizedBox(height: 10.w);
-            },
-            itemCount: controller.list.length,
           ),
         ),
       ),

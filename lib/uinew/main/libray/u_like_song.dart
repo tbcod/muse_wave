@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../tool/like/like_util.dart';
 import '../../../view/base_view.dart';
@@ -46,18 +47,20 @@ class UserLikeSong extends GetView<UserLikeSongController> {
             //     icon: Icon(Icons.delete))
           ],
         ),
-        body: Obx(
-          () => ListView.separated(
-            padding: EdgeInsets.only(
-              bottom: Get.mediaQuery.padding.bottom + 60.w,
+        body: PlayerBottomBarView(
+          child: Obx(
+            () => ListView.separated(
+              padding: EdgeInsets.only(
+                bottom: Get.mediaQuery.padding.bottom + 60.w,
+              ),
+              itemBuilder: (_, i) {
+                return getMusicItem(controller.list[i]);
+              },
+              separatorBuilder: (_, i) {
+                return SizedBox(height: 10.w);
+              },
+              itemCount: controller.list.length,
             ),
-            itemBuilder: (_, i) {
-              return getMusicItem(controller.list[i]);
-            },
-            separatorBuilder: (_, i) {
-              return SizedBox(height: 10.w);
-            },
-            itemCount: controller.list.length,
           ),
         ),
       ),

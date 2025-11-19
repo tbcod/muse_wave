@@ -1,21 +1,27 @@
 import 'package:android_play_install_referrer/android_play_install_referrer.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/tool/tba/tba_and.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/base_api.dart';
 import '../log.dart';
-import 'event_util.dart';
 
 class TbaUtils {
   TbaUtils._internal();
+
   static final TbaUtils _instance = TbaUtils._internal();
+
   static TbaUtils get instance {
     return _instance;
   }
+
+
+  Future checkUnFinishedEvent() async {
+    await TbaAnd.instance.postTbaErrorData();
+  }
+
+
 
   Future<BaseModel> postEvent(String id, Map<String, dynamic>? data) async {
     if (GetPlatform.isIOS) {
@@ -23,11 +29,7 @@ class TbaUtils {
     }
 
     //android
-    return TbaAnd.instance.postData(
-      TbaType.event,
-      eventData: data,
-      eventId: id,
-    );
+    return TbaAnd.instance.postData(TbaType.event, eventData: data, eventId: id);
   }
 
   Future<BaseModel> postInstall() async {
@@ -40,8 +42,7 @@ class TbaUtils {
     //android
     var andInfo = await DeviceInfoPlugin().androidInfo;
 
-    ReferrerDetails referrerDetails =
-        await AndroidPlayInstallReferrer.installReferrer;
+    ReferrerDetails referrerDetails = await AndroidPlayInstallReferrer.installReferrer;
 
     referrerDetails.googlePlayInstantParam;
 
@@ -87,11 +88,11 @@ class TbaUtils {
     required String ad_pos_id,
     required String ad_pre_ecpm,
     required String currency,
-    required String precision_type,
-    required String positionKey,
+    required String ad_sence,
+    // required String precision_type,
+    // required String positionKey,
   }) async {
-    AppLog.e("广告收益原值:$ad_pre_ecpm");
-    AppLog.e("广告来源:$ad_network");
+    AppLog.i("广告价值:$ad_pre_ecpm, $ad_source-$ad_format,  $ad_sence, pos_id:$ad_pos_id, $ad_network, $ad_unit_id");
 
     if (GetPlatform.isIOS) {
       return BaseModel(code: -1);
@@ -127,16 +128,17 @@ class TbaUtils {
       TbaType.ad,
       eventData: {
         "ketch": ad_network,
-        "corey": ad_source,
-        //广告id
-        "century": ad_unit_id,
-        "ploy": ad_format,
+        "corey": ad_source, //广告SDK，admob，max等
+        "century": ad_unit_id, //广告id
+        "ploy": ad_format, //广告类型，插屏，原生，banner，激励视频等
         "coppery": ad_pos_id,
         "victrola": realMoney.toString(),
         "habitant": currency,
-        "watanabe": precision_type,
+        "tilth": ad_sence, //广告场景: open, behavior
+        // "watanabe": precision_type, //google ltvpingback的预估收益类型
       },
-      positionKey: positionKey,
+      positionKey: ad_pos_id,
+      // positionKey: positionKey,
     );
   }
 

@@ -8,9 +8,6 @@ import 'package:muse_wave/ui/main/setting/only_web.dart';
 import 'package:muse_wave/view/base_view.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../static/env.dart';
-import '../../tool/log.dart';
 import '../../tool/toast.dart';
 
 class SettingPage extends GetView<SettingPageController> {

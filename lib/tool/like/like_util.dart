@@ -1,10 +1,10 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:muse_wave/uinew/main/u_home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../static/db_key.dart';
-import '../../uinew/main/u_home.dart';
 import '../../uinew/main/u_library.dart';
 import '../dialog_util.dart';
 import '../history_util.dart';
