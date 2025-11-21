@@ -2,11 +2,11 @@ import 'package:anythink_sdk/at_init.dart';
 import 'package:applovin_max/applovin_max.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:muse_wave/muse_config.dart';
+import 'package:muse_wave/view/debug_page.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -38,19 +38,24 @@ class UserSetting extends GetView<UserSettingController> {
         }
       },
       child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/oimg/all_page_bg.png"),
-            fit: BoxFit.fill,
-          ),
-        ),
+        decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            centerTitle: false,
-            title: Text("Setting".tr),
-            titleSpacing: 12.w,
-          ),
+          appBar: AppBar(centerTitle: false, title: Text("Setting".tr), titleSpacing: 12.w, actions: [
+            GestureDetector(
+                onDoubleTap: () {
+                  controller._clickCount++;
+                  if (controller._clickCount > 5) {
+                    controller._clickCount = 0;
+                    Get.to(() => UDebugPage());
+                  }
+                },
+                child: Container(
+                  color: MuseConfig.isUser ? Colors.transparent : Colors.white30,
+                  width: 100,
+                  height: 44,
+                )),
+          ],),
           body: Container(
             child: Obx(
               () => ListView.separated(
@@ -94,26 +99,11 @@ class UserSetting extends GetView<UserSettingController> {
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Row(
           children: [
-            Text(
-              controller.listTitle[i],
-              style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
-            ),
+            Text(controller.listTitle[i], style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
             Spacer(),
             isRightText
-                ? Obx(
-                  () => Text(
-                    rightText.value,
-                    style: TextStyle(
-                      fontSize: 12.w,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ),
-                )
-                : Image.asset(
-                  "assets/img/icon_right.png",
-                  width: 24.w,
-                  height: 24.w,
-                ),
+                ? Obx(() => Text(rightText.value, style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5))))
+                : Image.asset("assets/img/icon_right.png", width: 24.w, height: 24.w),
           ],
         ),
       ),
@@ -146,30 +136,17 @@ class UserSetting extends GetView<UserSettingController> {
                       Spacer(),
                       TextButton(
                         onPressed: () async {
-                          var listLocale = [
-                            Get.deviceLocale,
-                            Locale("zh", "CN"),
-                            Locale("en", "US"),
-                            Locale("fr", "FR"),
-                            Locale("es", "ES"),
-                            Locale("pt", "PT"),
-                            Locale("de", "DE"),
-                          ];
+                          var listLocale = [Get.deviceLocale, Locale("zh", "CN"), Locale("en", "US"), Locale("fr", "FR"), Locale("es", "ES"), Locale("pt", "PT"), Locale("de", "DE")];
 
                           AppLog.e(nowIndex);
 
-                          var nowLocale =
-                              listLocale[nowIndex] ?? Locale("en", "US");
+                          var nowLocale = listLocale[nowIndex] ?? Locale("en", "US");
                           MyTranslations.locale = nowLocale;
                           await Get.updateLocale(nowLocale);
-                          controller.langStr.value =
-                              listLocale[nowIndex].toString();
+                          controller.langStr.value = listLocale[nowIndex].toString();
                           var sp = await SharedPreferences.getInstance();
                           sp.setString("lastLangCode", nowLocale.languageCode);
-                          sp.setString(
-                            "lastLangCountryCode",
-                            nowLocale.countryCode ?? "",
-                          );
+                          sp.setString("lastLangCountryCode", nowLocale.countryCode ?? "");
 
                           Get.find<UserMainController>().reloadData();
 
@@ -186,15 +163,7 @@ class UserSetting extends GetView<UserSettingController> {
                       onSelectedItemChanged: (index) {
                         nowIndex = index;
                       },
-                      children: [
-                        Text("system"),
-                        Text("zh_CN"),
-                        Text("en_US"),
-                        Text("fr_FR"),
-                        Text("es_ES"),
-                        Text("pt_PT"),
-                        Text("de_DE"),
-                      ],
+                      children: [Text("system"), Text("zh_CN"), Text("en_US"), Text("fr_FR"), Text("es_ES"), Text("pt_PT"), Text("de_DE")],
                     ),
                   ),
                 ],
@@ -227,30 +196,29 @@ class UserSetting extends GetView<UserSettingController> {
           AppLog.e(AdUtils.instance.loadedAdMap);
           AppLog.e(AdUtils.instance.adJson);
 
-          if (MuseConfig.isUser) {
-            return;
-          }
-
-          Get.dialog(
-            BaseDialog(
-              title: "Tip",
-              content: "choose",
-              lBtnText: "Max",
-              rBtnText: "TopOn",
-              lBtnOnTap: () {
-                Get.back();
-                AppLovinMAX.showMediationDebugger();
-              },
-              rBtnOnTap: () {
-                Get.back();
-                ATInitManger.showDebuggerUI(debugKey: "");
-                // MobileAds.instance.openAdInspector((p0) {
-                //   // ToastUtil.showToast(msg: p0?.message ?? "error");
-                // });
-              },
-            ),
-            barrierDismissible: true,
-          );
+          // if (MuseConfig.isUser) {
+          //   return;
+          // }
+          // Get.dialog(
+          //   BaseDialog(
+          //     title: "Tip",
+          //     content: "choose",
+          //     lBtnText: "Max",
+          //     rBtnText: "TopOn",
+          //     lBtnOnTap: () {
+          //       Get.back();
+          //       AppLovinMAX.showMediationDebugger();
+          //     },
+          //     rBtnOnTap: () {
+          //       Get.back();
+          //       ATInitManger.showDebuggerUI(debugKey: "");
+          //       // MobileAds.instance.openAdInspector((p0) {
+          //       //   // ToastUtil.showToast(msg: p0?.message ?? "error");
+          //       // });
+          //     },
+          //   ),
+          //   barrierDismissible: true,
+          // );
         } else if (itemTitle == "Cache clean".tr) {
           Get.dialog(
             BaseDialog(
@@ -260,8 +228,7 @@ class UserSetting extends GetView<UserSettingController> {
               rBtnText: "Clear".tr,
               rBtnOnTap: () async {
                 await CacheUtils.instance.clearCache();
-                controller.cacheNum.value =
-                    await CacheUtils.instance.loadCacheSize();
+                controller.cacheNum.value = await CacheUtils.instance.loadCacheSize();
               },
             ),
           );
@@ -301,6 +268,7 @@ class UserSettingController extends GetxController {
   var versionName = "".obs;
   var cacheNum = "".obs;
   var langStr = "".obs;
+  int _clickCount = 0;
 
   @override
   void onInit() async {

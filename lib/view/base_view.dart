@@ -585,8 +585,8 @@ Widget getAdCloseView(Widget adView, {String toponAdId = ""}) {
                     adView,
                     //关闭按钮
                     Positioned(
-                      right: 0,
-                      top: 0,
+                      left: 4,
+                      top: 4,
                       child: InkWell(
                         onTap: () {
                           isShow.value = false;

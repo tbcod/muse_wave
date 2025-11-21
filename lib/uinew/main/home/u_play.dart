@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:muse_wave/tool/ad/view/page_admob_native.dart';
 import 'package:muse_wave/tool/tba/tba_and.dart';
 import 'package:muse_wave/tool/tba/tba_util.dart';
 import 'package:path_provider/path_provider.dart';
@@ -119,6 +120,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                 ),
                                 //广告
                                 Positioned.fill(child: Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "pagebanner", positionKey: "play"))),
+                                Positioned.fill(child: Container(alignment: Alignment.center, child: PageAdmobNativeView())),
                               ],
                             ),
                           ),
@@ -2161,6 +2163,7 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
     await _player?.play();
     final controller = Get.find<UserPlayInfoController>();
+    controller.isPlaying.value = true;
     EventUtils.instance.addEvent(
       "play_num",
       data: {"song_id": controller.nowData["videoId"] ?? "", "song_name": controller.nowData["title"] ?? "", "artist_name": controller.nowData["subtitle"] ?? ""},
@@ -2174,6 +2177,8 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   @override
   Future<void> pause() async {
+    final controller = Get.find<UserPlayInfoController>();
+    controller.isPlaying.value = false;
     await _player?.pause();
   }
 
@@ -2198,7 +2203,6 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   }
 
   _updateState() async {
-
     playbackState.add(
       PlaybackState(
         controls: [

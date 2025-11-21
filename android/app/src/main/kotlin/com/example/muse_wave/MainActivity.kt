@@ -9,9 +9,10 @@ import com.facebook.appevents.AppEventsLogger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin
-import com.example.muse_wave.MuseNativeAdmobAd
 import android.os.Bundle
 import android.util.Log
+import com.example.muse_wave.MuseNativePageAd
+import com.example.muse_wave.MuseNativeAdmobAd
 
 class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
     private lateinit var methodChannel: MethodChannel
@@ -27,14 +28,25 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
                 MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, "player.musicmuse.nativemethod")
             methodChannel.setMethodCallHandler(this)
         }
-        val factoryIds = listOf("highest", "behavior")
-        for (id in factoryIds) {
-            GoogleMobileAdsPlugin.registerNativeAdFactory(
-                flutterEngine,
-                id,
-                MuseNativeAdmobAd(applicationContext)
-            )
-        }
+//        val factoryIds = listOf("admob_full_native")
+//        for (id in factoryIds) {
+//            GoogleMobileAdsPlugin.registerNativeAdFactory(
+//                flutterEngine,
+//                id,
+//                MuseNativeAdmobAd(applicationContext)
+//            )
+//        }
+
+        GoogleMobileAdsPlugin.registerNativeAdFactory(
+            flutterEngine,
+            "admob_full_native",
+            MuseNativeAdmobAd(applicationContext)
+        )
+        GoogleMobileAdsPlugin.registerNativeAdFactory(
+            flutterEngine,
+            "admob_page_native",
+            MuseNativePageAd(applicationContext)
+        )
     }
 
 

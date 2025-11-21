@@ -18,7 +18,7 @@ import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin
 import com.google.android.gms.ads.nativead.MediaView
 
 
-class MuseNativeAdmobAd(private val context: Context) : GoogleMobileAdsPlugin.NativeAdFactory {
+class MuseNativePageAd(private val context: Context) : GoogleMobileAdsPlugin.NativeAdFactory {
 
     override fun createNativeAd(nativeAd: NativeAd, customOptions: Map<String, Any>?): NativeAdView {
 
@@ -35,9 +35,9 @@ class MuseNativeAdmobAd(private val context: Context) : GoogleMobileAdsPlugin.Na
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(dpToPx(0), dpToPx(16), dpToPx(0), dpToPx(0))
+                setMargins(dpToPx(0), dpToPx(8), dpToPx(0), dpToPx(0))
             }
-            setPadding(0, dpToPx(40), 0, 0)
+            setPadding(0, dpToPx(0), 0, 0)
             setBackgroundColor(Color.TRANSPARENT)
         }
 
@@ -47,7 +47,7 @@ class MuseNativeAdmobAd(private val context: Context) : GoogleMobileAdsPlugin.Na
             val mediaView = MediaView(context).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dpToPx(250)
+                    dpToPx(160)
                 )
             }
             mediaView.mediaContent = nativeAd.mediaContent
@@ -57,7 +57,7 @@ class MuseNativeAdmobAd(private val context: Context) : GoogleMobileAdsPlugin.Na
             val imageView = ImageView(context).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dpToPx(250)
+                    dpToPx(160)
                 )
                 scaleType = ImageView.ScaleType.CENTER_CROP
                 setImageDrawable(nativeAd.images[0].drawable)
@@ -66,21 +66,52 @@ class MuseNativeAdmobAd(private val context: Context) : GoogleMobileAdsPlugin.Na
             container.addView(imageView)
         }
 
+        val rowLayout = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(dpToPx(18), dpToPx(24), dpToPx(18), dpToPx(2))
+            }
+        }
+
+
+         val adIconView = ImageView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(dpToPx(48), dpToPx(48)).apply {
+                rightMargin = dpToPx(6)
+            }
+            scaleType = ImageView.ScaleType.FIT_CENTER
+        }
+        adIconView.setImageDrawable(nativeAd.icon?.drawable)
+        adView.iconView = adIconView
+        rowLayout.addView(adIconView)
+
+        val textV = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+//            setBackgroundColor(Color.RED)
+        }
+
         val headline = TextView(context).apply {
             text = nativeAd.headline
-            gravity = Gravity.CENTER
+            gravity = Gravity.LEFT
             textSize = 16f
             maxLines = 1
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(dpToPx(18), dpToPx(24), dpToPx(18), dpToPx(0))
+                setMargins(dpToPx(0), dpToPx(0), dpToPx(0), dpToPx(0))
             }
-            setTextColor(Color.WHITE)
+            setTextColor(Color.BLACK)
         }
         adView.headlineView = headline
-        container.addView(headline)
+        textV.addView(headline)
 
         val bodyV = TextView(context).apply {
             text = nativeAd.body
@@ -91,12 +122,14 @@ class MuseNativeAdmobAd(private val context: Context) : GoogleMobileAdsPlugin.Na
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(dpToPx(18), dpToPx(6), dpToPx(18), dpToPx(2))
+                setMargins(dpToPx(0), dpToPx(6), dpToPx(0), dpToPx(2))
             }
-            setTextColor(Color.parseColor("#eeeeee"))
+            setTextColor(Color.parseColor("#333333"))
         }
         adView.bodyView = bodyV
-        container.addView(bodyV)
+        textV.addView(bodyV)
+        rowLayout.addView(textV)
+        container.addView(rowLayout)
 
         val actionButton = Button(context).apply {
             text = nativeAd.callToAction
@@ -106,7 +139,7 @@ class MuseNativeAdmobAd(private val context: Context) : GoogleMobileAdsPlugin.Na
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 dpToPx(40)
             ).apply {
-                setMargins(dpToPx(18), dpToPx(32), dpToPx(18), dpToPx(0))
+                setMargins(dpToPx(18), dpToPx(24), dpToPx(18), dpToPx(0))
             }
             setTextColor(Color.WHITE)
         }

@@ -4,6 +4,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive/hive.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/bus.dart';
@@ -357,7 +358,7 @@ class UserHome extends GetView<UserHomeController> {
                                   EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
                                 }
 
-                                AppLog.e(subItem);
+                                // AppLog.e(subItem);
                                 var plist = List.of(data);
                                 var pItem = Map.of(subItem);
 
@@ -1107,6 +1108,8 @@ class UserHomeController extends GetxController with StateMixin {
     await Future.delayed(const Duration(seconds: 1));
 
     MyDialogUtils.instance.showOtherAppDialog();
+    AdUtils.instance.loadPageNativeAd(AdPosition.NVPage_full.name, positionKey: AdScene.play.name);
+
   }
 
   var nextData = {};

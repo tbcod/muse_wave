@@ -15,6 +15,8 @@ const String mmOpenAd = "mmOpenAd";
 
 const String museSongRecommonedKey = "museSongRecommonedKeys";
 
+const String mmPageNativeAdClickbait = "mmPageNativeAdClickbait";
+
 class RemoteUtil {
   static RemoteUtil shareInstance = RemoteUtil._();
 
@@ -23,6 +25,8 @@ class RemoteUtil {
   Map<String, dynamic> _adJson = {};
 
   String _bannerClickbait = "";
+
+  String _pageNativeClickbait = "";
 
   // late SharedPreferences isp;
 
@@ -44,6 +48,8 @@ class RemoteUtil {
     }
 
     _bannerClickbait = museSp.getString(mmFullClickbait) ?? "";
+
+    _pageNativeClickbait = museSp.getString(mmPageNativeAdClickbait) ?? "";
 
     _listenNowRecom = museSp.getString(museSongRecommonedKey) ?? "";
 
@@ -101,6 +107,12 @@ class RemoteUtil {
         _bannerClickbait = bannerClickbait;
       }
 
+      String pageNativeClickbait = FirebaseRemoteConfig.instance.getString("NVPage_Clickbait");
+      if (pageNativeClickbait.isNotEmpty) {
+        museSp.setString(mmPageNativeAdClickbait, pageNativeClickbait);
+        _pageNativeClickbait = pageNativeClickbait;
+      }
+
       String listenNowSongs = FirebaseRemoteConfig.instance.getString("muse_song_recom");
       museSp.setString(museSongRecommonedKey, listenNowSongs);
       _listenNowRecom = listenNowSongs;
@@ -131,6 +143,14 @@ class RemoteUtil {
     if (_bannerClickbait.isEmpty) return 0;
     final Map<String, dynamic> config = jsonDecode(_bannerClickbait);
     return config["Countdown"] ?? 0;
+  }
+
+
+  //参数值：0、10、20、30……100 参数值=10：有10%的概率跳转
+  int get adPageNativeScreenClick {
+    if (_pageNativeClickbait.isEmpty) return 0;
+    final Map<String, dynamic> config = jsonDecode(_pageNativeClickbait);
+    return config["ScreenClick"] ?? 0;
   }
 
   List<Map> get listenNowRecommend {

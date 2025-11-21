@@ -95,7 +95,7 @@ class AdmobUtils {
               );
             },
           ),
-          request: AdRequest(httpTimeoutMillis: 5000),
+          request: AdRequest(httpTimeoutMillis: 9000),
         )..load(),
       ),
     );
@@ -111,6 +111,7 @@ class AdmobUtils {
   ) async {
     Widget view = Container();
     Completer<Ad?> completer = Completer();
+
 
     view = Container(
       constraints: BoxConstraints(
@@ -149,7 +150,6 @@ class AdmobUtils {
               String currencyCode,
             ) {
               TbaUtils.instance.postAd(
-                // ad_network: ad.responseInfo?.mediationAdapterClassName ?? "",
                 ad_network:
                     ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ??
                     "",
@@ -165,7 +165,7 @@ class AdmobUtils {
               );
             },
           ),
-          request: AdRequest(httpTimeoutMillis: 5000),
+          request: AdRequest(httpTimeoutMillis: 9000),
         )..load(),
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:advertising_id/advertising_id.dart';
 import 'package:android_id/android_id.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -14,10 +16,7 @@ import '../../main.dart';
 import '../log.dart';
 
 class TbaAnd extends BaseApi {
-  static final String host =
-      MuseConfig.isUser
-          ? "https://volley.muse-wave.com/movie/ere"
-          : "https://test-volley.muse-wave.com/messy/wilma/setscrew";
+  static final String host = MuseConfig.isUser ? "https://volley.muse-wave.com/movie/ere" : "https://test-volley.muse-wave.com/messy/wilma/setscrew";
 
   TbaAnd._internal() : super(host);
   static final TbaAnd _instance = TbaAnd._internal();
@@ -28,17 +27,10 @@ class TbaAnd extends BaseApi {
     return _instance;
   }
 
-
-
-  Future<BaseModel> postData(
-    TbaType type, {
-    Map<String, dynamic>? eventData,
-    String? eventId,
-    String? positionKey,
-  }) async {
+  Future<BaseModel> postData(TbaType type, {Map<String, dynamic>? eventData, String? eventId, String? positionKey}) async {
     // AppLog.e("事件上报：${type.name}:\n${eventId ?? ""}\n事件数据：$eventData");
     // AppLog.e("事件数据：$eventData");
-    AppLog.i("事件上报：${type.name.replaceAll("mw_", "")}, $eventId, $eventData");
+    AppLog.i("事件上报：${type.name}, ${(eventId ?? "").replaceAll("mw_", "")}, $eventData");
     //通用参数
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     AndroidDeviceInfo andDeviceInfo = await DeviceInfoPlugin().androidInfo;
@@ -79,11 +71,7 @@ class TbaAnd extends BaseApi {
         "muriatic": logId,
         "clinch": andDeviceInfo.supportedAbis.toString(),
       },
-      "chamfer": {
-        "crowbar": packageInfo.version,
-        "stark": advertisingId,
-        "chauncey": "titanium",
-      },
+      "chamfer": {"crowbar": packageInfo.version, "stark": advertisingId, "chauncey": "titanium"},
       "kiss": {
         "fortieth": andDeviceInfo.manufacturer,
         "blow": androidId,
@@ -125,22 +113,17 @@ class TbaAnd extends BaseApi {
     // //存下来下次提交
     // await box.put(logId, generalMap);
 
-    var result = await httpRequest(
-      "",
-      method: HttpMethod.post,
-      body: generalMap,
-      contentType: "application/json",
-    );
+    var result = await httpRequest("", method: HttpMethod.post, body: generalMap, contentType: "application/json");
 
     //请求失败的下次一起提交
 
     if (result.code != HttpCode.success) {
-      AppLog.e("上报失败 ${type.name}, $eventId");
+      AppLog.e("上报失败 ${type.name}, $eventId, code: ${result.code}, msg: ${result.message}");
       // AppLog.e(logId);
-      if(result.code?.toInt() == 500){
+      if (result.code?.toInt() == 500) {
         //服务器错误
         // AppLog.e("服务器错误:${result.code}");
-      }else{
+      } else {
         var box = await Hive.openBox("tbaErrorData");
         //存下来下次提交
         await box.put(logId, generalMap);
@@ -172,40 +155,34 @@ class TbaAnd extends BaseApi {
     // AppLog.i("上报上次未成功的tba: ${data.length}条");
     // AppLog.e(data.length);
 
-    if(isPostError) return;
+    if (isPostError) return;
     isPostError = true;
     var box = await Hive.openBox("tbaErrorData");
     // AppLog.e("上报上次未成功的tba");
     // AppLog.e(data.length);
     var data = box.values.toList();
-    AppLog.i("上报未成功的tba data:${data.length}");
+    AppLog.i("上报未成功的tba数据: ${data.length}条");
     if (data.isEmpty) {
       isPostError = false;
       return;
     }
 
-    if (data.length > 1000) {
-      //太多了不上报
-      await box.clear();
-      isPostError = false;
-      return;
-    }
+    // if (data.length > 1000) {
+    //   //太多了不上报
+    //   await box.clear();
+    //   isPostError = false;
+    //   return;
+    // }
 
-    for (int i = 0; i < data.length; i++) {
+    for (int i = 0; i < min(data.length, 20); i++) {
       var bodyMap = Map<String, dynamic>.from(data[i]);
-      var httpData = await httpRequest(
-        "",
-        method: HttpMethod.post,
-        body: bodyMap,
-        contentType: "application/json",
-      );
+      var httpData = await httpRequest("", method: HttpMethod.post, body: bodyMap, contentType: "application/json");
       if (httpData.code == HttpCode.success) {
-        // AppLog.e("上次失败的上报成功$i");
-        //
-        // //TODO 注意修改为logid的路径
-        // AppLog.e(bodyMap["queue"]?["muriatic"] ?? "");
-
         await box.delete(bodyMap["queue"]?["muriatic"] ?? "");
+      } else {
+        if (httpData.code?.toInt() == 500) {
+          await box.delete(bodyMap["queue"]?["muriatic"] ?? "");
+        }
       }
     }
     isPostError = false;
