@@ -61,9 +61,9 @@ dependencies:
   android_play_install_referrer: ^0.4.0
   google_mobile_ads: ^6.0.0
   applovin_max: ^4.4.0
-#  anythink_sdk:
-#    path: plugin/anythink_sdk-1.0.5
-  anythink_sdk: ^1.0.8
+  anythink_sdk:
+    path: plugin/anythink_sdk-1.0.5
+#  anythink_sdk: ^1.0.8
 #  secmtp_sdk: ^1.0.8
 
 

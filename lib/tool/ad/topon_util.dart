@@ -39,14 +39,12 @@ class TopOnUtils {
     } else {
       AppLog.e("topon init start");
       try {
-        ATInitManger.setLogEnabled(logEnabled: true);
-
+        ATInitManger.setLogEnabled(logEnabled: false);
         var str = await ATInitManger.initAnyThinkSDK(
           appidStr: 'h67d9062a4e687',
           appidkeyStr: 'a78e55da0d7a8109c4be7fb6e6877ad26',
         );
-
-        AppLog.e("topon init ok---$str");
+        AppLog.i("topon init ok---$str");
       } catch (e) {
         AppLog.e("topon init error");
         print(e);
@@ -75,9 +73,9 @@ class TopOnUtils {
     allCom[adId] = Completer<bool>();
 
     bannerStream ??= ATListenerManager.bannerEventHandler.listen((e) {
-      AppLog.e("topon banner ${e.bannerStatus}");
-      AppLog.e("topon ${e.placementID}");
-      AppLog.e("${e.requestMessage}");
+      AppLog.i("topon banner ${e.bannerStatus},${e.placementID},${e.requestMessage}");
+      // AppLog.e("topon ${e.placementID}");
+      // AppLog.e("${e.requestMessage}");
       if (e.bannerStatus == BannerStatus.bannerAdDidFinishLoading) {
         allCom[e.placementID]?.complete(true);
       } else if (e.bannerStatus == BannerStatus.bannerAdFailToLoadAD) {

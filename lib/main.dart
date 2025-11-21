@@ -398,7 +398,7 @@ class Application extends GetxService {
         AppLog.e("异常【不上报】PlatformDispatcher type:${error.runtimeType}, $error");
       } else {
         AppLog.e("异常上报：PlatformDispatcher onError:$error,$stack");
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);
       }
       return true;
     };

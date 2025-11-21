@@ -61,28 +61,27 @@ class RemoteUtil {
     //获取云控字段
     try {
       await FirebaseRemoteConfig.instance.setConfigSettings(RemoteConfigSettings(fetchTimeout: const Duration(seconds: 15), minimumFetchInterval: const Duration(seconds: 30)));
-      await FirebaseRemoteConfig.instance.fetchAndActivate();
-      FirebaseRemoteConfig.instance.onConfigUpdated.listen((event) async {
-        var tempTime = DateTime.now();
+      try {
+        await FirebaseRemoteConfig.instance.fetchAndActivate();
+        FirebaseRemoteConfig.instance.onConfigUpdated.listen((event) async {
+           try {
+             await FirebaseRemoteConfig.instance.activate();
+          } catch (_) {}
 
-        var isOk = await FirebaseRemoteConfig.instance.activate();
+          // Use the new config values here.
+          String jsonString1 = FirebaseRemoteConfig.instance.getString("ad_json_and");
+          if(jsonString1.isNotEmpty){
+            Map oldMap1 = jsonDecode(jsonString1);
+            // AppLog.i(oldMap1);
+            //map key转为小写
+            _adJson = oldMap1.map((key, value) => MapEntry(key.toLowerCase(), value));
+          }
+        });
+        isInitSuc = true;
+      } catch (e, s) {
+        AppLog.e("Remote Config error: $e");
+      }
 
-        if (isOk) {
-          var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
-          EventUtils.instance.addEvent("firebase_get", data: {"time": doTime});
-        }
-
-        // Use the new config values here.
-        String jsonString1 = FirebaseRemoteConfig.instance.getString("ad_json_and");
-        if(jsonString1.isNotEmpty){
-          Map oldMap1 = jsonDecode(jsonString1);
-          // AppLog.i(oldMap1);
-          //map key转为小写
-          _adJson = oldMap1.map((key, value) => MapEntry(key.toLowerCase(), value));
-        }
-      });
-
-      isInitSuc = true;
 
       //初始化facebook
       NativeUtils.instance.initFacebook();
