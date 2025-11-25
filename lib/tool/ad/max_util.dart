@@ -81,7 +81,7 @@ class MaxUtils {
                         ad_format: "native",
                         ad_pre_ecpm: ad.revenue.toString(),
                         currency: "",
-                        ad_sence: positionKey,
+                        ad_sence: key,
                         // precision_type: ad.revenuePrecision,
                         // positionKey: positionKey,
                       );
@@ -196,7 +196,7 @@ class MaxUtils {
                 onAdRevenuePaidCallback: (ad) {
                   TbaUtils.instance.postAd(
                     ad_network: ad.networkName,
-                    ad_pos_id: key,
+                    ad_pos_id: positionKey,
                     ad_source: "max",
                     ad_unit_id: ad.adUnitId,
                     ad_format: "banner",

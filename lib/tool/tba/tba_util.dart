@@ -92,7 +92,7 @@ class TbaUtils {
     // required String precision_type,
     // required String positionKey,
   }) async {
-    AppLog.i("广告价值:$ad_pre_ecpm, $ad_source-$ad_format,  $ad_sence, pos_id:$ad_pos_id, $ad_network, $ad_unit_id");
+    AppLog.i("广告价值:$ad_pre_ecpm, $ad_source, $ad_format,  $ad_sence, pos_id:$ad_pos_id, $ad_network, $ad_unit_id");
 
     if (GetPlatform.isIOS) {
       return BaseModel(code: -1);

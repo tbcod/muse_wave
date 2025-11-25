@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/cupertino.dart';
@@ -1285,8 +1286,10 @@ class UserPlayInfoController extends GetxController {
             //没有网络
             AppLog.e("没有网络，不切换下一曲");
             if (!hasNetwork) {
+              var andInfo = await DeviceInfoPlugin().androidInfo;
+              String deviceInfo = "${andInfo.version.release}, manufacturer:${andInfo.manufacturer}, model:${andInfo.model}, brand:${andInfo.brand}, isAppBack:${Get.find<Application>().isAppBack}";
               EventUtils.instance.addEvent("play_num", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]});
-              EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "no network"});
+              EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "no network", "deviceInfo": deviceInfo});
             }
 
             //如果是首页初始化，不播放下一首
@@ -1315,8 +1318,13 @@ class UserPlayInfoController extends GetxController {
         }
 
         if (nowPlayUrl.isEmpty) {
+          var andInfo = await DeviceInfoPlugin().androidInfo;
+          String deviceInfo = "${andInfo.version.release}, manufacturer:${andInfo.manufacturer}, model:${andInfo.model}, brand:${andInfo.brand}, isAppBack:${Get.find<Application>().isAppBack}";
           EventUtils.instance.addEvent("play_num", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]});
-          EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "reason": "Get url error"});
+          EventUtils.instance.addEvent(
+            "play_fail",
+            data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "deviceInfo": deviceInfo, "reason": "Get url error"},
+          );
           if (!isAutoNext) {
             ToastUtil.showToast(msg: "Get url error".tr);
           } else {

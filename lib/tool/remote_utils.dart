@@ -41,8 +41,13 @@ class RemoteUtil {
 
     final jsonString = museSp.getString(mmAdJsonKey) ?? "";
     if (jsonString.isNotEmpty) {
-      Map oldMap = jsonDecode(jsonString);
-      _adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
+      try {
+        Map oldMap = jsonDecode(jsonString);
+        _adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
+      } catch (e) {
+        EventUtils.instance.addEvent("fb_ad_json_fail", data: {"reason": e.toString(), "code_type": 3});
+        _adJson = MuseConfig.adJsonAnd;
+      }
     } else {
       _adJson = MuseConfig.adJsonAnd;
     }
@@ -64,24 +69,17 @@ class RemoteUtil {
       try {
         await FirebaseRemoteConfig.instance.fetchAndActivate();
         FirebaseRemoteConfig.instance.onConfigUpdated.listen((event) async {
-           try {
-             await FirebaseRemoteConfig.instance.activate();
-          } catch (_) {}
-
-          // Use the new config values here.
-          String jsonString1 = FirebaseRemoteConfig.instance.getString("ad_json_and");
-          if(jsonString1.isNotEmpty){
-            Map oldMap1 = jsonDecode(jsonString1);
-            // AppLog.i(oldMap1);
-            //map key转为小写
-            _adJson = oldMap1.map((key, value) => MapEntry(key.toLowerCase(), value));
+          try {
+            await FirebaseRemoteConfig.instance.activate();
+          } catch (err) {
+            EventUtils.instance.addEvent("fb_ad_json_fail", data: {"reason": err.toString(), "code_type": 2});
           }
+          updateData();
         });
         isInitSuc = true;
       } catch (e, s) {
         AppLog.e("Remote Config error: $e");
       }
-
 
       //初始化facebook
       NativeUtils.instance.initFacebook();
@@ -89,9 +87,18 @@ class RemoteUtil {
       var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
       EventUtils.instance.addEvent("firebase_get", data: {"time": doTime});
 
-      //使用json
-      var jsonString = FirebaseRemoteConfig.instance.getString("ad_json_and");
+      updateData();
+    } catch (e) {
+      AppLog.e(e);
+      EventUtils.instance.addEvent("fb_ad_json_fail", data: {"reason": e.toString(), "code_type": 1});
+    }
+  }
 
+  updateData() {
+    //使用json
+    var jsonString = FirebaseRemoteConfig.instance.getString("ad_json_and");
+
+    try {
       if (jsonString.isNotEmpty) {
         AppLog.i("获取到云控广告:$jsonString");
         museSp.setString(mmAdJsonKey, jsonString);
@@ -99,29 +106,30 @@ class RemoteUtil {
         //map key转为小写
         _adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
       }
-
-      String bannerClickbait = FirebaseRemoteConfig.instance.getString("NVfull_Clickbait");
-      if (bannerClickbait.isNotEmpty) {
-        museSp.setString(mmFullClickbait, bannerClickbait);
-        _bannerClickbait = bannerClickbait;
-      }
-
-      String pageNativeClickbait = FirebaseRemoteConfig.instance.getString("NVPage_Clickbait");
-      if (pageNativeClickbait.isNotEmpty) {
-        museSp.setString(mmPageNativeAdClickbait, pageNativeClickbait);
-        _pageNativeClickbait = pageNativeClickbait;
-      }
-
-      String listenNowSongs = FirebaseRemoteConfig.instance.getString("muse_song_recom");
-      museSp.setString(museSongRecommonedKey, listenNowSongs);
-      _listenNowRecom = listenNowSongs;
-
-      String openAdStr = FirebaseRemoteConfig.instance.getString("musicmuse_open_ad");
-      museSp.setString(mmOpenAd, openAdStr);
-      _openAdStr = openAdStr;
-    } catch (e) {
-      AppLog.e(e);
+    } catch (e, s) {
+      EventUtils.instance.addEvent("fb_ad_json_fail", data: {"reason": e.toString(), "code_type": 0});
+      AppLog.e("Remote Config error: $e");
     }
+
+    String bannerClickbait = FirebaseRemoteConfig.instance.getString("NVfull_Clickbait");
+    if (bannerClickbait.isNotEmpty) {
+      museSp.setString(mmFullClickbait, bannerClickbait);
+      _bannerClickbait = bannerClickbait;
+    }
+
+    String pageNativeClickbait = FirebaseRemoteConfig.instance.getString("NVPage_Clickbait");
+    if (pageNativeClickbait.isNotEmpty) {
+      museSp.setString(mmPageNativeAdClickbait, pageNativeClickbait);
+      _pageNativeClickbait = pageNativeClickbait;
+    }
+
+    String listenNowSongs = FirebaseRemoteConfig.instance.getString("muse_song_recom");
+    museSp.setString(museSongRecommonedKey, listenNowSongs);
+    _listenNowRecom = listenNowSongs;
+
+    String openAdStr = FirebaseRemoteConfig.instance.getString("musicmuse_open_ad");
+    museSp.setString(mmOpenAd, openAdStr);
+    _openAdStr = openAdStr;
   }
 
   Map<String, dynamic> get adJson {
@@ -143,7 +151,6 @@ class RemoteUtil {
     final Map<String, dynamic> config = jsonDecode(_bannerClickbait);
     return config["Countdown"] ?? 0;
   }
-
 
   //参数值：0、10、20、30……100 参数值=10：有10%的概率跳转
   int get adPageNativeScreenClick {

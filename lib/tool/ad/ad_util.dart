@@ -327,7 +327,7 @@ class AdUtils {
             request: AdRequest(),
             rewardedAdLoadCallback: RewardedAdLoadCallback(
               onAdLoaded: (ad) {
-                AppLog.e("admob 加载完成rewarded");
+                // AppLog.e("admob 加载完成rewarded");
                 if (onLoad != null) {
                   onLoad(ad.adUnitId, true, null);
                 }
@@ -590,7 +590,7 @@ class AdUtils {
       isLoadSuc = await isCompleter.future;
       if (isLoadSuc) {
         EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
-        AppLog.i("广告瀑布流请求完成：$key ,adweight: $ad_weight, $source, $type, $ad_id");
+        AppLog.i("广告瀑布流请求完成：$key, adweight:$ad_weight, $source, $type, $ad_id");
         break;
       } else {
         AppLog.e("广告瀑布流请求失败：$key, $source, $type, adweight:$ad_weight, $ad_id, reason:$reason");

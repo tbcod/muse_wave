@@ -83,7 +83,7 @@ class AdmobUtils {
                 ad_network:
                     ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ??
                     "",
-                ad_pos_id: key,
+                ad_pos_id: positionKey,
                 ad_source: "admob",
                 ad_unit_id: ad.adUnitId,
                 ad_format: "banner",
@@ -153,7 +153,7 @@ class AdmobUtils {
                 ad_network:
                     ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ??
                     "",
-                ad_pos_id: key,
+                ad_pos_id: positionKey,
                 ad_source: "admob",
                 ad_unit_id: ad.adUnitId,
                 ad_format: "native",

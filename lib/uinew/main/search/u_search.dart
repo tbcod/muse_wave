@@ -5,34 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-
-import 'package:easy_refresh/easy_refresh.dart';
-import 'package:extended_wrap/extended_wrap.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:hive/hive.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/download/download_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/u_main.dart';
 import 'package:muse_wave/view/empty_view.dart';
 import 'package:muse_wave/view/more_sheet_util.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
-
-import '../../../api/api_main.dart';
-import '../../../api/base_dio_api.dart';
-import '../../../generated/assets.dart';
 import '../../../main.dart';
 import '../../../static/db_key.dart';
-import '../../../tool/ad/ad_util.dart';
-import '../../../tool/dialog_util.dart';
-import '../../../tool/format_data.dart';
 import '../../../tool/keep_view.dart';
 import '../../../tool/like/like_util.dart';
 import '../../../tool/log.dart';
 import '../../../tool/tba/event_util.dart';
-import '../../../tool/toast.dart';
 import '../../../view/base_view.dart';
 import '../home/u_artist.dart';
 import '../home/u_play.dart';
@@ -283,6 +268,14 @@ class UserSearch extends GetView<UserSearchController> {
 
                                   ),
                                 ))
+                            , Container(
+                              padding: EdgeInsets.symmetric(vertical:0),
+                              alignment: Alignment.center,
+                              child: MyNativeAdView(
+                                adKey: "pagebanner",
+                                positionKey: "search",
+                              ),
+                            ),
 
                           ],
                         )),
