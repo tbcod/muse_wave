@@ -65,8 +65,8 @@ class PageAdmobNativeViewController extends GetxController {
     // } else {
     //
     // }
-    AdUtils.instance.loadPageNativeAd(AdPosition.NVPage_full.name, positionKey: AdScene.play.name).then((v) {
-      NativeAd? ad = AdUtils.instance.getPageNativeAd(AdPosition.NVPage_full.name, adScene: AdScene.play);
+    AdUtils.instance.loadPageNativeAd(AdPosition.nvpage_full.name, positionKey: AdScene.play.name).then((v) {
+      NativeAd? ad = AdUtils.instance.getPageNativeAd(AdPosition.nvpage_full.name, adScene: AdScene.play);
       if (ad != null) {
         admobAd = ad;
         adView.value = _playAdWidget(ad);

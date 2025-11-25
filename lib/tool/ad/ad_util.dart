@@ -24,7 +24,7 @@ import 'view/full_admob_native.dart';
 
 enum AdScene { play, download, search, openCool, openHot, playlist, artist, collection, back }
 
-enum AdPosition { open, behavior, level_h, homenative, normalbanner, pagebanner, NVPage_full }
+enum AdPosition { open, behavior, level_h, homenative, normalbanner, pagebanner, nvpage_full }
 
 class AdUtils {
   AdUtils._internal();

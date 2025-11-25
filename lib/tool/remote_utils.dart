@@ -101,10 +101,10 @@ class RemoteUtil {
     try {
       if (jsonString.isNotEmpty) {
         AppLog.i("获取到云控广告:$jsonString");
-        museSp.setString(mmAdJsonKey, jsonString);
         Map oldMap = jsonDecode(jsonString);
         //map key转为小写
-        _adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
+        _adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value)); //key.toLowerCase()
+        museSp.setString(mmAdJsonKey, jsonString);
       }
     } catch (e, s) {
       EventUtils.instance.addEvent("fb_ad_json_fail", data: {"reason": e.toString(), "code_type": 0});

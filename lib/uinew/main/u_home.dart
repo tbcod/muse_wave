@@ -1108,7 +1108,7 @@ class UserHomeController extends GetxController with StateMixin {
     await Future.delayed(const Duration(seconds: 1));
 
     MyDialogUtils.instance.showOtherAppDialog();
-    AdUtils.instance.loadPageNativeAd(AdPosition.NVPage_full.name, positionKey: AdScene.play.name);
+    AdUtils.instance.loadPageNativeAd(AdPosition.nvpage_full.name, positionKey: AdScene.play.name);
 
   }
 
