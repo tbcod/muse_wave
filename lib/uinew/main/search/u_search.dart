@@ -519,7 +519,7 @@ class UserSearch extends GetView<UserSearchController> {
               return GestureDetector(
                 onTap: () {
                   Debounce(500).run(() {
-                    EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+                    EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
                     Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
                   });
                 },
@@ -699,7 +699,7 @@ class UserSearch extends GetView<UserSearchController> {
                   EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "playlist", "playlist_id": item["browseId"]});
                   Get.to(() => UserPlayListInfo(isFormSearch: true), arguments: item);
                 } else {
-                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
                   Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
                 }
               },
@@ -1004,12 +1004,12 @@ class UserSearch extends GetView<UserSearchController> {
 
     return InkWell(
       onTap: () {
-        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
 
         //添加单曲并播放
         // var pList = List.of(Get.find<UserPlayInfoController>().playList)
         //   ..add(item);
-        EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
+        EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"] ?? "", "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
 
         Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);
@@ -1106,9 +1106,9 @@ class UserSearch extends GetView<UserSearchController> {
   getMusicItem(Map item) {
     return InkWell(
       onTap: () {
-        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"]});
+        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
 
-        EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
+        EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"] ?? "", "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
 
         Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);

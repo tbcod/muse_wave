@@ -14,16 +14,12 @@ class FormatMyData {
 
     // AppLog.e(oldList.first);
     for (var item in oldList) {
-      try {
-        var title =
-            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-        var subtitle =
-            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-        var cover =
-            item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-                .last["url"];
-        var videoId =
-            item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
+      try{
+        var videoId = item["musicResponsiveListItemRenderer"]?["playlistItemData"]?["videoId"];
+        if (videoId == null) continue;
+        var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
 
         list.add({
           "title": title,
@@ -31,9 +27,31 @@ class FormatMyData {
           "cover": cover,
           "videoId": videoId,
         });
-      } catch (e) {
-        print(e);
+      }catch(e){
+        AppLog.e(e.toString());
       }
+
+      //
+      // try {
+      //   var title =
+      //       item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+      //   var subtitle =
+      //       item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+      //   var cover =
+      //       item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
+      //           .last["url"];
+      //   var videoId =
+      //       item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
+      //
+      //   list.add({
+      //     "title": title,
+      //     "subtitle": subtitle,
+      //     "cover": cover,
+      //     "videoId": videoId,
+      //   });
+      // } catch (e) {
+      //   print(e);
+      // }
     }
 
     return list;

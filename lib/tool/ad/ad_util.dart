@@ -209,6 +209,9 @@ class AdUtils {
 
     bool isLoadSuc = false;
     //循环加载广告
+
+    EventUtils.instance.addEvent("ad_load_start", data: {"ad_pos_id": key});
+
     for (var item in configList) {
       String type = item["adtype"];
       String source = item["adsource"];
@@ -591,7 +594,7 @@ class AdUtils {
         break;
       } else {
         AppLog.e("广告瀑布流请求失败：$key, $source, $type, adweight:$ad_weight, $ad_id, reason:$reason");
-        EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_weight": ad_weight, "ad_type": type, "reason": reason});
+        EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type, "reason": reason});
         continue;
       }
     }
@@ -671,7 +674,7 @@ class AdUtils {
     //循环判断广告是否加载
     AppLog.i("开始显示广告:$key");
 
-    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key});
+    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": adScene.name, "ad_scene":key});
 
     var isShowAd = false;
     for (var item in configList) {

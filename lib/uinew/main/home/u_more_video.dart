@@ -198,10 +198,16 @@ class UserMoreVideoController extends GetxController with StateMixin {
     }
 
     //解析
-    List oldList =
-        result
-            .data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"] ??
-        [];
+    // List oldList =
+    //     result
+    //         .data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"] ??
+    //     [];
+    List tabs = result.data?["contents"]?["singleColumnBrowseResultsRenderer"]?["tabs"] ?? [];
+    List contents = tabs.firstOrNull?["tabRenderer"]?["content"]?["sectionListRenderer"]?["contents"] ?? [];
+    List oldList = contents.firstOrNull?["musicPlaylistShelfRenderer"]?["contents"] ?? [];
+    if(oldList.isEmpty){
+      oldList = contents.firstOrNull?["musicShelfRenderer"]?["contents"] ?? [];
+    }
 
     // nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]
     //                 ["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]
