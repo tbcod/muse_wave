@@ -60,12 +60,12 @@ class UDebugPage extends StatelessWidget {
                       AppLovinMAX.showMediationDebugger();
                     },
                     child: const Text('ApplovinMax')),
-                // const SizedBox(height: 12),
-                // CupertinoButton(
-                //     onPressed: () {
-                //       ATInitManger.showDebuggerUI(debugKey: "");
-                //     },
-                //     child: const Text('Topon')),
+                const SizedBox(height: 12),
+                CupertinoButton(
+                    onPressed: () {
+                      ATInitManger.showDebuggerUI(debugKey: "");
+                    },
+                    child: const Text('Topon')),
               ],
             ),
             const SizedBox(height: 12),

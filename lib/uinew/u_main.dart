@@ -38,6 +38,7 @@ class UserMain extends GetView<UserMainController> {
           return true;
         }
 
+
         // 返回桌面逻辑
         AppLog.e("back");
         AndroidIntent intent = const AndroidIntent(
@@ -70,6 +71,7 @@ class UserMain extends GetView<UserMainController> {
                       Get.find<UserHomeController>().bindYoutubeMusicData(source: "click_bottomtab");
                     }
                   }
+
 
                   controller.nowIndex.value = index;
                   controller.pageC.jumpToPage(index);

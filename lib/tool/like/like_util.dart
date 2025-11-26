@@ -84,8 +84,7 @@ class LikeUtil {
   }
 
   likeList(String browseId, Map infoData, String subtitle) async {
-    //好评引导
-    MyDialogUtils.instance.showRateDialog();
+    //好评引导MyDialogUtils.instance.showRateDialog();
 
     EventUtils.instance.addEvent(
       "liked_click",

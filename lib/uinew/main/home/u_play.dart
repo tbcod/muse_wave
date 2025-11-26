@@ -15,6 +15,7 @@ import 'package:hive/hive.dart';
 import 'package:muse_wave/tool/ad/view/page_admob_native.dart';
 import 'package:muse_wave/tool/tba/tba_and.dart';
 import 'package:muse_wave/tool/tba/tba_util.dart';
+import 'package:muse_wave/uinew/u_main.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -120,7 +121,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   ),
                                 ),
                                 //广告
-                                Positioned.fill(child: Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "pagebanner", positionKey: "play"))),
+                                if (!Get.isRegistered<UserMainController>() || (Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1))
+                                  Positioned.fill(child: Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "pagebanner", positionKey: "play"))),
                                 Positioned.fill(child: Container(alignment: Alignment.center, child: PageAdmobNativeView())),
                               ],
                             ),
@@ -688,8 +690,8 @@ class UserPlayInfoController extends GetxController {
           case AudioInterruptionType.pause:
             AppLog.e("外部音乐结束pause");
             // The interruption ended and we should resume.
-            await player?.play();
-            isPlaying.value = player?.value.isPlaying ?? false;
+            // await player?.play();
+            // isPlaying.value = player?.value.isPlaying ?? false;
             break;
 
           case AudioInterruptionType.unknown:
