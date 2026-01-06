@@ -48,6 +48,16 @@ class UserSearchController extends GetxController with StateMixin {
     TbaUtils.instance.checkUnFinishedEvent();
   }
 
+  @override
+  void onReady() {
+    if(!inputFocusNode.hasFocus){
+      Future.delayed(Duration(milliseconds: 600)).then((v){
+        inputFocusNode.requestFocus();
+      });
+    }
+    super.onReady();
+  }
+
   void getSearchList(String str) async {
     BaseModel result = await ApiMain.instance.getSearchList(str);
     if (result.code == HttpCode.success) {

@@ -59,7 +59,7 @@ class UserSearch extends GetView<UserSearchController> {
                       onSubmitted: (str) {
                         controller.toSearch(str);
                       },
-                      autofocus: true,
+                      // autofocus: true,
                       style: TextStyle(fontSize: 12.w),
                       placeholder: "Search for music/artist/playlist".tr,
                       padding: EdgeInsets.symmetric(horizontal: 16.w),

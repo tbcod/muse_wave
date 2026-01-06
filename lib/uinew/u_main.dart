@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/native_utils.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -22,6 +23,7 @@ import '../tool/log.dart';
 import '../tool/tba/event_util.dart';
 import '../tool/toast.dart';
 import 'main/home/u_play.dart';
+import 'main/search/u_search.dart';
 import 'main/u_home.dart';
 import 'main/u_library.dart';
 import 'main/u_setting.dart';
@@ -38,14 +40,9 @@ class UserMain extends GetView<UserMainController> {
           return true;
         }
 
-
         // 返回桌面逻辑
         AppLog.e("back");
-        AndroidIntent intent = const AndroidIntent(
-          action: 'android.intent.action.MAIN',
-          category: "android.intent.category.HOME",
-          flags: [Flag.FLAG_ACTIVITY_NEW_TASK],
-        );
+        AndroidIntent intent = const AndroidIntent(action: 'android.intent.action.MAIN', category: "android.intent.category.HOME", flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
         intent.launch();
         AppLog.e("back1");
 
@@ -72,7 +69,6 @@ class UserMain extends GetView<UserMainController> {
                     }
                   }
 
-
                   controller.nowIndex.value = index;
                   controller.pageC.jumpToPage(index);
 
@@ -83,40 +79,19 @@ class UserMain extends GetView<UserMainController> {
                 },
                 unselectedItemColor: Color(0xffC4C5D5),
                 selectedItemColor: Color(0xff141414),
-                selectedLabelStyle: TextStyle(
-                  color: Color(0xff141414),
-                  fontSize: 12.w,
-                ),
-                unselectedLabelStyle: TextStyle(
-                  color: Color(0xffC4C5D5),
-                  fontSize: 12.w,
-                ),
+                selectedLabelStyle: TextStyle(color: Color(0xff141414), fontSize: 12.w),
+                unselectedLabelStyle: TextStyle(color: Color(0xffC4C5D5), fontSize: 12.w),
                 items:
                     controller.bottomList.map((e) {
                       return BottomNavigationBarItem(
-                        icon: Image.asset(
-                          e["icon"].toString(),
-                          width: 24.w,
-                          height: 24.w,
-                        ),
-                        activeIcon: Image.asset(
-                          e["c_icon"].toString(),
-                          width: 24.w,
-                          height: 24.w,
-                        ),
+                        icon: Image.asset(e["icon"].toString(), width: 24.w, height: 24.w),
+                        activeIcon: Image.asset(e["c_icon"].toString(), width: 24.w, height: 24.w),
                         label: e["name"],
                       );
                     }).toList(),
               ),
             ),
-            Container(
-              alignment: Alignment.center,
-              child: MyNativeAdView(
-                adKey: "normalbanner",
-                positionKey: "homeBottom",
-                isSmall: true,
-              ),
-            ),
+            Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "normalbanner", positionKey: "homeBottom", isSmall: true)),
             SizedBox(height: Get.mediaQuery.padding.bottom),
           ],
         ),
@@ -151,30 +126,22 @@ class UserMain extends GetView<UserMainController> {
 class UserMainController extends GetxController {
   var bottomList =
       [
-        {
-          "name": "Home".tr,
-          "icon": "assets/img/icon_b_1_off.png",
-          "c_icon": "assets/img/icon_b_1.png",
-        },
-        {
-          "name": "Library".tr,
-          "icon": "assets/oimg/icon_lib_off.png",
-          "c_icon": "assets/oimg/icon_lib_on.png",
-        },
-        {
-          "name": "Setting".tr,
-          "icon": "assets/img/icon_b_2_off.png",
-          "c_icon": "assets/img/icon_b_2.png",
-        },
+        {"name": "Home".tr, "icon": "assets/img/icon_b_1_off.png", "c_icon": "assets/img/icon_b_1.png"},
+        {"name": "Library".tr, "icon": "assets/oimg/icon_lib_off.png", "c_icon": "assets/oimg/icon_lib_on.png"},
+        {"name": "Setting".tr, "icon": "assets/img/icon_b_2_off.png", "c_icon": "assets/img/icon_b_2.png"},
       ].obs;
 
   var pageC = PageController();
   var nowIndex = 0.obs;
 
   ConnectivityResult? lastResult;
+
   @override
   void onInit() {
     super.onInit();
+
+    EventUtils.instance.addEvent("enter_home", data: {"source": "b"});
+    EventUtils.instance.addEvent("home_source");
 
     Get.put(UserPlayInfoController());
 
@@ -184,10 +151,9 @@ class UserMainController extends GetxController {
     //预加载广告
     AdUtils.instance.loadAd("behavior", positionKey: "B_Preloaded");
 
-    StreamSubscription<List<ConnectivityResult>>
-    subscription = Connectivity().onConnectivityChanged.listen((
-      List<ConnectivityResult> result,
-    ) async {
+    NativeUtils.instance.startSearchNotificationBar();
+
+    StreamSubscription<List<ConnectivityResult>> subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
       AppLog.e("网络变化${result}");
 
       //网络变化
@@ -220,11 +186,9 @@ class UserMainController extends GetxController {
         }
 
         lastResult = ConnectivityResult.mobile;
-      } else if (!result.contains(ConnectivityResult.wifi) &&
-          !result.contains(ConnectivityResult.mobile)) {
+      } else if (!result.contains(ConnectivityResult.wifi) && !result.contains(ConnectivityResult.mobile)) {
         // ToastUtil.showToast(msg: "Network interruption, check the network");
-        if (lastResult == ConnectivityResult.mobile ||
-            lastResult == ConnectivityResult.wifi) {
+        if (lastResult == ConnectivityResult.mobile || lastResult == ConnectivityResult.wifi) {
           //获取是否有正在下载的数据
           var oldList = DownloadUtils.instance.allDownLoadingData.values;
           var downloadingList =
@@ -268,6 +232,13 @@ class UserMainController extends GetxController {
     // });
   }
 
+  @override
+  onReady() {
+    if (NativeUtils.instance.isStartInForegroundSearch) {
+      Get.to(() => const UserSearch(), duration: Duration.zero);
+    }
+  }
+
   initData() async {
     // ALDownloader.initialize();
     // ALDownloader.configurePrint(true);
@@ -293,22 +264,10 @@ class UserMainController extends GetxController {
     // return;
 
     var now = DateTime.now();
-    var tzDate = tz.TZDateTime.from(
-      DateTime(now.year, now.month, now.day, 10, 0, 0),
-      tz.local,
-    );
-    var tzDate2 = tz.TZDateTime.from(
-      DateTime(now.year, now.month, now.day, 15, 0, 0),
-      tz.local,
-    );
-    var tzDate3 = tz.TZDateTime.from(
-      DateTime(now.year, now.month, now.day, 18, 0, 0),
-      tz.local,
-    );
-    var tzDate4 = tz.TZDateTime.from(
-      DateTime(now.year, now.month, now.day, 20, 0, 0),
-      tz.local,
-    );
+    var tzDate = tz.TZDateTime.from(DateTime(now.year, now.month, now.day, 10, 0, 0), tz.local);
+    var tzDate2 = tz.TZDateTime.from(DateTime(now.year, now.month, now.day, 15, 0, 0), tz.local);
+    var tzDate3 = tz.TZDateTime.from(DateTime(now.year, now.month, now.day, 18, 0, 0), tz.local);
+    var tzDate4 = tz.TZDateTime.from(DateTime(now.year, now.month, now.day, 20, 0, 0), tz.local);
     await FlutterLocalNotificationsPlugin().cancelAll();
 
     //获取云控push次数
@@ -331,21 +290,9 @@ class UserMainController extends GetxController {
 
   reloadData() {
     bottomList.value = [
-      {
-        "name": "Home".tr,
-        "icon": "assets/img/icon_b_1_off.png",
-        "c_icon": "assets/img/icon_b_1.png",
-      },
-      {
-        "name": "Library".tr,
-        "icon": "assets/oimg/icon_lib_off.png",
-        "c_icon": "assets/oimg/icon_lib_on.png",
-      },
-      {
-        "name": "Setting".tr,
-        "icon": "assets/img/icon_b_2_off.png",
-        "c_icon": "assets/img/icon_b_2.png",
-      },
+      {"name": "Home".tr, "icon": "assets/img/icon_b_1_off.png", "c_icon": "assets/img/icon_b_1.png"},
+      {"name": "Library".tr, "icon": "assets/oimg/icon_lib_off.png", "c_icon": "assets/oimg/icon_lib_on.png"},
+      {"name": "Setting".tr, "icon": "assets/img/icon_b_2_off.png", "c_icon": "assets/img/icon_b_2.png"},
     ];
 
     if (Get.isRegistered<UserSettingController>()) {

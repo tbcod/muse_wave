@@ -28,6 +28,8 @@ class DownloadUtils {
     return _instance;
   }
 
+  String _curClickType = 'search';
+
   Future initData() async {
     var box = await Hive.openBox(DBKey.myDownloadMusicData);
     allDownLoadingData.value = box.toMap();
@@ -151,10 +153,10 @@ class DownloadUtils {
       //download
       //artist_more_song
       //artist
-      EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
+      // EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
+      _curClickType = clickType;
       ToastUtil.showToast(msg: "addedDownloadQueue".tr);
     }
-
     if (showAd) {
       AdUtils.instance.showAd("behavior", adScene: AdScene.download);
       //好评引导
@@ -191,6 +193,7 @@ class DownloadUtils {
           HistoryUtil.instance.addHistorySong(infoData);
 
           ToastUtil.showToast(msg: "downloadCompleted".tr);
+          EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
           EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
           return;
         }
@@ -211,6 +214,7 @@ class DownloadUtils {
         if (clickType.isNotEmpty) {
           ToastUtil.showToast(msg: "Get url error".tr);
         }
+        EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
         EventUtils.instance.addEvent("save_fail", data: {"reason": "Get url fail"});
         return;
       }
@@ -252,7 +256,6 @@ class DownloadUtils {
       CancelToken ct = allCancelToken[videoId];
       ct.cancel();
     }
-
     allCancelToken[videoId] = CancelToken();
     try {
       Dio().download(
@@ -271,6 +274,7 @@ class DownloadUtils {
             saveVideoInfo();
 
             ToastUtil.showToast(msg: "downloadCompleted".tr);
+            EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
             EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
             hasNewDownload.value = true;
             saveNewState();
@@ -288,6 +292,7 @@ class DownloadUtils {
       if (isRetry) {
         AppLog.e("下载失败Dio：${e.toString()}");
         ToastUtil.showToast(msg: "downloadFailed".tr);
+        EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
         EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "Http Exception", "message": "1.${e.toString()}"});
       } else {
         AppLog.e("下载失败：${e.toString()}，开始重试");
@@ -316,6 +321,7 @@ class DownloadUtils {
       // //存本地
       // saveVideoInfo();
       ToastUtil.showToast(msg: "downloadFailed".tr);
+      EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
       EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "network error", "message": "2.${e.toString()}"});
     }
 
@@ -401,6 +407,7 @@ class DownloadUtils {
 
         ToastUtil.showToast(msg: "Delete ok".tr);
         if (state == 1) {
+          EventUtils.instance.addEvent("save_click", data: {"station": _curClickType, "song_id": videoId});
           EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "User Cancel!"});
         }
       },

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/muse_config.dart';
+import 'package:muse_wave/tool/remote_utils.dart';
 import 'package:muse_wave/ui/main_page.dart';
 import 'package:muse_wave/view/base_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -133,16 +134,16 @@ class LaunchPageController extends GetxController {
     var sp = await SharedPreferences.getInstance();
     var isFirstLoadAd = sp.getBool("isFirstLoadAd") ?? true;
 
-    var openAdStr = FirebaseRemoteConfig.instance.getString(
-      "musicmuse_open_ad",
-    );
+    // var openAdStr = FirebaseRemoteConfig.instance.getString(
+    //   "musicmuse_open_ad",
+    // );
+    //
+    // if (openAdStr.isEmpty) {
+    //   //默认为close,
+    //   openAdStr = "close";
+    // }
 
-    if (openAdStr.isEmpty) {
-      //默认为close,
-      openAdStr = "close";
-    }
-
-    if (isFirstLoadAd && openAdStr == "close") {
+    if (isFirstLoadAd && !RemoteUtil.shareInstance.isShowOpenAd) {
       AppLog.e("第一次不加载广告");
       sp.setBool("isFirstLoadAd", false);
       return;
@@ -229,8 +230,8 @@ class LaunchPageController extends GetxController {
         // Get.off(const MainPage(), routeName: "/MainPage");
         // return;
 
-        EventUtils.instance.addEvent("enter_home");
-        EventUtils.instance.addEvent("home_source");
+        // EventUtils.instance.addEvent("enter_home");
+        // EventUtils.instance.addEvent("home_source");
         Get.off(const UserMain(), routeName: "/UserMain");
         return;
       }
@@ -240,13 +241,13 @@ class LaunchPageController extends GetxController {
       var isOpenUser = sp.getBool("isOpenUser") ?? false;
 
       if (isOpenUser) {
-        EventUtils.instance.addEvent("enter_home");
-        EventUtils.instance.addEvent("home_source");
+        // EventUtils.instance.addEvent("enter_home");
+        // EventUtils.instance.addEvent("home_source");
         Get.off(const UserMain(), routeName: "/UserMain");
         return;
       }
-      EventUtils.instance.addEvent("enter_home");
-      EventUtils.instance.addEvent("home_no");
+      // EventUtils.instance.addEvent("enter_home");
+      // EventUtils.instance.addEvent("home_no");
 
       Get.off(
         isOpenUser ? const UserMain() : const MainPage(),

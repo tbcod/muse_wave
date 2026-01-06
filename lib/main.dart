@@ -40,10 +40,12 @@ import 'package:timezone/timezone.dart' as tz;
 import 'lang/my_tr.dart';
 import 'muse_config.dart';
 import 'tool/log.dart';
+import 'tool/native_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // VideoPlayerMediaKit.ensureInitialized(android: true);
+  NativeUtils.instance.init();
   await Get.putAsync(() => Application().init());
   runApp(const MyApp());
 }

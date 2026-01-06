@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/generated/assets.dart';
+import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../tool/ad/ad_util.dart';
@@ -33,11 +34,7 @@ class MainPage extends GetView<MainPageController> {
 
         // 返回桌面逻辑
         AppLog.e("back");
-        AndroidIntent intent = const AndroidIntent(
-          action: 'android.intent.action.MAIN',
-          category: "android.intent.category.HOME",
-          flags: [Flag.FLAG_ACTIVITY_NEW_TASK],
-        );
+        AndroidIntent intent = const AndroidIntent(action: 'android.intent.action.MAIN', category: "android.intent.category.HOME", flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
         intent.launch();
         AppLog.e("back1");
 
@@ -57,48 +54,15 @@ class MainPage extends GetView<MainPageController> {
             },
             unselectedItemColor: Color(0xff8B94A7),
             selectedItemColor: Color(0xff558CFF),
-            selectedLabelStyle: TextStyle(
-              color: Color(0xff558CFF),
-              fontSize: 12.w,
-            ),
-            unselectedLabelStyle: TextStyle(
-              color: Color(0xff8B94A7),
-              fontSize: 12.w,
-            ),
+            selectedLabelStyle: TextStyle(color: Color(0xff558CFF), fontSize: 12.w),
+            unselectedLabelStyle: TextStyle(color: Color(0xff8B94A7), fontSize: 12.w),
             items: [
-              BottomNavigationBarItem(
-                icon: Image.asset(Assets.imgHomeOff, width: 24.w, height: 24.w),
-                activeIcon: Image.asset(
-                  Assets.imgHomeOn,
-                  width: 24.w,
-                  height: 24.w,
-                ),
-                label: "Home",
-              ),
-              BottomNavigationBarItem(
-                icon: Image.asset(
-                  Assets.imgSettingOff,
-                  width: 24.w,
-                  height: 24.w,
-                ),
-                activeIcon: Image.asset(
-                  Assets.imgSettingOn,
-                  width: 24.w,
-                  height: 24.w,
-                ),
-                label: "Setting",
-              ),
+              BottomNavigationBarItem(icon: Image.asset(Assets.imgHomeOff, width: 24.w, height: 24.w), activeIcon: Image.asset(Assets.imgHomeOn, width: 24.w, height: 24.w), label: "Home"),
+              BottomNavigationBarItem(icon: Image.asset(Assets.imgSettingOff, width: 24.w, height: 24.w), activeIcon: Image.asset(Assets.imgSettingOn, width: 24.w, height: 24.w), label: "Setting"),
             ],
           );
         }),
-        body: PageView(
-          controller: controller.pageC,
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            KeepStateView(child: HomePage()),
-            KeepStateView(child: SettingPage()),
-          ],
-        ),
+        body: PageView(controller: controller.pageC, physics: NeverScrollableScrollPhysics(), children: [KeepStateView(child: HomePage()), KeepStateView(child: SettingPage())]),
       ),
     );
   }
@@ -114,13 +78,14 @@ class MainPageController extends GetxController {
     super.onInit();
     Get.put(PlayPageController());
 
+    EventUtils.instance.addEvent("enter_home", data: {"source": "a"});
+    EventUtils.instance.addEvent("home_no");
+
     //预加载广告
     AdUtils.instance.loadAd("behavior", positionKey: "A_Preloaded");
 
     //设置网络监听，成功后打开B面
-    subscription = Connectivity().onConnectivityChanged.listen((
-      List<ConnectivityResult> result,
-    ) async {
+    subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
       var result = await CUtil.instance.checkCloak();
 
       //监听到网络变化重新请求一次

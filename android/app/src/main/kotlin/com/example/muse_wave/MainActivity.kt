@@ -13,6 +13,12 @@ import android.os.Bundle
 import android.util.Log
 import com.example.muse_wave.MuseNativePageAd
 import com.example.muse_wave.MuseNativeAdmobAd
+import com.example.muse_wave.MuseSearchBar
+import android.content.ServiceConnection
+import android.content.ComponentName
+import android.content.Intent
+import android.os.IBinder
+import android.os.Build
 
 class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
     private lateinit var methodChannel: MethodChannel
@@ -28,14 +34,6 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
                 MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, "player.musicmuse.nativemethod")
             methodChannel.setMethodCallHandler(this)
         }
-//        val factoryIds = listOf("admob_full_native")
-//        for (id in factoryIds) {
-//            GoogleMobileAdsPlugin.registerNativeAdFactory(
-//                flutterEngine,
-//                id,
-//                MuseNativeAdmobAd(applicationContext)
-//            )
-//        }
 
         GoogleMobileAdsPlugin.registerNativeAdFactory(
             flutterEngine,
@@ -47,6 +45,7 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
             "admob_page_native",
             MuseNativePageAd(applicationContext)
         )
+        handleIntent(intent)
     }
 
 
@@ -58,11 +57,34 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
                 initFacebookSdk(appId, token)
             }
             result.success(true)
+        } else if (call.method.equals("startSearchNotificationBarService")) {
+            Log.i("MuseAndroid", "startSearchNotificationBarService")
+            val intent = Intent(this, MuseForegroundService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
+            result.success(null)
         } else {
             result.success(false)
         }
     }
 
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent == null) return
+        val value = intent.getStringExtra("Arg")
+        Log.i("MuseAndroid", "onNewIntent Foreground service start with value = $value")
+        if (value == "ClickSearchBar") {
+            methodChannel.invokeMethod("ForegroundToSearchPage", emptyMap<String, String>())
+        }
+    }
 
     private fun initFacebookSdk(appId: String, token: String) {
         FacebookSdk.setApplicationId(appId)
@@ -72,7 +94,7 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
         if (isFBInitFinished) {
             fbAppEventsLogger = AppEventsLogger.newLogger(applicationContext)
         }
-        Log.i("MuseAndroid",  "android facebook sdk init res：$isFBInitFinished, $appId, $token")
+        Log.i("MuseAndroid", "android facebook sdk init res：$isFBInitFinished, $appId, $token")
     }
 
 

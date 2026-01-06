@@ -719,7 +719,16 @@ class UserPlayInfoController extends GetxController {
       }
     });
 
-    myHandler = await AudioService.init(builder: () => MyVideoHandler(), config: AudioServiceConfig(androidNotificationIcon: "drawable/ic_launcher_foreground"));
+    myHandler = await AudioService.init(
+      builder: () => MyVideoHandler(),
+      config: AudioServiceConfig(
+        androidNotificationChannelId: "muse.wave.playback",
+        androidNotificationChannelName: "MuseWave Playback",
+        androidNotificationOngoing: false,
+        androidStopForegroundOnPause: false,
+        androidNotificationIcon: "drawable/ic_launcher_foreground",
+      ),
+    );
 
     checkShowDownloadGuide();
 

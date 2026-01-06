@@ -1,3 +1,9 @@
+//buildscript {
+//    dependencies {
+//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
+//    }
+//}
+//
 allprojects {
     repositories {
         google()
@@ -8,7 +14,7 @@ allprojects {
         maven("https://jfrog.anythinktech.com/artifactory/debugger")
         maven("https://android-sdk.is.com/")
         maven("https://artifactory.bidmachine.io/bidmachine")
-        maven("https://repo1.anythinktech.com/android_sdk")
+//        maven("https://repo1.anythinktech.com/android_sdk")
         mavenLocal()
     }
 }
