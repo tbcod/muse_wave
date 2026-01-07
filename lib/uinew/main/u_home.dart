@@ -128,7 +128,7 @@ class UserHome extends GetView<UserHomeController> {
                           if (i == 2) {
                             return Container(
                               margin: EdgeInsets.symmetric(vertical: 8.w, horizontal: 16.w),
-                              child: const MyNativeAdView(adKey: "homenative", positionKey: "HomeNative"),
+                              child: const MyNativeAdView(adKey: "homenative", adScene: AdScene.home),
                             );
                           }
                           Map item = controller.netList[i];
@@ -1108,7 +1108,7 @@ class UserHomeController extends GetxController with StateMixin {
     await Future.delayed(const Duration(seconds: 1));
 
     MyDialogUtils.instance.showOtherAppDialog();
-    AdUtils.instance.loadPageNativeAd(AdPosition.nvpage_full.name, positionKey: AdScene.play.name);
+    AdUtils.instance.loadPageNativeAd(AdPosition.nvpage_full.name, adSense: AdScene.play);
 
   }
 

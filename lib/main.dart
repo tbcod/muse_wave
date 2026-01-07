@@ -208,7 +208,7 @@ class AppController extends SuperController {
           TbaUtils.instance.postUserData({"new_user": "new"});
         }
         TbaUtils.instance.checkUnFinishedEvent();
-        AdUtils.instance.showAd("open", adScene: AdScene.openHot);
+        AdUtils.instance.showAd("open", adScene: AdScene.open_hot);
       } else if (state == AppState.background) {
         Get.find<Application>().isAppBack = true;
         TbaUtils.instance.checkUnFinishedEvent();
@@ -381,6 +381,9 @@ class Application extends GetxService {
         return true;
       }
       if (errorStr.contains('RenderFlex overflowed')) {
+        return true;
+      }
+      if (errorStr.contains('AdWidget')) {
         return true;
       }
       return false;

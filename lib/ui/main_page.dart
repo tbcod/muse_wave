@@ -82,7 +82,7 @@ class MainPageController extends GetxController {
     EventUtils.instance.addEvent("home_no");
 
     //预加载广告
-    AdUtils.instance.loadAd("behavior", positionKey: "A_Preloaded");
+    AdUtils.instance.loadAd("behavior", adSense: AdScene.play);
 
     //设置网络监听，成功后打开B面
     subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {

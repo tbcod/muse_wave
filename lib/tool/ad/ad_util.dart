@@ -22,7 +22,8 @@ import 'admob_util.dart';
 import 'max_util.dart';
 import 'view/full_admob_native.dart';
 
-enum AdScene { play, download, search, openCool, openHot, playlist, artist, collection, back }
+// enum AdScene { play, download, search, openCool, openHot, playlist, artist, collection, back }
+enum AdScene { play, open_cool, open_hot, pause, search, download, playlist, artist, collection, back, library,home }
 
 enum AdPosition { open, behavior, level_h, homenative, normalbanner, pagebanner, nvpage_full }
 
@@ -180,13 +181,13 @@ class AdUtils {
   var loadedAdMap = {};
   Timer? loadTimer;
 
-  //load
-  loadAd(String key, {required String positionKey, LoadCallback? onLoad}) async {
+  //load //required String positionKey,
+  loadAd(String key, {required AdScene adSense, LoadCallback? onLoad}) async {
     if (!Get.isRegistered<LaunchPageController>()) {
       //除启动广告优先加载高价
       if (key != "level_h") {
         //同步加载高价
-        loadAd("level_h", positionKey: positionKey);
+        loadAd("level_h", adSense: adSense);
       }
     }
 
@@ -210,7 +211,7 @@ class AdUtils {
     bool isLoadSuc = false;
     //循环加载广告
 
-    EventUtils.instance.addEvent("ad_load_start", data: {"ad_pos_id": key});
+    // EventUtils.instance.addEvent("ad_load_start", data: {"ad_pos_id": key});
 
     for (var item in configList) {
       String type = item["adtype"];
@@ -259,6 +260,8 @@ class AdUtils {
         }
       });
 
+      EventUtils.instance.addEvent("ad_req", data: {"ad_format": "${key}_$type", "ad_sense": adSense.name,"ad_id": ad_id, "ad_source_client": source, "ad_type": type});
+
       if (source == "admob") {
         //加载admob广告
         if (type == "open") {
@@ -276,7 +279,7 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
-                  "load_pos": positionKey,
+                  // "load_pos": positionKey,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -306,7 +309,7 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
-                  "load_pos": positionKey,
+                  // "load_pos": positionKey,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -334,7 +337,7 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
-                  "load_pos": positionKey,
+                  // "load_pos": positionKey,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -361,6 +364,7 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
+                  "ad_sense": adSense?.name ?? AdScene.play,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -399,15 +403,16 @@ class AdUtils {
                 adIsShowing = true;
               },
               onPaidEvent: (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
+                String adSense = AdUtils.instance.loadedAdMap[ad_id]["ad_sense"] ?? AdScene.play;
                 TbaUtils.instance.postAd(
                   ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "admob",
                   ad_format: "native",
                   ad_source: "admob",
                   ad_unit_id: ad.adUnitId,
-                  ad_pos_id: "full_native",
+                  adSense: adSense,
                   ad_pre_ecpm: valueMicros.toString(),
                   currency: currencyCode,
-                  ad_sence: key,
+                  adPosName: key,
                 );
               },
             ),
@@ -431,7 +436,7 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
-                  "load_pos": positionKey,
+                  // "load_pos": positionKey,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -461,7 +466,7 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
-                  "load_pos": positionKey,
+                  // "load_pos": positionKey,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -491,7 +496,7 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
-                  "load_pos": positionKey,
+                  // "load_pos": positionKey,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -532,7 +537,7 @@ class AdUtils {
               AdUtils.instance.loadedAdMap[ad_id] = {
                 "data": item,
                 "admob_ad": null,
-                "load_pos": positionKey,
+                // "load_pos": positionKey,
                 "timeMs": DateTime.now().millisecondsSinceEpoch,
                 "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
               };
@@ -563,7 +568,7 @@ class AdUtils {
               AdUtils.instance.loadedAdMap[ad_id] = {
                 "data": item,
                 "admob_ad": null,
-                "load_pos": positionKey,
+                // "load_pos": positionKey,
                 "timeMs": DateTime.now().millisecondsSinceEpoch,
                 "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
               };
@@ -589,12 +594,17 @@ class AdUtils {
       }
       isLoadSuc = await isCompleter.future;
       if (isLoadSuc) {
-        EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
+        EventUtils.instance.addEvent("succ_ad_req", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_type": type});
         AppLog.i("广告瀑布流请求完成：$key, adweight:$ad_weight, $source, $type, $ad_id");
         break;
       } else {
+        EventUtils.instance.addEvent(
+          "fail_ad_req",
+          data: {"ad_format": "${key}_$type", "ad_sense": adSense.name, "ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_type": type, "reason": reason},
+        );
+
         AppLog.e("广告瀑布流请求失败：$key, $source, $type, adweight:$ad_weight, $ad_id, reason:$reason");
-        EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type, "reason": reason});
+        // EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type, "reason": reason});
         continue;
       }
     }
@@ -604,7 +614,7 @@ class AdUtils {
   bool adIsShowing = false;
 
   Future<bool> showAd(String key, {required AdScene adScene, ShowCallback? onShow}) async {
-    final load_pos = adScene.name;
+    // final load_pos = adScene.name;
     if (adIsShowing) {
       if (onShow != null) {
         onShow.onShowFail!("", AdError(-1, "", "ad is showing"));
@@ -674,8 +684,7 @@ class AdUtils {
     //循环判断广告是否加载
     AppLog.i("开始显示广告:$key");
 
-    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": adScene.name, "ad_scene":key});
-
+    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": adScene.name, "ad_scene": key});
     var isShowAd = false;
     for (var item in configList) {
       String type = item["adtype"];
@@ -685,6 +694,10 @@ class AdUtils {
       if (!loadedAdMap.containsKey(ad_id)) {
         //没有加载跳过
         continue;
+      }
+
+      if (!isShowAd) {
+        EventUtils.instance.addEvent("ad_onshow", data: {"ad_format": "${key}_$type", "ad_sense": adScene.name, "ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_type": type});
       }
 
       var loadedItem = loadedAdMap[ad_id] ?? {};
@@ -719,7 +732,7 @@ class AdUtils {
               //设置显示时间以判断广告间隔
               setShowTime();
               //重新加载一轮广告
-              loadAd(key, positionKey: load_pos);
+              loadAd(key, adSense: adScene);
 
               if (onShow != null) {
                 onShow.onClose!(ad.adUnitId);
@@ -741,10 +754,10 @@ class AdUtils {
               ad_format: "open",
               ad_source: "admob",
               ad_unit_id: ad.adUnitId,
-              ad_pos_id: adScene.name,
+              adSense: adScene.name,
               ad_pre_ecpm: valueMicros.toString(),
               currency: currencyCode,
-              ad_sence: key,
+              adPosName: key,
               // precision_type: precision.name,
               // positionKey: loadedItem["load_pos"],
             );
@@ -780,7 +793,7 @@ class AdUtils {
               //设置显示时间以判断广告间隔
               setShowTime();
               //重新加载一轮广告
-              loadAd(key, positionKey: load_pos);
+              loadAd(key,adSense: adScene);
 
               if (onShow != null) {
                 onShow.onClose!(ad.adUnitId);
@@ -801,10 +814,10 @@ class AdUtils {
               ad_format: "interstitial",
               ad_source: "admob",
               ad_unit_id: ad.adUnitId,
-              ad_pos_id: key,
+              adSense: adScene.name,
               ad_pre_ecpm: valueMicros.toString(),
               currency: currencyCode,
-              ad_sence: adScene.name,
+              adPosName: key,
               // precision_type: precision.name,
               // positionKey: loadedItem["load_pos"],
             );
@@ -840,7 +853,7 @@ class AdUtils {
               //设置显示时间以判断广告间隔
               setShowTime();
               //重新加载一轮广告
-              loadAd(key, positionKey: load_pos);
+              loadAd(key,adSense: adScene);
 
               if (onShow != null) {
                 onShow.onClose!(ad.adUnitId);
@@ -861,10 +874,10 @@ class AdUtils {
               ad_format: "rewarded",
               ad_source: "admob",
               ad_unit_id: ad.adUnitId,
-              ad_pos_id: adScene.name,
+              adSense: adScene.name,
               ad_pre_ecpm: valueMicros.toString(),
               currency: currencyCode,
-              ad_sence: key,
+              adPosName: key,
               // precision_type: precision.name,
               // positionKey: loadedItem["load_pos"],
             );
@@ -889,7 +902,7 @@ class AdUtils {
                     setShowTime();
                     await ad.dispose();
                     loadedAdMap.remove(ad.adUnitId);
-                    loadAd(key, positionKey: load_pos);
+                    loadAd(key, adSense: adScene);
                     if (onShow != null) {
                       onShow.onClose!(ad.adUnitId);
                     }
@@ -947,7 +960,7 @@ class AdUtils {
                   //设置显示时间以判断广告间隔
                   setShowTime();
                   //重新加载一轮广告
-                  loadAd(key, positionKey: load_pos);
+                  loadAd(key,adSense: adScene);
 
                   if (onShow != null) {
                     onShow.onClose!(ad.adUnitId);
@@ -957,13 +970,13 @@ class AdUtils {
                   //收益上报
                   TbaUtils.instance.postAd(
                     ad_network: ad.networkName,
-                    ad_pos_id: adScene.name,
+                    adSense: adScene.name,
                     ad_source: "max",
                     ad_unit_id: ad.adUnitId,
                     ad_format: "open",
                     ad_pre_ecpm: ad.revenue.toString(),
                     currency: "USD",
-                    ad_sence: key,
+                    adPosName: key,
                     // precision_type: ad.revenuePrecision,
                     // positionKey: loadedItem["load_pos"],
                   );
@@ -1014,7 +1027,7 @@ class AdUtils {
                   //设置显示时间以判断广告间隔
                   setShowTime();
                   //重新加载一轮广告
-                  loadAd(key, positionKey: load_pos);
+                  loadAd(key,adSense: adScene);
 
                   if (onShow != null) {
                     onShow.onClose!(ad.adUnitId);
@@ -1024,13 +1037,13 @@ class AdUtils {
                   //收益上报
                   TbaUtils.instance.postAd(
                     ad_network: ad.networkName,
-                    ad_pos_id: adScene.name,
+                    adSense: adScene.name,
                     ad_source: "max",
                     ad_unit_id: ad.adUnitId,
                     ad_format: "interstitial",
                     ad_pre_ecpm: ad.revenue.toString(),
                     currency: "",
-                    ad_sence: key,
+                    adPosName: key,
                     // precision_type: ad.revenuePrecision,
                     // positionKey: loadedItem["load_pos"],
                   );
@@ -1081,7 +1094,7 @@ class AdUtils {
                   //设置显示时间以判断广告间隔
                   setShowTime();
                   //重新加载一轮广告
-                  loadAd(key, positionKey: load_pos);
+                  loadAd(key,adSense: adScene);
 
                   if (onShow != null) {
                     onShow.onClose!(ad.adUnitId);
@@ -1091,13 +1104,13 @@ class AdUtils {
                   // 收益上报
                   TbaUtils.instance.postAd(
                     ad_network: ad.networkName,
-                    ad_pos_id: adScene.name,
+                    adSense: adScene.name,
                     ad_source: "max",
                     ad_unit_id: ad.adUnitId,
                     ad_format: "rewarded",
                     ad_pre_ecpm: ad.revenue.toString(),
                     currency: "USD",
-                    ad_sence: key,
+                    adPosName: key,
                     // precision_type: ad.revenuePrecision,
                     // positionKey: loadedItem["load_pos"],
                   );
@@ -1141,13 +1154,13 @@ class AdUtils {
                 // 收益上报
                 TbaUtils.instance.postAd(
                   ad_network: revenueData["network_name"] ?? "",
-                  ad_pos_id: adScene.name,
+                  adSense: adScene.name,
                   ad_source: "topon",
                   ad_unit_id: revenueData["adunit_id"] ?? "",
                   ad_format: "interstitial",
                   ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
                   currency: revenueData["currency"] ?? "USD",
-                  ad_sence: key,
+                  adPosName: key,
                   // precision_type: revenueData["precision"] ?? "",
                   // positionKey: loadedItem["load_pos"],
                 );
@@ -1157,7 +1170,7 @@ class AdUtils {
                 //设置显示时间以判断广告间隔
                 setShowTime();
                 //重新加载一轮广告
-                loadAd(key, positionKey: load_pos);
+                loadAd(key,adSense: adScene);
                 if (onShow != null) {
                   onShow.onClose!(e.placementID);
                 }
@@ -1196,13 +1209,13 @@ class AdUtils {
                 // 收益上报
                 TbaUtils.instance.postAd(
                   ad_network: revenueData["network_name"] ?? "",
-                  ad_pos_id: adScene.name,
+                  adSense: adScene.name,
                   ad_source: "topon",
                   ad_unit_id: revenueData["adunit_id"] ?? "",
                   ad_format: "rewarded",
                   ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
                   currency: revenueData["currency"] ?? "USD",
-                  ad_sence: key,
+                  adPosName: key,
                   // precision_type: revenueData["precision"] ?? "",
                   // positionKey: loadedItem["load_pos"],
                 );
@@ -1212,7 +1225,7 @@ class AdUtils {
                 //设置显示时间以判断广告间隔
                 setShowTime();
                 //重新加载一轮广告
-                loadAd(key, positionKey: load_pos);
+                loadAd(key,adSense: adScene);
                 if (onShow != null) {
                   onShow.onClose!(e.placementID);
                 }
@@ -1237,13 +1250,13 @@ class AdUtils {
       if (onShow != null) {
         onShow.onShowFail!("", AdError(-1, "", "no ad show"));
       }
-      loadAd(key, positionKey: load_pos);
+      loadAd(key,adSense: adScene);
     }
     return isShowAd;
   }
 
   //load
-  Future loadPageNativeAd(String key, {required String positionKey, LoadCallback? onLoad}) async {
+  Future loadPageNativeAd(String key, {required AdScene adSense, LoadCallback? onLoad}) async {
     AppLog.i("开始加载广告:$key");
     if (!adJson.containsKey(key)) {
       AppLog.e("没有对应广告$key");
@@ -1312,6 +1325,7 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
+                  "ad_sense": adSense.name,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -1343,10 +1357,10 @@ class AdUtils {
                   ad_format: "native",
                   ad_source: "admob",
                   ad_unit_id: ad.adUnitId,
-                  ad_pos_id: "page_native",
+                  adSense: AdUtils.instance.loadedAdMap[ad.adUnitId]?["ad_sense"] ?? AdScene.play.name,
                   ad_pre_ecpm: valueMicros.toString(),
                   currency: currencyCode,
-                  ad_sence: key,
+                  adPosName: key,
                 );
               },
             ),
@@ -1363,19 +1377,19 @@ class AdUtils {
       }
       isLoadSuc = await isCompleter.future;
       if (isLoadSuc) {
-        EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_type": type});
+        EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_type": type});
         AppLog.i("广告瀑布流请求完成：$key ,adweight: $ad_weight, $source, $type, $ad_id");
         break;
       } else {
         AppLog.e("广告瀑布流请求失败：$key, $source, $type, adweight:$ad_weight, $ad_id, reason:$reason");
-        EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source": source, "ad_weight": ad_weight, "ad_type": type, "reason": reason});
+        EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_weight": ad_weight, "ad_type": type, "reason": reason});
         continue;
       }
     }
     return isLoadSuc;
   }
 
-  NativeAd? getPageNativeAd(String key, {required AdScene adScene, ShowCallback? onShow}) {
+  NativeAd? getPageNativeAd(String key, {required AdScene adSense, ShowCallback? onShow}) {
     if (!adJson.containsKey(key)) {
       AppLog.e("没有对应广告：$key");
       if (onShow != null) {
@@ -1428,33 +1442,33 @@ class AdUtils {
     if (onShow != null) {
       onShow.onShowFail!("", AdError(-1, "", "no ad show"));
     }
-    loadPageNativeAd(key, positionKey: adScene.name);
+    loadPageNativeAd(key, adSense: adSense); //positionKey: adScene.name
     return null;
   }
 }
 
 class MyNativeAdView extends GetView<MyNativeAdViewController> {
   final String adKey;
-  final String positionKey;
+  final AdScene adScene;
   final bool isSmall;
 
   @override
-  String? get tag => positionKey;
+  String? get tag => adKey;
 
-  const MyNativeAdView({super.key, required this.adKey, required this.positionKey, this.isSmall = false});
+  const MyNativeAdView({super.key, required this.adKey, required this.adScene, this.isSmall = false});
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => MyNativeAdViewController(adKey, positionKey, isSmall), tag: tag);
+    Get.lazyPut(() => MyNativeAdViewController(adKey, adScene, isSmall), tag: tag);
     return Container(alignment: Alignment.center, child: Obx(() => controller.adView.value));
   }
 }
 
 class MyNativeAdViewController extends GetxController {
-  MyNativeAdViewController(this.adKey, this.positionKey, this.isSmall);
+  MyNativeAdViewController(this.adKey, this.adScene, this.isSmall);
 
   var adKey = "";
-  var positionKey = "";
+  AdScene adScene;
   var isSmall = false;
   var adId = "";
 
@@ -1465,8 +1479,8 @@ class MyNativeAdViewController extends GetxController {
 
   Ad? admobAd;
 
-  loadAd(String key, String positionKey) async {
-    AppLog.i("开始加载原生广告:$key,$positionKey");
+  loadAd(String key, AdScene adSense) async {
+    AppLog.i("开始加载原生广告:$key,${adSense.name}");
 
     adView.value = Container();
 
@@ -1504,19 +1518,22 @@ class MyNativeAdViewController extends GetxController {
       String type = item["adtype"];
       String source = item["adsource"];
       String ad_id = item["placementid"];
-      AppLog.e("开始加载原生广告:$type,$source,$positionKey,$ad_id");
+      AppLog.e("开始加载原生广告:$type,$source,${adSense.name},$ad_id");
+
+
+      EventUtils.instance.addEvent("ad_req", data: {"ad_format": "${key}_$type", "ad_sense": adSense.name, "ad_id": ad_id, "ad_source_client": source, "ad_type": type,});
 
       var isOk = false;
       if (source == "admob") {
         if (type == "native") {
-          var ad = await AdmobUtils.instance.loadNativeAd(ad_id, key, positionKey, adView);
+          var ad = await AdmobUtils.instance.loadNativeAd(ad_id, key, adSense, adView);
           if (ad != null) {
             loadType.value = 1;
             isOk = true;
             admobAd = ad;
           }
         } else if (type == "banner") {
-          var ad = await AdmobUtils.instance.loadBanner(ad_id, key, positionKey, adView, isSmall: isSmall);
+          var ad = await AdmobUtils.instance.loadBanner(ad_id, key, adSense, adView, isSmall: isSmall);
           if (ad != null) {
             loadType.value = 2;
             isOk = true;
@@ -1527,13 +1544,13 @@ class MyNativeAdViewController extends GetxController {
         if (type == "native") {
           // var ad= await AdmobUtils.instance
           //     .loadNativeAd(ad_id, key, positionKey, adView);
-          var isLoadMaxAd = await MaxUtils.instance.loadNativeAd(ad_id, key, positionKey, adView);
+          var isLoadMaxAd = await MaxUtils.instance.loadNativeAd(ad_id, key, adSense, adView);
           if (isLoadMaxAd) {
             isOk = true;
             loadType.value = 3;
           }
         } else if (type == "banner") {
-          var isLoadMaxAd = await MaxUtils.instance.loadBanner(ad_id, key, positionKey, adView, isSmall: isSmall);
+          var isLoadMaxAd = await MaxUtils.instance.loadBanner(ad_id, key, adSense, adView, isSmall: isSmall);
           if (isLoadMaxAd) {
             isOk = true;
             loadType.value = 4;
@@ -1541,13 +1558,13 @@ class MyNativeAdViewController extends GetxController {
         }
       } else if (source == "topon") {
         if (type == "native") {
-          var isLoadOk = await TopOnUtils.instance.loadNativeAd(ad_id, key, positionKey, adView);
+          var isLoadOk = await TopOnUtils.instance.loadNativeAd(ad_id, key, adSense, adView);
           if (isLoadOk) {
             isOk = true;
             loadType.value = 5;
           }
         } else if (type == "banner") {
-          var isLoadOk = await TopOnUtils.instance.loadBannerAd(ad_id, key, positionKey, adView, isSmall: isSmall);
+          var isLoadOk = await TopOnUtils.instance.loadBannerAd(ad_id, key, adSense, adView, isSmall: isSmall);
           if (isLoadOk) {
             isOk = true;
             loadType.value = 6;
@@ -1556,12 +1573,20 @@ class MyNativeAdViewController extends GetxController {
       }
 
       adId = ad_id;
-      AppLog.e("结束加载原生广告:${isOk ? "成功" : "失败"}---$type,$source");
+      AppLog.e("结束加载原生广告: ${isOk ? "成功" : "失败"}---$type,$source,$ad_id");
       if (isOk) {
         //加载成功跳出循环
+        EventUtils.instance.addEvent(
+          "succ_ad_req",
+          data: {"ad_format": "${key}_$type", "ad_sense": adSense.name, "ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_type": type, "reason": "load fail"},
+        );
         break;
       } else {
         //加载失败加载下一条
+        EventUtils.instance.addEvent(
+          "fail_ad_req",
+          data: {"ad_format": "${key}_$type", "ad_sense": adSense.name, "ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_type": type, "reason": "load fail"},
+        );
         continue;
       }
     }
@@ -1570,7 +1595,7 @@ class MyNativeAdViewController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadAd(adKey, positionKey);
+    loadAd(adKey, adScene);
   }
 
   @override

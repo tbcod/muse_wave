@@ -62,7 +62,7 @@ class LaunchPage extends GetView<LaunchPageController> {
               child: Obx(
                 () => LinearProgressIndicator(
                   value: controller.progress.value,
-                  minHeight: 4.w,
+                  // minHeight: 4.w,
                   borderRadius: BorderRadius.circular(2.w),
                   color: Colors.black,
                   backgroundColor: Colors.black.withOpacity(0.2),
@@ -155,10 +155,7 @@ class LaunchPageController extends GetxController {
     AdUtils.instance.loadAd(
       "open",
       onLoad: (adId, isOk, e) {
-        AppLog.e("启动页加载广告结果$isOk, $adId");
-        AppLog.e("$adId");
-        // AppLog.e("${e}");
-
+        AppLog.e("启动页加载广告结果$isOk, $adId, $e");
         if (showAdNum != 0) {
           return;
         }
@@ -188,12 +185,11 @@ class LaunchPageController extends GetxController {
                 isAdShow = true;
               },
             ),
-            adScene: AdScene.openCool,
+            adScene: AdScene.open_cool,
           );
         }
       },
-      positionKey: 'open',
-    );
+    adSense: AdScene.open_cool);
   }
 
   Future countdown() async {

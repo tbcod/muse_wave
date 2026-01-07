@@ -91,7 +91,7 @@ class UserMain extends GetView<UserMainController> {
                     }).toList(),
               ),
             ),
-            Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "normalbanner", positionKey: "homeBottom", isSmall: true)),
+            Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "normalbanner", adScene: AdScene.home, isSmall: true)),
             SizedBox(height: Get.mediaQuery.padding.bottom),
           ],
         ),
@@ -149,7 +149,7 @@ class UserMainController extends GetxController {
     initData();
 
     //预加载广告
-    AdUtils.instance.loadAd("behavior", positionKey: "B_Preloaded");
+    AdUtils.instance.loadAd("behavior",adSense: AdScene.play);
 
     NativeUtils.instance.startSearchNotificationBar();
 

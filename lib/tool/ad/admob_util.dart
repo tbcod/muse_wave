@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:muse_wave/view/base_view.dart';
 
 import '../log.dart';
@@ -44,7 +46,7 @@ class AdmobUtils {
   Future<Ad?> loadBanner(
     String adId,
     String key,
-    String positionKey,
+    AdScene adScene,
     Rx<Widget> adView, {
     bool isSmall = false,
   }) {
@@ -63,6 +65,7 @@ class AdmobUtils {
           adUnitId: adId,
           listener: BannerAdListener(
             onAdLoaded: (ad) {
+              EventUtils.instance.addEvent("ad_req", data: {"ad_format": "${key}_banner", "ad_sense": adScene.name,"ad_id": adId, "ad_source_client": "admob", "ad_type": "banner"});
               AppLog.e("原生广告banner加载成功");
               adView.value = isSmall ? view : getAdCloseView(view);
               completer.complete(ad);
@@ -83,13 +86,13 @@ class AdmobUtils {
                 ad_network:
                     ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ??
                     "",
-                ad_pos_id: positionKey,
+                adSense: adScene.name,
                 ad_source: "admob",
                 ad_unit_id: ad.adUnitId,
                 ad_format: "banner",
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
-                ad_sence: key
+                adPosName: key
                 // precision_type: precision.name,
                 //   positionKey: positionKey
               );
@@ -106,7 +109,7 @@ class AdmobUtils {
   Future<Ad?> loadNativeAd(
     String adId,
     String key,
-    String positionKey,
+    AdScene adScene,
     Rx<Widget> adView,
   ) async {
     Widget view = Container();
@@ -153,13 +156,13 @@ class AdmobUtils {
                 ad_network:
                     ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ??
                     "",
-                ad_pos_id: positionKey,
+                adSense: adScene.name,
                 ad_source: "admob",
                 ad_unit_id: ad.adUnitId,
                 ad_format: "native",
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
-                ad_sence: key
+                adPosName: key
                 // precision_type: precision.name,
                 //   positionKey: positionKey
               );

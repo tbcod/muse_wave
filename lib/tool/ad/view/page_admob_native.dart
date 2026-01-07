@@ -8,6 +8,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/log.dart';
 import 'package:muse_wave/tool/remote_utils.dart';
+import 'package:muse_wave/tool/tba/event_util.dart';
 
 import 'full_admob_native.dart';
 
@@ -58,16 +59,10 @@ class PageAdmobNativeViewController extends GetxController {
 
   @override
   void onReady() {
-    // NativeAd? ad = AdUtils.instance.showNativeAd(AdPosition.NVPage_full.name, adScene: AdScene.play);
-    // if (ad != null) {
-    //   admobAd = ad;
-    //   adView.value = _playAdWidget(ad);
-    // } else {
-    //
-    // }
-    AdUtils.instance.loadPageNativeAd(AdPosition.nvpage_full.name, positionKey: AdScene.play.name).then((v) {
-      NativeAd? ad = AdUtils.instance.getPageNativeAd(AdPosition.nvpage_full.name, adScene: AdScene.play);
+    AdUtils.instance.loadPageNativeAd(AdPosition.nvpage_full.name, adSense: AdScene.play).then((v) {
+      NativeAd? ad = AdUtils.instance.getPageNativeAd(AdPosition.nvpage_full.name, adSense: AdScene.play);
       if (ad != null) {
+        EventUtils.instance.addEvent("ad_onshow", data: {"ad_format": "${AdPosition.nvpage_full.name}_native", "ad_sense": AdScene.play, "ad_pos_id": AdPosition.nvpage_full.name, "ad_id": ad.adUnitId, "ad_source_client": "admob", "ad_type": "native"});
         admobAd = ad;
         adView.value = _playAdWidget(ad);
       }

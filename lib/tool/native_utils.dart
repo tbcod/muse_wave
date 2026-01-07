@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/muse_config.dart';
 import 'package:muse_wave/tool/log.dart';
+import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:muse_wave/uinew/main/search/u_search.dart';
 import 'package:muse_wave/uinew/u_main.dart';
 
@@ -28,8 +29,10 @@ class NativeUtils {
           {
             if (Get.isRegistered<UserMainController>()) {
               Get.to(() => const UserSearch());
+              EventUtils.instance.addEvent("click_background_search_bar", data: {"val": "hot"});
             } else {
               isStartInForegroundSearch = true;
+              EventUtils.instance.addEvent("click_background_search_bar", data: {"val": "cool"});
             }
             break;
           }

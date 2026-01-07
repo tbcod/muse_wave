@@ -16,12 +16,9 @@ class TbaUtils {
     return _instance;
   }
 
-
   Future checkUnFinishedEvent() async {
     await TbaAnd.instance.postTbaErrorData();
   }
-
-
 
   Future<BaseModel> postEvent(String id, Map<String, dynamic>? data) async {
     if (GetPlatform.isIOS) {
@@ -85,14 +82,13 @@ class TbaUtils {
     required String ad_format,
     required String ad_source,
     required String ad_unit_id,
-    required String ad_pos_id,
+    required String adSense,
     required String ad_pre_ecpm,
     required String currency,
-    required String ad_sence,
+    required String adPosName,
     // required String precision_type,
     // required String positionKey,
   }) async {
-    AppLog.i("广告价值:$ad_pre_ecpm, $ad_source, $ad_format,  $ad_sence, pos_id:$ad_pos_id, $ad_network, $ad_unit_id");
 
     if (GetPlatform.isIOS) {
       return BaseModel(code: -1);
@@ -124,20 +120,22 @@ class TbaUtils {
       );
     }
 
+    AppLog.i("ad_impression广告价值:$ad_pre_ecpm, adSource:$ad_source, adFormat:${adPosName}_$ad_format, adSense:$adSense, adPosId:$adPosName,  adNetwork:$ad_network, $ad_unit_id");
+
     return TbaAnd.instance.postData(
       TbaType.ad,
       eventData: {
         "ketch": ad_network,
         "corey": ad_source, //广告SDK，admob，max等
         "century": ad_unit_id, //广告id
-        "ploy": ad_format, //广告类型，插屏，原生，banner，激励视频等
-        "coppery": ad_pos_id,
+        "ploy": "${adPosName}_$ad_format", //广告类型，插屏，原生，banner，激励视频等
+        "coppery": adPosName, //广告位逻辑编号，例如：page1_bottom, connect_finished
         "victrola": realMoney.toString(),
         "habitant": currency,
-        "tilth": ad_sence, //广告场景: open, behavior
+        "tilth": adSense, //广告场景: backplay,enterplay,open,pause,playing,search
         // "watanabe": precision_type, //google ltvpingback的预估收益类型
       },
-      positionKey: ad_pos_id,
+      positionKey: adSense,
       // positionKey: positionKey,
     );
   }

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:applovin_max/applovin_max.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/tba/event_util.dart';
 
 import '../../view/base_view.dart';
 import '../log.dart';
@@ -34,7 +36,7 @@ class MaxUtils {
   Future<bool> loadNativeAd(
     String adId,
     String key,
-    String positionKey,
+    AdScene adScene,
     Rx<Widget> adView,
   ) async {
     Completer<bool> completer = Completer();
@@ -75,13 +77,13 @@ class MaxUtils {
                     onAdRevenuePaidCallback: (ad) {
                       TbaUtils.instance.postAd(
                         ad_network: ad.networkName,
-                        ad_pos_id: positionKey,
+                        adSense: adScene.name,
                         ad_source: "max",
                         ad_unit_id: ad.adUnitId,
                         ad_format: "native",
                         ad_pre_ecpm: ad.revenue.toString(),
                         currency: "",
-                        ad_sence: key,
+                        adPosName: key,
                         // precision_type: ad.revenuePrecision,
                         // positionKey: positionKey,
                       );
@@ -164,7 +166,7 @@ class MaxUtils {
   Future<bool> loadBanner(
     String adId,
     String key,
-    String positionKey,
+    AdScene adScene,
     Rx<Widget> adView, {
     required bool isSmall,
   }) {
@@ -194,15 +196,16 @@ class MaxUtils {
                 },
                 onAdClickedCallback: (ad) {},
                 onAdRevenuePaidCallback: (ad) {
+                  EventUtils.instance.addEvent("ad_req", data: {"ad_format": "${key}_banner", "ad_sense": adScene.name,"ad_id": adId, "ad_source_client": "max", "ad_type": "banner"});
                   TbaUtils.instance.postAd(
                     ad_network: ad.networkName,
-                    ad_pos_id: positionKey,
+                    adSense: adScene.name,
                     ad_source: "max",
                     ad_unit_id: ad.adUnitId,
                     ad_format: "banner",
                     ad_pre_ecpm: ad.revenue.toString(),
                     currency: "",
-                    ad_sence: key
+                    adPosName: key
                     // precision_type: ad.revenuePrecision,
                     // positionKey: positionKey,
                   );

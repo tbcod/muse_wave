@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:muse_wave/muse_config.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/tba/event_util.dart';
 import '../../view/base_view.dart';
 import '../log.dart';
 import '../tba/tba_util.dart';
@@ -59,7 +61,7 @@ class TopOnUtils {
   Future<bool> loadBannerAd(
     String adId,
     String key,
-    String positionKey,
+    AdScene adScene,
     Rx<Widget> adView, {
     var isSmall = false,
   }) async {
@@ -85,17 +87,17 @@ class TopOnUtils {
       } else if (e.bannerStatus == BannerStatus.bannerAdDidShowSucceed) {
         //展示成功
         var revenueData = e.extraMap;
-
+        EventUtils.instance.addEvent("ad_req", data: {"ad_format": "${key}_banner", "ad_sense": adScene.name,"ad_id": adId, "ad_source_client": "topon", "ad_type": "banner"});
         //上传收益
         TbaUtils.instance.postAd(
           ad_network: revenueData["network_name"] ?? "",
-          ad_pos_id: positionKey,
+          adSense: adScene.name,
           ad_source: "topon",
           ad_unit_id: revenueData["adunit_id"] ?? "",
           ad_format: "banner",
           ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
           currency: revenueData["currency"] ?? "USD",
-          ad_sence: key,
+          adPosName: key,
           // precision_type: revenueData["precision"] ?? "",
           // positionKey: positionKey,
         );
@@ -121,7 +123,7 @@ class TopOnUtils {
         width: adSize.width.toDouble(),
         height: adSize.height.toDouble(),
         alignment: Alignment.center,
-        child: PlatformBannerWidget(adId, sceneID: positionKey),
+        child: PlatformBannerWidget(adId, sceneID: adScene.name),
       );
       adView.value = isSmall ? view : getAdCloseView(view, toponAdId: adId);
     } else {
@@ -133,7 +135,7 @@ class TopOnUtils {
   Future<bool> loadNativeAd(
     String adId,
     String key,
-    String positionKey,
+    AdScene adScene,
     Rx<Widget> adView,
   ) async {
     if (allCom[adId] != null) {
@@ -163,13 +165,13 @@ class TopOnUtils {
         //上传收益
         TbaUtils.instance.postAd(
           ad_network: revenueData["network_name"] ?? "",
-          ad_pos_id: positionKey,
+          adSense: adScene.name,
           ad_source: "topon",
           ad_unit_id: revenueData["adunit_id"] ?? "",
           ad_format: "native",
           ad_pre_ecpm: "${revenueData["publisher_revenue"] ?? ""}",
           currency: revenueData["currency"] ?? "USD",
-          ad_sence: key
+          adPosName: key
           // precision_type: revenueData["precision"] ?? "",
           // positionKey: positionKey,
         );
@@ -270,7 +272,7 @@ class TopOnUtils {
                   backgroundColorStr: "#7F000000",
                 ),
           },
-          sceneID: positionKey,
+          sceneID: adScene.name,
           isAdaptiveHeight: true,
         ),
       );

@@ -381,7 +381,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                 alignment: Alignment.center,
                 child: MyNativeAdView(
                   adKey: "pagebanner",
-                  positionKey: "library",
+                  adScene: AdScene.library,
                 ),
               ),
 

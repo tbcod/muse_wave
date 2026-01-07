@@ -122,7 +122,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                 ),
                                 //广告
                                 if (!Get.isRegistered<UserMainController>() || (Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1))
-                                  Positioned.fill(child: Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "pagebanner", positionKey: "play"))),
+                                  Positioned.fill(child: Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "pagebanner", adScene: AdScene.play))),
                                 Positioned.fill(child: Container(alignment: Alignment.center, child: PageAdmobNativeView())),
                               ],
                             ),
@@ -216,6 +216,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                         }
 
                                         if (controller.isPlaying.value) {
+                                          AdUtils.instance.showAd("behavior", adScene: AdScene.pause);
                                           controller.player?.pause();
                                         } else {
                                           AdUtils.instance.showAd("behavior", adScene: AdScene.play);
