@@ -1358,6 +1358,10 @@ class PlayPageController extends GetxController {
     myHandler = await AudioService.init(
       builder: () => MyAudioHandler(),
       config: AudioServiceConfig(
+        androidNotificationChannelId: "muse.wave.playback",
+        androidNotificationChannelName: "MuseWave Playback",
+        androidNotificationOngoing: false,
+        androidStopForegroundOnPause: false,
         androidNotificationIcon: "drawable/ic_launcher_foreground",
       ),
     );

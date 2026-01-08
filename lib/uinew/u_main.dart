@@ -151,7 +151,6 @@ class UserMainController extends GetxController {
     //预加载广告
     AdUtils.instance.loadAd("behavior",adSense: AdScene.play);
 
-    NativeUtils.instance.startSearchNotificationBar();
 
     StreamSubscription<List<ConnectivityResult>> subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
       AppLog.e("网络变化${result}");
@@ -252,6 +251,8 @@ class UserMainController extends GetxController {
 
     await Get.find<Application>().initLocPush();
     await Get.find<Application>().initNetPush();
+
+    NativeUtils.instance.startSearchNotificationBar();
 
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.local);

@@ -364,7 +364,7 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
-                  "ad_sense": adSense?.name ?? AdScene.play,
+                  "ad_sense": adSense.name ?? AdScene.play.name,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -403,7 +403,7 @@ class AdUtils {
                 adIsShowing = true;
               },
               onPaidEvent: (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
-                String adSense = AdUtils.instance.loadedAdMap[ad_id]["ad_sense"] ?? AdScene.play;
+                String adSense = AdUtils.instance.loadedAdMap[ad_id]["ad_sense"] ?? AdScene.play.name;
                 TbaUtils.instance.postAd(
                   ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "admob",
                   ad_format: "native",

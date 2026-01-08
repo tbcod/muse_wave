@@ -1214,11 +1214,17 @@ class UserPlayInfoController extends GetxController {
 
     canLast.value = canPlayLast();
     canNext.value = canPlayNext();
-    if (isOpenShowBar) {
-      showFloatingWidget();
-      isLoaded.value = true;
-      return;
-    }
+    // if (isOpenShowBar) {
+    //   showFloatingWidget();
+    //   isLoaded.value = true;
+    //   return;
+    // }
+
+    //更新播放
+    var item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: Duration.zero, artUri: Uri.parse(nowData["cover"] ?? ""));
+    myHandler?.showItem(item);
+    myHandler?._updateState(isLoading: true);
+
 
     //黑名单歌曲
     var blackVideoIds = FirebaseRemoteConfig.instance.getString("musicmuse_song_block");
@@ -1350,7 +1356,7 @@ class UserPlayInfoController extends GetxController {
             }
           }
           // playNext(isAutoNext: true);
-
+          isLoaded.value = true;
           return;
         }
 
@@ -1393,21 +1399,31 @@ class UserPlayInfoController extends GetxController {
     player?.addListener(playListener);
     isLoaded.value = true;
 
-    if (isOpenShowBar) {
-      //更新播放
-      var item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: maxD, artUri: Uri.parse(nowData["cover"] ?? ""));
-      myHandler?.showItem(item);
-      myHandler?._updateState();
-      return;
-    }
+    // if (isOpenShowBar) {
+    //   //更新播放
+    //   var item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: player?.value.duration, artUri: Uri.parse(nowData["cover"] ?? ""));
+    //   myHandler?.showItem(item);
+    //   myHandler?._updateState();
+    //   return;
+    // }
+
 
     player?.play();
     //保存播放列表和当前播放数据，下次打开app显示
     saveBarData();
 
     //更新播放
-    var item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: maxD, artUri: Uri.parse(nowData["cover"] ?? ""));
+    item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: player?.value.duration, artUri: Uri.parse(nowData["cover"] ?? ""));
     myHandler?.showItem(item);
+
+    if (isOpenShowBar) {
+      player?.pause();
+      myHandler?._updateState();
+      return;
+    }else{
+      myHandler?._updateState(isLoading: true);
+    }
+
 
     isPlaying.value = true;
 
@@ -2161,6 +2177,8 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   showItem(MediaItem item) {
     // AppLog.e("showItem==$item");
+    AppLog.i("add mediaItem duration:${item.duration?.inSeconds}, title:${item.title}");
+
     mediaItem.add(item);
 
     _player = Get.find<UserPlayInfoController>().player;
@@ -2213,29 +2231,34 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   }
 
   @override
-  Future<void> skipToNext() {
-    return Get.find<UserPlayInfoController>().playNext(isNotif: true);
+  Future<void> skipToNext() async {
+    if (Get.find<UserPlayInfoController>().canNext.value) {
+      Get.find<UserPlayInfoController>().playNext(isNotif: true);
+    }
   }
 
   @override
-  Future<void> skipToPrevious() {
-    return Get.find<UserPlayInfoController>().playLast(isNotif: true);
+  Future<void> skipToPrevious() async {
+    if (Get.find<UserPlayInfoController>().canLast.value) {
+      Get.find<UserPlayInfoController>().playLast(isNotif: true);
+    }
   }
 
-  _updateState() async {
+  _updateState({bool isLoading = false}) async {
+    AppLog.i("updateState:${_player?.value.position.inSeconds}s/${_player?.value.duration.inSeconds}s，isPlaying:${_player?.value.isPlaying}, isLoading:$isLoading");
     playbackState.add(
       PlaybackState(
         controls: [
-          if (Get.find<UserPlayInfoController>().canLast.value) MediaControl.skipToPrevious,
+          MediaControl.skipToPrevious, // if (Get.find<UserPlayInfoController>().canLast.value)
           (_player?.value.isPlaying ?? false) ? MediaControl.pause : MediaControl.play,
-          if (Get.find<UserPlayInfoController>().canNext.value) MediaControl.skipToNext,
+          MediaControl.skipToNext, //if (Get.find<UserPlayInfoController>().canNext.value)
         ],
         // Which other actions should be enabled in the notification
         systemActions: {MediaAction.seek, MediaAction.seekForward, MediaAction.seekBackward},
         // Which controls to show in Android's compact view.
         // androidCompactActionIndices: const [0, 1, 3],
         // Whether audio is ready, buffering, ...
-        processingState: AudioProcessingState.ready,
+        processingState: isLoading ? AudioProcessingState.loading : AudioProcessingState.ready,
         // Whether audio is playing
         playing: _player?.value.isPlaying ?? false,
         // The current position as of this update. You should not broadcast

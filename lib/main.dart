@@ -140,7 +140,6 @@ class AppController extends SuperController {
   }
 
   bindData() async {
-
     TbaUtils.instance.postSession();
     // var sp = await SharedPreferences.getInstance();
     var isPostInstall = museSp.getBool("isPostInstall");
@@ -207,6 +206,14 @@ class AppController extends SuperController {
         } else {
           TbaUtils.instance.postUserData({"new_user": "new"});
         }
+        var isOpenUser = museSp.getBool("isOpenUser");
+        if (isOpenUser) {
+          EventUtils.instance.addEvent("enter_home", data: {"source": "b"});
+          EventUtils.instance.addEvent("home_source");
+        } else {
+          EventUtils.instance.addEvent("enter_home", data: {"source": "a"});
+          EventUtils.instance.addEvent("home_no");
+        }
         TbaUtils.instance.checkUnFinishedEvent();
         AdUtils.instance.showAd("open", adScene: AdScene.open_hot);
       } else if (state == AppState.background) {
@@ -246,13 +253,13 @@ class Application extends GetxService {
   var isAppBack = false;
 
   Future initNetPush() async {
-    if (!MuseConfig.isUser) {
-      return;
-    }
+    // if (!MuseConfig.isUser) {
+    //   return;
+    // }
 
-    AppLog.e("开始初始化推送");
+    AppLog.e("开始初始化通知");
     NotificationSettings settings = await FirebaseMessaging.instance.requestPermission();
-    AppLog.e(settings.authorizationStatus.name);
+    AppLog.e("开始初始化通知结果：${settings.authorizationStatus.name}");
 
     if (settings.authorizationStatus != AuthorizationStatus.authorized) {
       return;
@@ -400,7 +407,7 @@ class Application extends GetxService {
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
     PlatformDispatcher.instance.onError = (error, stack) {
       if (isIgnoreError(error)) {
-        AppLog.e("异常【不上报】PlatformDispatcher type:${error.runtimeType}, $error");
+        AppLog.e("异常【不上报】PlatformDispatcher type:${error.runtimeType}, $error, $stack");
       } else {
         AppLog.e("异常上报：PlatformDispatcher onError:$error,$stack");
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);

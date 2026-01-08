@@ -234,7 +234,13 @@ class DownloadUtils {
       // };
     }
 
-    var url = allDownLoadingData[videoId]["url"] ?? "";
+    String url = allDownLoadingData[videoId]["url"] ?? "";
+    if (url.isEmpty) {
+      allDownLoadingData[videoId]["state"] = 0;
+      allDownLoadingData.refresh();
+      return;
+    }
+
     var fileName = "${const Uuid().v8()}.mp4";
     AppLog.i("下载链接$url");
     allDownLoadingData[videoId]["state"] = 1;
@@ -477,7 +483,13 @@ class DownloadUtils {
     }
 
     //当前下载为空
-    var url = allCacheData[videoId]["url"] ?? "";
+    String url = allCacheData[videoId]["url"] ?? "";
+
+    if(url.isEmpty){
+      allCacheData[videoId]["state"] = 0;
+      allCacheData.refresh();
+      return;
+    }
 
     String? path = allCacheData[videoId]["path"];
 
@@ -490,7 +502,7 @@ class DownloadUtils {
 
     var fileName = "${Uuid().v8()}.mp4";
 
-    Dio().download(url, dic.path + "/$fileName", onReceiveProgress: (int count, int total) {
+    Dio().download(url, "${dic.path}/$fileName", onReceiveProgress: (int count, int total) {
       // AppLog.e("缓存$count/$total");
 
       if (count == total) {
