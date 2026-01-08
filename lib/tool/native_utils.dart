@@ -4,6 +4,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/muse_config.dart';
+import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/log.dart';
 import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:muse_wave/uinew/main/search/u_search.dart';
@@ -23,16 +24,18 @@ class NativeUtils {
 
   void init() {
     channel.setMethodCallHandler((MethodCall methodCall) async {
-      AppLog.i("MethodCall:${methodCall.method}");
+      AppLog.i("channel MethodCall:${methodCall.method}, isBMode:${bus.isBMode}");
       switch (methodCall.method) {
         case 'ForegroundToSearchPage':
           {
-            if (Get.isRegistered<UserMainController>()) {
-              Get.to(() => const UserSearch());
-              EventUtils.instance.addEvent("click_background_search_bar", data: {"val": "hot"});
-            } else {
-              isStartInForegroundSearch = true;
-              EventUtils.instance.addEvent("click_background_search_bar", data: {"val": "cool"});
+            if (bus.isBMode) {
+              if (Get.isRegistered<UserMainController>()) {
+                Get.to(() => const UserSearch());
+                EventUtils.instance.addEvent("click_background_search_bar", data: {"val": "hot"});
+              } else {
+                isStartInForegroundSearch = true;
+                EventUtils.instance.addEvent("click_background_search_bar", data: {"val": "cool"});
+              }
             }
             break;
           }

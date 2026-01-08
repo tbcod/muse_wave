@@ -63,7 +63,7 @@
         <service
             android:name=".MuseForegroundService"
             android:enabled="true"
-            android:exported="true"
+            android:exported="false"
             android:foregroundServiceType="mediaPlayback">
         </service>
 

@@ -21,8 +21,8 @@ class MuseSearchBar {
     private var notification: Notification? = null
 
     companion object {
-        const val SEARCH_CHANNEL_ID = "MuseSearchBarForegroundChannelId"
-        const val SEARCH_BAR_FOREGROUND_ID = 110
+        const val SEARCH_CHANNEL_ID = "muse.search.foreground.channelId"
+        const val SEARCH_BAR_FOREGROUND_ID = 1001
 
         private var manager: MuseSearchBar? = null
 
@@ -51,7 +51,8 @@ class MuseSearchBar {
             //只在Android O之上需要渠道
             val notificationChannel = NotificationChannel(
                 SEARCH_CHANNEL_ID,
-                javaClass.simpleName, android.app.NotificationManager.IMPORTANCE_HIGH
+                javaClass.simpleName,
+                android.app.NotificationManager.IMPORTANCE_HIGH
             )
             notificationChannel.setShowBadge(false)
             if (notificationManager != null) {

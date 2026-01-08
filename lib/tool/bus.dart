@@ -1,4 +1,4 @@
-
+import 'package:muse_wave/tool/log.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Bus bus = Bus.sh;
@@ -10,7 +10,11 @@ class Bus {
 
   DateTime? startTime;
 
-  bool isBMode = false; //进入到B面后设置为true
+  bool get isBMode {
+    bool isOpenUser = museSp.getBool("isOpenUser");
+    AppLog.i("isBMode:$isOpenUser");
+    return isOpenUser;
+  }
 
   bool isLaunchLoadingAdShowing = false;
 
@@ -37,11 +41,11 @@ class MuseSP {
 
   late SharedPreferences _museSp;
 
- Future init() async {
+  Future init() async {
     _museSp = await SharedPreferences.getInstance();
   }
 
-  Future  setInt(String key, int value) async {
+  Future setInt(String key, int value) async {
     await _museSp.setInt(key, value);
   }
 
@@ -58,7 +62,7 @@ class MuseSP {
     return _museSp.getBool(key) ?? false;
   }
 
-  Future  setString(String key, String value) async {
+  Future setString(String key, String value) async {
     await _museSp.setString(key, value);
   }
 

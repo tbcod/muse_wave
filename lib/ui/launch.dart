@@ -2,7 +2,9 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/main.dart';
 import 'package:muse_wave/muse_config.dart';
+import 'package:muse_wave/tool/native_utils.dart';
 import 'package:muse_wave/tool/remote_utils.dart';
 import 'package:muse_wave/ui/main_page.dart';
 import 'package:muse_wave/view/base_view.dart';
@@ -96,12 +98,17 @@ class LaunchPageController extends GetxController {
     var isOpenUser = sp.getBool("isOpenUser") ?? false;
     if (isOpenUser) {
       //已经是用户模式，不用再请求
+      await Get.find<Application>().initNetPush();
+      NativeUtils.instance.startSearchNotificationBar();
       isB = true;
       return;
     }
 
     var tempTime = DateTime.now();
     var result = await CUtil.instance.checkCloak();
+
+    AppLog.i("获取cloak结果:${result.data}， ${result.data == 'diesel' ? "user" : "cloak"}");
+
 
     var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
     EventUtils.instance.addEvent("cloak_get", data: {"time": doTime});
@@ -221,16 +228,16 @@ class LaunchPageController extends GetxController {
       // Get.off(const MainPage());
       // return;
 
-      if (!MuseConfig.isUser) {
-        //TODO 测试A
-        // Get.off(const MainPage(), routeName: "/MainPage");
-        // return;
-
-        // EventUtils.instance.addEvent("enter_home");
-        // EventUtils.instance.addEvent("home_source");
-        Get.off(const UserMain(), routeName: "/UserMain");
-        return;
-      }
+      // if (!MuseConfig.isUser) {
+      //   //TODO 测试A
+      //   // Get.off(const MainPage(), routeName: "/MainPage");
+      //   // return;
+      //
+      //   // EventUtils.instance.addEvent("enter_home");
+      //   // EventUtils.instance.addEvent("home_source");
+      //   Get.off(const UserMain(), routeName: "/UserMain");
+      //   return;
+      // }
 
       var sp = await SharedPreferences.getInstance();
 

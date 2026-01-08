@@ -252,6 +252,8 @@ class Application extends GetxService {
 
   var isAppBack = false;
 
+  bool isInitMessage = false;
+
   Future initNetPush() async {
     // if (!MuseConfig.isUser) {
     //   return;
@@ -261,6 +263,7 @@ class Application extends GetxService {
     NotificationSettings settings = await FirebaseMessaging.instance.requestPermission();
     AppLog.e("开始初始化通知结果：${settings.authorizationStatus.name}");
 
+    isInitMessage = true;
     if (settings.authorizationStatus != AuthorizationStatus.authorized) {
       return;
     }
@@ -302,6 +305,18 @@ class Application extends GetxService {
     final InitializationSettings initializationSettings = InitializationSettings(iOS: DarwinInitializationSettings(), android: AndroidInitializationSettings("ic_launcher"));
 
     var d = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+    final bool enabled =
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+            ?.areNotificationsEnabled()
+            ?? false;
+    if(enabled){
+      AppLog.i("通知权限开启");
+    }else{
+      AppLog.e("通知权限未开启");
+    }
 
     if (d != null) {
       EventUtils.instance.addEvent("push_click");

@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 import 'package:get/get.dart';
+import 'package:muse_wave/muse_config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../api/base_api.dart';
@@ -51,7 +52,7 @@ class CUtil extends BaseApi {
           //device_model
           "conceal": androidInfo.model,
           //bundle_id
-          "nib": packageInfo.packageName,
+          "nib": MuseConfig.isUser? packageInfo.packageName : "com.musewave.player.music",
           //os_version
           "helmet": androidInfo.version.sdkInt,
           //gaid

@@ -250,9 +250,11 @@ class UserMainController extends GetxController {
     await HistoryUtil.instance.initData();
 
     await Get.find<Application>().initLocPush();
-    await Get.find<Application>().initNetPush();
+    if(!Get.find<Application>().isInitMessage){
+      await Get.find<Application>().initNetPush();
+      NativeUtils.instance.startSearchNotificationBar();
+    }
 
-    NativeUtils.instance.startSearchNotificationBar();
 
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.local);

@@ -129,7 +129,7 @@ class PlayerBottomBarView extends StatelessWidget {
                                       controller.isPlaying.toggle();
                                     },
                                   ))
-                                  : Container(width: 32.w, height: 32.w, padding: EdgeInsets.all(5.w), child: const CircularProgressIndicator())),
+                                  : Container(width: 32.w, height: 32.w, padding: EdgeInsets.all(5.w), child: const CircularProgressIndicator(strokeWidth: 2,))),
 
                               SizedBox(
                                 width: 6.w,

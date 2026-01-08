@@ -30,13 +30,14 @@ class MuseForegroundService : Service() {
     override fun onCreate() {
         super.onCreate()
         service = this
-        val notification = buildNotification()
-        startForeground(MuseSearchBar.SEARCH_BAR_FOREGROUND_ID, notification)
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // 可以在这里更新通知
 //        updateNotification()
+        val notification = buildNotification()
+        startForeground(MuseSearchBar.SEARCH_BAR_FOREGROUND_ID, notification)
         return START_STICKY
     }
 

@@ -107,19 +107,35 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                             child: Stack(
                               children: [
                                 Positioned.fill(
-                                  child: Obx(
-                                    () =>
-                                        controller.isLoaded.value && controller.player != null
-                                            ? Container(
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                              alignment: Alignment.center,
-                                              //设置最高高度
-                                              child: AspectRatio(aspectRatio: controller.videoAspectRatio, child: Container(child: VideoPlayer(controller.player!))),
-                                            )
-                                            : Container(width: double.infinity, height: double.infinity, child: Center(child: CircularProgressIndicator())),
-                                  ),
+                                  child: Obx(() {
+                                    if (!controller.isLoaded.value) {
+                                      return SizedBox(width: double.infinity, height: double.infinity, child: Center(child: CircularProgressIndicator(strokeWidth: 3)));
+                                    }
+                                    if (controller.player != null) {
+                                      return Container(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        alignment: Alignment.center,
+                                        //设置最高高度
+                                        child: AspectRatio(aspectRatio: controller.videoAspectRatio, child: VideoPlayer(controller.player!)),
+                                      );
+                                    }
+                                    return SizedBox(width: double.infinity, height: double.infinity, child: NetImageView(imgUrl: controller.nowData["cover"] ?? "", fit: BoxFit.cover));
+                                  }),
                                 ),
+
+                                // child: Obx(
+                                //   () =>
+                                //       controller.isLoaded.value && controller.player != null
+                                //           ? Container(
+                                //             width: double.infinity,
+                                //             height: double.infinity,
+                                //             alignment: Alignment.center,
+                                //             //设置最高高度
+                                //             child: AspectRatio(aspectRatio: controller.videoAspectRatio, child: Container(child: VideoPlayer(controller.player!))),
+                                //           )
+                                //           : Container(width: double.infinity, height: double.infinity, child: Center(child: CircularProgressIndicator())),
+                                // ),
                                 //广告
                                 if (!Get.isRegistered<UserMainController>() || (Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1))
                                   Positioned.fill(child: Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "pagebanner", adScene: AdScene.play))),
@@ -252,7 +268,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                       },
                                     ),
                                   )
-                                  : Container(width: 48.w, height: 48.w, child: CircularProgressIndicator()),
+                                  : Container(padding: EdgeInsets.all(8), width: 48.w, height: 48.w, child: CircularProgressIndicator(strokeWidth: 2.5)),
                         ),
                         SizedBox(width: 35.w),
                         Obx(() {
@@ -1220,11 +1236,12 @@ class UserPlayInfoController extends GetxController {
     //   return;
     // }
 
+    maxD = Duration.zero;
+
     //更新播放
     var item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: Duration.zero, artUri: Uri.parse(nowData["cover"] ?? ""));
     myHandler?.showItem(item);
     myHandler?._updateState(isLoading: true);
-
 
     //黑名单歌曲
     var blackVideoIds = FirebaseRemoteConfig.instance.getString("musicmuse_song_block");
@@ -1271,6 +1288,12 @@ class UserPlayInfoController extends GetxController {
         //请求播放数据
         AppLog.i("请求播放数据");
 
+        //加载和播放
+        if (player != null) {
+          player?.removeListener(playListener);
+          player?.dispose();
+        }
+
         var lasthttpvideoId = nowData["videoId"];
         var result = await ApiMain.instance.getVideoInfo(nowData["videoId"]);
         // AppLog.e(result.data);
@@ -1279,6 +1302,7 @@ class UserPlayInfoController extends GetxController {
           // ToastUtil.showToast(msg: result.message ?? "error");
           AppLog.e("请求失败。${result.message}");
           //如果不是当前
+          bool hasNetwork = true;
           if (lasthttpvideoId == nowData["videoId"]) {
             // ToastUtil.showToast(msg: "network error");
             //播放下一个
@@ -1298,16 +1322,10 @@ class UserPlayInfoController extends GetxController {
             //   playNext(isAutoNext: true);
             // }
 
-            AppLog.e("播放网络：$connectivityResult");
-            bool hasNetwork = connectivityResult.contains(ConnectivityResult.wifi) || connectivityResult.contains(ConnectivityResult.mobile);
-
-            //没有网络
-            AppLog.e("没有网络，不切换下一曲");
+            AppLog.i("当前网络：$connectivityResult");
+            hasNetwork = connectivityResult.contains(ConnectivityResult.wifi) || connectivityResult.contains(ConnectivityResult.mobile);
             if (!hasNetwork) {
-              var andInfo = await DeviceInfoPlugin().androidInfo;
-              String deviceInfo = "${andInfo.version.release}, manufacturer:${andInfo.manufacturer}, model:${andInfo.model}, brand:${andInfo.brand}, isAppBack:${Get.find<Application>().isAppBack}";
-              EventUtils.instance.addEvent("play_num", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]});
-              EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": "no network", "deviceInfo": deviceInfo});
+              AppLog.e("没有网络，不切换下一曲");
             }
 
             //如果是首页初始化，不播放下一首
@@ -1315,10 +1333,20 @@ class UserPlayInfoController extends GetxController {
               if (_playNextCount < 5) {
                 _playNextCount++;
                 playNext(isAutoNext: true);
+                return;
               }
             }
           }
-
+          if (!isOpenShowBar) {
+            if (!isAutoNext) {
+              ToastUtil.showToast(msg: "Play failed, Please try again");
+            }
+            var andInfo = await DeviceInfoPlugin().androidInfo;
+            String deviceInfo = "${andInfo.version.release}, manufacturer:${andInfo.manufacturer}, model:${andInfo.model}, brand:${andInfo.brand}, isAppBack:${Get.find<Application>().isAppBack}";
+            EventUtils.instance.addEvent("play_num", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]});
+            EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": hasNetwork ? "url http fail" : "no network", "deviceInfo": deviceInfo});
+          }
+          _playerReset();
           return;
         }
         //获取url
@@ -1328,35 +1356,35 @@ class UserPlayInfoController extends GetxController {
         //
         // //视频比例
         // videoAspectRatio = width / height;
-
-        //加载和播放
-        if (player != null) {
-          player?.removeListener(playListener);
-          player?.dispose();
-        }
+        //
+        // //加载和播放
+        // if (player != null) {
+        //   player?.removeListener(playListener);
+        //   player?.dispose();
+        // }
 
         if (nowPlayUrl.isEmpty) {
-          var andInfo = await DeviceInfoPlugin().androidInfo;
-          String deviceInfo = "${andInfo.version.release}, manufacturer:${andInfo.manufacturer}, model:${andInfo.model}, brand:${andInfo.brand}, isAppBack:${Get.find<Application>().isAppBack}";
-          EventUtils.instance.addEvent("play_num", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]});
-          EventUtils.instance.addEvent(
-            "play_fail",
-            data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "deviceInfo": deviceInfo, "reason": "Get url error"},
-          );
-          if (!isAutoNext) {
-            ToastUtil.showToast(msg: "Get url error".tr);
-          } else {
-            // AppLog.e(result.data);
-          }
+          AppLog.e("获取url失败: ${result.data}");
+
           //播放下一个
           if (!isOpenShowBar) {
             if (_playNextCount < 5) {
               _playNextCount++;
               playNext(isAutoNext: true);
+              return;
+            }
+            var andInfo = await DeviceInfoPlugin().androidInfo;
+            String deviceInfo = "${andInfo.version.release}, manufacturer:${andInfo.manufacturer}, model:${andInfo.model}, brand:${andInfo.brand}, isAppBack:${Get.find<Application>().isAppBack}";
+            EventUtils.instance.addEvent("play_num", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]});
+            EventUtils.instance.addEvent(
+              "play_fail",
+              data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "deviceInfo": deviceInfo, "reason": "Get url error"},
+            );
+            if (!isAutoNext) {
+              ToastUtil.showToast(msg: "Get url error".tr);
             }
           }
-          // playNext(isAutoNext: true);
-          isLoaded.value = true;
+          _playerReset();
           return;
         }
 
@@ -1390,7 +1418,11 @@ class UserPlayInfoController extends GetxController {
           "play_fail",
           data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "reason": "initialize error", "detail": errorCode},
         );
+        if (!isAutoNext) {
+          ToastUtil.showToast(msg: "Get url error".tr);
+        }
       }
+      _playerReset();
       AppLog.e("initialize error:${e.toString()}");
     });
 
@@ -1407,7 +1439,6 @@ class UserPlayInfoController extends GetxController {
     //   return;
     // }
 
-
     player?.play();
     //保存播放列表和当前播放数据，下次打开app显示
     saveBarData();
@@ -1420,10 +1451,9 @@ class UserPlayInfoController extends GetxController {
       player?.pause();
       myHandler?._updateState();
       return;
-    }else{
+    } else {
       myHandler?._updateState(isLoading: true);
     }
-
 
     isPlaying.value = true;
 
@@ -1447,6 +1477,15 @@ class UserPlayInfoController extends GetxController {
 
     ApiMain.instance.postYoutubePlaybackInfo(isWatchOnly: false);
     _startTimer();
+  }
+
+  _playerReset() {
+    isLoaded.value = true;
+    sliderValue.value = 0;
+    playTime.value = formatDuration(Duration.zero);
+    maxTime.value = formatDuration(Duration.zero);
+    isPlaying.value = false;
+    _playNextCount = 0;
   }
 
   //播放监听

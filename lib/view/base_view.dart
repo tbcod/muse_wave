@@ -17,15 +17,7 @@ class BasePage extends GetView {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          fit: BoxFit.fill,
-          image: AssetImage(Assets.imgBgAll),
-        ),
-      ),
-      child: child,
-    );
+    return Container(decoration: BoxDecoration(image: DecorationImage(fit: BoxFit.fill, image: AssetImage(Assets.imgBgAll))), child: child);
   }
 }
 
@@ -81,26 +73,16 @@ class BaseDialog extends GetView {
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.w),
               decoration: BoxDecoration(
                 color: Color(0xff202020),
-                gradient: LinearGradient(
-                  colors: [Color(0xffEAEAFF), Color(0xffFAFAFA)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                gradient: LinearGradient(colors: [Color(0xffEAEAFF), Color(0xffFAFAFA)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
                 borderRadius: BorderRadius.circular(24.w),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title ?? "",
-                    style: TextStyle(fontSize: 20.w, color: Colors.black),
-                  ),
+                  Text(title ?? "", style: TextStyle(fontSize: 20.w, color: Colors.black)),
                   SizedBox(height: 24.w),
-                  Text(
-                    content ?? "",
-                    style: TextStyle(fontSize: 14.w, color: Colors.black),
-                  ),
+                  Text(content ?? "", style: TextStyle(fontSize: 14.w, color: Colors.black)),
                   SizedBox(height: 32.w),
                   Container(
                     height: 40.w,
@@ -121,19 +103,8 @@ class BaseDialog extends GetView {
                                     child: Container(
                                       height: double.infinity,
                                       alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          20.w,
-                                        ),
-                                        color: mainColor,
-                                      ),
-                                      child: Text(
-                                        rBtnText ?? "",
-                                        style: TextStyle(
-                                          fontSize: 14.w,
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.w), color: mainColor),
+                                      child: Text(rBtnText ?? "", style: TextStyle(fontSize: 14.w, color: Colors.white)),
                                     ),
                                   ),
                                 ),
@@ -152,23 +123,12 @@ class BaseDialog extends GetView {
                                       height: double.infinity,
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          20.w,
-                                        ),
+                                        borderRadius: BorderRadius.circular(20.w),
 
                                         // color: Colors.white.withOpacity(0.15)
-                                        border: Border.all(
-                                          color: mainColor,
-                                          width: 2.w,
-                                        ),
+                                        border: Border.all(color: mainColor, width: 2.w),
                                       ),
-                                      child: Text(
-                                        lBtnText ?? "",
-                                        style: TextStyle(
-                                          fontSize: 14.w,
-                                          color: mainColor,
-                                        ),
-                                      ),
+                                      child: Text(lBtnText ?? "", style: TextStyle(fontSize: 14.w, color: mainColor)),
                                     ),
                                   ),
                                 ),
@@ -185,19 +145,8 @@ class BaseDialog extends GetView {
                                     child: Container(
                                       height: double.infinity,
                                       alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          20.w,
-                                        ),
-                                        color: mainColor,
-                                      ),
-                                      child: Text(
-                                        rBtnText ?? "",
-                                        style: TextStyle(
-                                          fontSize: 14.w,
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.w), color: mainColor),
+                                      child: Text(rBtnText ?? "", style: TextStyle(fontSize: 14.w, color: Colors.white)),
                                     ),
                                   ),
                                 ),
@@ -223,22 +172,13 @@ class NetImageView extends GetView {
   final Color? bgColor;
   final double? radius;
 
-  const NetImageView({
-    Key? key,
-    required this.imgUrl,
-    this.width,
-    this.height,
-    this.fit = BoxFit.cover,
-    this.errorAsset,
-    this.bgColor,
-    this.radius,
-  }) : super(key: key);
+  const NetImageView({Key? key, required this.imgUrl, this.width, this.height, this.fit = BoxFit.cover, this.errorAsset, this.bgColor, this.radius}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (!imgUrl.startsWith("http")) return Container();
     return ClipRRect(
-      borderRadius:
-      radius == null ? BorderRadius.zero : BorderRadius.circular(radius!),
+      borderRadius: radius == null ? BorderRadius.zero : BorderRadius.circular(radius!),
       child: CachedNetworkImage(
         imageUrl: imgUrl,
         width: width,
@@ -247,15 +187,12 @@ class NetImageView extends GetView {
         placeholder: (c, url) {
           return errorAsset == null
               ? Container(
-            color: bgColor ?? Colors.black.withOpacity(0.08),
-            // child: const Center(
-            //   child: Icon(Icons.error),
-            // ),
-          )
-              : Image.asset(
-            errorAsset!,
-            fit: BoxFit.cover,
-          );
+                color: bgColor ?? Colors.black.withOpacity(0.08),
+                // child: const Center(
+                //   child: Icon(Icons.error),
+                // ),
+              )
+              : Image.asset(errorAsset!, fit: BoxFit.cover);
 
           // return Container(
           //   color: bgColor ?? Colors.black.withOpacity(0.08),
@@ -271,15 +208,12 @@ class NetImageView extends GetView {
 
           return errorAsset == null
               ? Container(
-            color: bgColor ?? Colors.black.withOpacity(0.08),
-            // child: const Center(
-            //   child: Icon(Icons.error),
-            // ),
-          )
-              : Image.asset(
-            errorAsset!,
-            fit: BoxFit.cover,
-          );
+                color: bgColor ?? Colors.black.withOpacity(0.08),
+                // child: const Center(
+                //   child: Icon(Icons.error),
+                // ),
+              )
+              : Image.asset(errorAsset!, fit: BoxFit.cover);
         },
       ),
     );
@@ -294,15 +228,7 @@ class NetAvatarView extends GetView {
   final Color borderColor;
   final Color bgColor;
 
-  const NetAvatarView(
-      {Key? key,
-        required this.imgUrl,
-        this.size = 40,
-        this.borderWidth = 0,
-        this.borderColor = Colors.grey,
-        this.bgColor = Colors.grey,
-        this.errorAsset = ""})
-      : super(key: key);
+  const NetAvatarView({Key? key, required this.imgUrl, this.size = 40, this.borderWidth = 0, this.borderColor = Colors.grey, this.bgColor = Colors.grey, this.errorAsset = ""}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -311,15 +237,9 @@ class NetAvatarView extends GetView {
       backgroundColor: borderColor,
       child: CircleAvatar(
         radius: size / 2 - borderWidth / 2,
-        backgroundImage: errorAsset.isEmpty
-            ? null
-            : AssetImage(
-          errorAsset,
-        ),
+        backgroundImage: errorAsset.isEmpty ? null : AssetImage(errorAsset),
         backgroundColor: bgColor,
-        foregroundImage: CachedNetworkImageProvider(
-          imgUrl,
-        ),
+        foregroundImage: CachedNetworkImageProvider(imgUrl),
         onForegroundImageError: (o, e) {},
       ),
     );
@@ -330,9 +250,7 @@ class MyTabIndicator extends Decoration {
   final double width = 16;
   final double lineWidth = 5;
   final StrokeCap strokeCap = StrokeCap.round;
-  final LinearGradient gradient = const LinearGradient(
-    colors: [Color(0xff6898FC), Color(0xff6898FC)],
-  );
+  final LinearGradient gradient = const LinearGradient(colors: [Color(0xff6898FC), Color(0xff6898FC)]);
 
   final BorderRadius? borderRadius = BorderRadius.all(Radius.circular(2));
 
@@ -343,24 +261,16 @@ class MyTabIndicator extends Decoration {
 
     double wantWidth = width;
     double cw = (indicator.left + indicator.right) / 2;
-    return Rect.fromLTWH(
-      cw - wantWidth / 2,
-      indicator.bottom - lineWidth,
-      wantWidth,
-      lineWidth,
-    );
+    return Rect.fromLTWH(cw - wantWidth / 2, indicator.bottom - lineWidth, wantWidth, lineWidth);
   }
 
   @override
-  BoxPainter createBoxPainter([VoidCallback? onChanged]) =>
-      _LinePainter(this, borderRadius, onChanged);
+  BoxPainter createBoxPainter([VoidCallback? onChanged]) => _LinePainter(this, borderRadius, onChanged);
 
   @override
   Path getClipPath(Rect rect, TextDirection textDirection) {
     if (borderRadius != null) {
-      return Path()..addRRect(
-        borderRadius!.toRRect(_indicatorRectFor(rect, textDirection)),
-      );
+      return Path()..addRRect(borderRadius!.toRRect(_indicatorRectFor(rect, textDirection)));
     }
     return Path()..addRect(_indicatorRectFor(rect, textDirection));
   }
@@ -383,9 +293,7 @@ class _LinePainter extends BoxPainter {
     if (decoration.borderRadius != null) {
       paint = Paint()..shader = decoration.gradient.createShader(rect);
 
-      final Rect indicator = decoration
-          ._indicatorRectFor(rect, textDirection)
-          .inflate(decoration.lineWidth / 4.0);
+      final Rect indicator = decoration._indicatorRectFor(rect, textDirection).inflate(decoration.lineWidth / 4.0);
 
       final RRect rrect = RRect.fromRectAndCorners(
         indicator,
@@ -399,22 +307,14 @@ class _LinePainter extends BoxPainter {
     } else {
       paint = Paint()..shader = decoration.gradient.createShader(rect);
 
-      final Rect indicator = decoration
-          ._indicatorRectFor(rect, textDirection)
-          .deflate(decoration.lineWidth / 2.0);
+      final Rect indicator = decoration._indicatorRectFor(rect, textDirection).deflate(decoration.lineWidth / 2.0);
 
       canvas.drawLine(indicator.bottomLeft, indicator.bottomRight, paint);
     }
   }
 }
 
-getDownloadAndMoreBtn(
-  Map item,
-  String type, {
-  bool isSearch = false,
-  bool locIsHome = false,
-  double iconHeight = 50,
-}) {
+getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsHome = false, double iconHeight = 50}) {
   // type分类
   //loc_playlist
   //net_playlist
@@ -429,18 +329,15 @@ getDownloadAndMoreBtn(
     mainAxisSize: MainAxisSize.min,
     children: [
       //获取是否显示下载按钮
-      if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") ==
-          "on")
+      if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") == "on")
         Obx(() {
           //获取下载状态
           var videoId = item["videoId"];
 
           if (DownloadUtils.instance.allDownLoadingData.containsKey(videoId)) {
             //有添加过下载
-            var state =
-                DownloadUtils.instance.allDownLoadingData[videoId]["state"];
-            double progress =
-                DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
+            var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
+            double progress = DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
 
             // AppLog.e(
             //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");
@@ -449,7 +346,7 @@ getDownloadAndMoreBtn(
               //下载中\下载暂停
               return InkWell(
                 onTap: () {
-                  DownloadUtils.instance.remove(videoId,state: state);
+                  DownloadUtils.instance.remove(videoId, state: state);
                 },
                 child: Container(
                   height: iconHeight,
@@ -461,29 +358,20 @@ getDownloadAndMoreBtn(
                     width: 20.w,
                     height: 20.w,
                     // padding: EdgeInsets.all(5.w),
-                    child: CircularProgressIndicator(
-                      value: progress,
-                      strokeWidth: 1.5,
-                      backgroundColor: Color(0xffA995FF).withOpacity(0.35),
-                      color: Color(0xffA995FF),
-                    ),
+                    child: CircularProgressIndicator(value: progress, strokeWidth: 1.5, backgroundColor: Color(0xffA995FF).withOpacity(0.35), color: Color(0xffA995FF)),
                   ),
                 ),
               );
             } else if (state == 2) {
               return InkWell(
                 onTap: () {
-                  DownloadUtils.instance.remove(videoId,state: state);
+                  DownloadUtils.instance.remove(videoId, state: state);
                 },
                 child: Container(
                   height: iconHeight,
                   // color: Colors.red,
                   padding: EdgeInsets.all(6.w),
-                  child: Image.asset(
-                    "assets/oimg/icon_download_ok.png",
-                    width: 20.w,
-                    height: 20.w,
-                  ),
+                  child: Image.asset("assets/oimg/icon_download_ok.png", width: 20.w, height: 20.w),
                 ),
               );
             }
@@ -492,35 +380,17 @@ getDownloadAndMoreBtn(
           return InkWell(
             onTap: () {
               if (type == "net_playlist" || type == "loc_playlist") {
-                EventUtils.instance.addEvent(
-                  "det_playlist_click",
-                  data: {"detail_click": "dl"},
-                );
+                EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "dl"});
               }
               if (type == "artist_more_song" || type == "artist") {
-                EventUtils.instance.addEvent(
-                  "det_artist_click",
-                  data: {"detail_click": "dl"},
-                );
+                EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "dl"});
               }
 
-              if (type == "net_playlist" ||
-                  type == "artist_more_song" ||
-                  type == "artist") {
-                DownloadUtils.instance.download(
-                  videoId,
-                  item,
-                  clickType: isSearch ? "s_detail" : "h_detail",
-                );
+              if (type == "net_playlist" || type == "artist_more_song" || type == "artist") {
+                DownloadUtils.instance.download(videoId, item, clickType: isSearch ? "s_detail" : "h_detail");
                 return;
-              } else if (type == "loc_playlist" ||
-                  type == "liked" ||
-                  type == "download") {
-                DownloadUtils.instance.download(
-                  videoId,
-                  item,
-                  clickType: locIsHome ? "h_detail" : "library",
-                );
+              } else if (type == "loc_playlist" || type == "liked" || type == "download") {
+                DownloadUtils.instance.download(videoId, item, clickType: locIsHome ? "h_detail" : "library");
                 return;
               }
 
@@ -530,11 +400,7 @@ getDownloadAndMoreBtn(
               height: iconHeight,
               // color: Colors.red,
               padding: EdgeInsets.all(6.w),
-              child: Image.asset(
-                "assets/oimg/icon_download_gray.png",
-                width: 20.w,
-                height: 20.w,
-              ),
+              child: Image.asset("assets/oimg/icon_download_gray.png", width: 20.w, height: 20.w),
             ),
           );
         }),
@@ -544,29 +410,15 @@ getDownloadAndMoreBtn(
       InkWell(
         onTap: () {
           if (type == "net_playlist" || type == "loc_playlist") {
-            EventUtils.instance.addEvent(
-              "det_playlist_click",
-              data: {"detail_click": "more"},
-            );
+            EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "more"});
           }
           if (type == "artist_more_song" || type == "artist") {
-            EventUtils.instance.addEvent(
-              "det_artist_click",
-              data: {"detail_click": "more"},
-            );
+            EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "more"});
           }
 
           MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: type);
         },
-        child: Container(
-          height: iconHeight,
-          padding: EdgeInsets.all(6.w),
-          child: Container(
-            width: 20.w,
-            height: 20.w,
-            child: Image.asset("assets/oimg/icon_more.png"),
-          ),
-        ),
+        child: Container(height: iconHeight, padding: EdgeInsets.all(6.w), child: Container(width: 20.w, height: 20.w, child: Image.asset("assets/oimg/icon_more.png"))),
       ),
     ],
   );
@@ -597,17 +449,10 @@ Widget getAdCloseView(Widget adView, {String toponAdId = ""}) {
                           }
                         },
                         child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.w),
-                            color: Colors.black.withOpacity(0.5),
-                          ),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w), color: Colors.black.withOpacity(0.5)),
                           width: 20.w,
                           height: 20.w,
-                          child: Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 15.w,
-                          ),
+                          child: Icon(Icons.close, color: Colors.white, size: 15.w),
                         ),
                       ),
                     ),
