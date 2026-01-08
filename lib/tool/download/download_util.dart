@@ -28,7 +28,7 @@ class DownloadUtils {
     return _instance;
   }
 
-  String _curClickType = 'search';
+  String _curClickType = '';
 
   Future initData() async {
     var box = await Hive.openBox(DBKey.myDownloadMusicData);
@@ -413,8 +413,12 @@ class DownloadUtils {
 
         ToastUtil.showToast(msg: "Delete ok".tr);
         if (state == 1) {
-          EventUtils.instance.addEvent("save_click", data: {"station": _curClickType, "song_id": videoId});
-          EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "User Cancel!"});
+          if(_curClickType.isNotEmpty){
+            EventUtils.instance.addEvent("save_click", data: {"station": _curClickType, "song_id": videoId});
+            EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "User Cancel!"});
+          }else{
+            EventUtils.instance.addEvent("download_exc", data: {"song_id": videoId, "reason": "User Cancel!!", "message": ""});
+          }
         }
       },
     ));
