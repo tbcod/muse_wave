@@ -21,4 +21,6 @@ abstract class DBKey {
 
   //上次播放数据
   static const myLastPlayDataAndIndex = "myLastPlayDataAndIndex";
+
+  static const keyAdImpression001 = "keyAdImpression001";
 }

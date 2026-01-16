@@ -1,7 +1,12 @@
 import 'package:android_play_install_referrer/android_play_install_referrer.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/static/db_key.dart';
+import 'package:muse_wave/tool/adjust_util.dart';
+import 'package:muse_wave/tool/bus.dart';
+import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:muse_wave/tool/tba/tba_and.dart';
 
 import '../../api/base_api.dart';
@@ -15,6 +20,8 @@ class TbaUtils {
   static TbaUtils get instance {
     return _instance;
   }
+
+  double _accumulateAdRevenue = 0; //累计的广告价值
 
   Future checkUnFinishedEvent() async {
     await TbaAnd.instance.postTbaErrorData();
@@ -89,7 +96,6 @@ class TbaUtils {
     // required String precision_type,
     // required String positionKey,
   }) async {
-
     if (GetPlatform.isIOS) {
       return BaseModel(code: -1);
     }
@@ -108,6 +114,7 @@ class TbaUtils {
 
     // final adMoney = realMoney.toDouble();
     //不是admob广告，其他平台不是admob聚合
+    double amount = (num.tryParse(ad_pre_ecpm) ?? 0).toDouble();
     if (ad_source != "admob" && (!ad_network.toLowerCase().contains("admob"))) {
       FirebaseAnalytics.instance.logAdImpression(
         adFormat: ad_format,
@@ -115,10 +122,15 @@ class TbaUtils {
         adSource: ad_source,
         adUnitName: ad_unit_id,
         //这里是不乘10的6次方的值
-        value: (num.tryParse(ad_pre_ecpm) ?? 0).toDouble(),
+        value: amount,
         currency: currency,
       );
     }
+
+    AdjustUtil.instance.addRevenueEvent(ad_source, amount: amount, network: ad_network, placement: adPosName);
+    AdjustUtil.instance.addPurchaseEvent(name: "ad_impression_and", amount: amount);
+
+    _postAdRevenue001(amount);
 
     AppLog.i("ad_impression广告价值:$ad_pre_ecpm, adSource:$ad_source, adFormat:${adPosName}_$ad_format, adSense:$adSense, adPosId:$adPosName,  adNetwork:$ad_network, $ad_unit_id");
 
@@ -146,6 +158,22 @@ class TbaUtils {
     }
 
     return TbaAnd.instance.postData(TbaType.userInfo, eventData: data);
+  }
+
+  void _postAdRevenue001(double revenue) {
+    if (_accumulateAdRevenue == 0) {
+      _accumulateAdRevenue = museSp.getDouble(DBKey.keyAdImpression001);
+    }
+    _accumulateAdRevenue = _accumulateAdRevenue + revenue;
+
+    if (_accumulateAdRevenue > 0.001) {
+      EventUtils.instance.addEvent("ads_revenue_001", data: {"value": _accumulateAdRevenue, "currency": "USD"});
+      AdjustUtil.instance.addPurchaseEvent(amount: _accumulateAdRevenue, name: "ads_revenue_001");
+      _accumulateAdRevenue = 0;
+      museSp.setDouble(DBKey.keyAdImpression001, 0);
+    } else {
+      museSp.setDouble(DBKey.keyAdImpression001, _accumulateAdRevenue);
+    }
   }
 }
 

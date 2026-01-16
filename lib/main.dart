@@ -2,7 +2,9 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:appsflyer_sdk/appsflyer_sdk.dart';
+// import 'package:appsflyer_sdk/appsflyer_sdk.dart';
+import 'package:adjust_sdk/adjust.dart';
+import 'package:adjust_sdk/adjust_config.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_refresh/easy_refresh.dart';
@@ -22,6 +24,7 @@ import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ad/admob_util.dart';
 import 'package:muse_wave/tool/ad/max_util.dart';
 import 'package:muse_wave/tool/ad/topon_util.dart';
+import 'package:muse_wave/tool/adjust_util.dart';
 import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/history_util.dart';
 import 'package:muse_wave/tool/like/like_util.dart';
@@ -306,15 +309,10 @@ class Application extends GetxService {
 
     var d = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
 
-    final bool enabled =
-        await flutterLocalNotificationsPlugin
-            .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-            ?.areNotificationsEnabled()
-            ?? false;
-    if(enabled){
+    final bool enabled = await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.areNotificationsEnabled() ?? false;
+    if (enabled) {
       AppLog.i("通知权限开启");
-    }else{
+    } else {
       AppLog.e("通知权限未开启");
     }
 
@@ -554,30 +552,33 @@ class Application extends GetxService {
     };
 
     await initHive();
-    await initAppsflyer();
+    // await initAppsflyer();
+    AdjustUtil.instance.initSdk();
 
     await initSdk();
 
     return this;
   }
 
-  AppsflyerSdk? appsflyerSdk;
 
-  initAppsflyer() async {
-    if (!MuseConfig.isUser) {
-      return;
-    }
 
-    AppsFlyerOptions appsFlyerOptions = AppsFlyerOptions(afDevKey: MuseConfig.isUser ? "XrT2fnS7Vhxh9w3YLjHtGS" : "", showDebug: !MuseConfig.isUser);
-    appsflyerSdk = AppsflyerSdk(appsFlyerOptions);
-    var appsflyerData = await appsflyerSdk?.initSdk(
-      registerConversionDataCallback: true,
-      // registerOnAppOpenAttributionCallback: true,
-      // registerOnDeepLinkingCallback: true,
-    );
-    AppLog.e("appsflyerSdk init ok,$appsflyerData");
-    appsflyerSdk?.setCustomerUserId(userAppUuid);
-  }
+  // AppsflyerSdk? appsflyerSdk;
+  //
+  // initAppsflyer() async {
+  //   if (!MuseConfig.isUser) {
+  //     return;
+  //   }
+  //
+  //   AppsFlyerOptions appsFlyerOptions = AppsFlyerOptions(afDevKey: MuseConfig.isUser ? "XrT2fnS7Vhxh9w3YLjHtGS" : "", showDebug: !MuseConfig.isUser);
+  //   appsflyerSdk = AppsflyerSdk(appsFlyerOptions);
+  //   var appsflyerData = await appsflyerSdk?.initSdk(
+  //     registerConversionDataCallback: true,
+  //     // registerOnAppOpenAttributionCallback: true,
+  //     // registerOnDeepLinkingCallback: true,
+  //   );
+  //   AppLog.e("appsflyerSdk init ok,$appsflyerData");
+  //   appsflyerSdk?.setCustomerUserId(userAppUuid);
+  // }
 
   Future initHive() async {
     var path = await getApplicationSupportDirectory();

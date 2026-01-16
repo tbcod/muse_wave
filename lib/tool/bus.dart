@@ -54,6 +54,18 @@ class MuseSP {
     return value ?? 0;
   }
 
+
+  Future setDouble(String key, double value) async {
+    await _museSp.setDouble(key, value);
+  }
+
+  double getDouble(String key) {
+    double? value = _museSp.getDouble(key);
+    return value ?? 0;
+  }
+
+
+
   Future setBool(String key, bool value) async {
     await _museSp.setBool(key, value);
   }

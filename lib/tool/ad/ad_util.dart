@@ -6,7 +6,6 @@ import 'package:anythink_sdk/at_listener.dart';
 import 'package:anythink_sdk/at_rewarded.dart';
 import 'package:applovin_max/applovin_max.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -35,6 +34,8 @@ class AdUtils {
   static AdUtils get instance {
     return _instance;
   }
+
+
 
   // //and test
   // Map<String, dynamic> adJson = {
