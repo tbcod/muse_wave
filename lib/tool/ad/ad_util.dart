@@ -291,7 +291,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(ad_id, false, e);
                 }
-                reason = e.message;
+                reason = "${e.code},${e.message}";
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
             ),
@@ -349,7 +349,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(ad_id, false, e);
                 }
-                reason = e.message;
+                reason = "${e.code},${e.message}";
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
             ),
@@ -377,7 +377,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(ad_id, false, e);
                 }
-                reason = e.message;
+                reason = "${e.code},${e.message}";
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
               onAdClicked: (ad) {
@@ -447,7 +447,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
-                reason = e.message;
+                reason = "${e.code},${e.message}";
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
               onAdDisplayedCallback: (ad) {},
@@ -477,7 +477,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
-                reason = e.message;
+                reason = "${e.code},${e.message}";
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
               onAdDisplayedCallback: (ad) {},
@@ -507,7 +507,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(adId, false, AdError(e.code.value, e.waterfall.toString(), e.message));
                 }
-                reason = e.message;
+                reason = "${e.code},${e.message}";
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
               onAdDisplayedCallback: (ad) {},
@@ -1338,7 +1338,7 @@ class AdUtils {
                 if (onLoad != null) {
                   onLoad(ad_id, false, e);
                 }
-                reason = e.message;
+                reason = "${e.code},${e.message}";
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
               onAdClicked: (ad) {

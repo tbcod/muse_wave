@@ -10,14 +10,8 @@ import 'log.dart' show AppLog;
 
 class AdjustUtil {
   AdjustUtil._() : super();
-  // static final AdjustUtil _instance = AdjustUtil._();
-  //
-  // static AdjustUtil get instance {
-  //   return _instance;
-  // }
 
   AdjustUtil._internal();
-
 
   static final AdjustUtil _instance = AdjustUtil._internal();
 

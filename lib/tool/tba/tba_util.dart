@@ -129,8 +129,18 @@ class TbaUtils {
       );
     }
 
-    AdjustUtil.instance.addRevenueEvent(ad_source, amount: amount, network: ad_network, placement: adPosName);
-    AdjustUtil.instance.addPurchaseEvent(name: "ad_impression_and", amount: amount);
+    try {
+      AdjustUtil.instance.addRevenueEvent(ad_source, amount: amount, network: ad_network, placement: adPosName);
+      AdjustUtil.instance.addPurchaseEvent(name: "ad_impression_and", amount: amount);
+
+      FacebookAppEvents().logEvent(name: "ad_impression_revenue", valueToSum: amount);
+      FacebookAppEvents().logEvent(
+        name: FacebookAppEvents.eventNameAdImpression,
+        parameters: {FacebookAppEvents.paramNameCurrency: "USD", FacebookAppEvents.paramNameAdType: ad_source},
+        valueToSum: amount,
+      );
+      FacebookAppEvents().logPurchase(amount: amount, currency: "USD");
+    } catch (_) {}
 
     _postAdRevenue001(amount);
 
@@ -169,8 +179,11 @@ class TbaUtils {
     _accumulateAdRevenue = _accumulateAdRevenue + revenue;
 
     if (_accumulateAdRevenue > 0.001) {
-      EventUtils.instance.addEvent("ads_revenue_001", data: {"value": _accumulateAdRevenue, "currency": "USD"});
-      AdjustUtil.instance.addPurchaseEvent(amount: _accumulateAdRevenue, name: "ads_revenue_001");
+      try {
+        EventUtils.instance.addEvent("ads_revenue_001", data: {"value": _accumulateAdRevenue, "currency": "USD"});
+        AdjustUtil.instance.addPurchaseEvent(amount: _accumulateAdRevenue, name: "ads_revenue_001");
+        FacebookAppEvents().logEvent(name: "ads_revenue_001", valueToSum: _accumulateAdRevenue);
+      } catch (_) {}
       _accumulateAdRevenue = 0;
       museSp.setDouble(DBKey.keyAdImpression001, 0);
     } else {
