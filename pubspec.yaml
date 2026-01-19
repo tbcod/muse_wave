@@ -81,7 +81,7 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   #flutter packages pub run flutter_launcher_icons:main
   flutter_launcher_icons: ^0.13.1
-  adjust_sdk: ^5.5.0
+  adjust_sdk: 5.4.3
 
 flutter_icons:
   android: true

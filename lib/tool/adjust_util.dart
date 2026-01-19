@@ -10,18 +10,29 @@ import 'log.dart' show AppLog;
 
 class AdjustUtil {
   AdjustUtil._() : super();
-  static final AdjustUtil _instance = AdjustUtil._();
+  // static final AdjustUtil _instance = AdjustUtil._();
+  //
+  // static AdjustUtil get instance {
+  //   return _instance;
+  // }
+
+  AdjustUtil._internal();
+
+
+  static final AdjustUtil _instance = AdjustUtil._internal();
 
   static AdjustUtil get instance {
     return _instance;
   }
 
-  void initSdk() {
+
+  void initSdk(String distinctId) {
     try {
       AdjustConfig config = AdjustConfig(MuseConfig.adjustAppId, MuseConfig.isUser ? AdjustEnvironment.production : AdjustEnvironment.sandbox);
-      String distinctId = Get.find<Application>().userAppUuid;
+      // String distinctId = Get.find<Application>().userAppUuid;
       Adjust.addGlobalCallbackParameter('customer_user_id', distinctId);
       Adjust.initSdk(config);
+      AppLog.i("initAdjust distinctId:$distinctId");
     } catch (e) {
       AppLog.e("initAdjust init fail:$e");
     }

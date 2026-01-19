@@ -174,7 +174,7 @@ class TbaAnd extends BaseApi {
     //   return;
     // }
 
-    for (int i = 0; i < min(data.length, 20); i++) {
+    for (int i = 0; i < min(data.length, 30); i++) {
       var bodyMap = Map<String, dynamic>.from(data[i]);
       var httpData = await httpRequest("", method: HttpMethod.post, body: bodyMap, contentType: "application/json");
       if (httpData.code == HttpCode.success) {

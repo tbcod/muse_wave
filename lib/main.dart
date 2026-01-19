@@ -155,7 +155,7 @@ class AppController extends SuperController {
       await museSp.setInt("installTimeMs", DateTime.now().millisecondsSinceEpoch);
       //安装上报
       TbaUtils.instance.postInstall().then((value) {
-        AppLog.e("安装上报:${value.toJson()}");
+        AppLog.i("install事件:${value.toJson()}");
         museSp.setBool("isPostInstall", true);
         TbaUtils.instance.postUserData({"new_user": "new"});
       });
@@ -427,34 +427,8 @@ class Application extends GetxService {
       }
       return true;
     };
-    RemoteUtil.shareInstance.initFirebaseRemoteSdk();
 
-    //测试环境异常上报
-    // FlutterError.onError = (errorDetails) {
-    //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    // };
-    // // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-    // PlatformDispatcher.instance.onError = (error, stack) {
-    //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    //   return true;
-    // };
-    //
-    // if (MuseConfig.isUser) {
-    //   AdUtils.instance.adJson = AdUtils.instance.adJsonRelease;
-    //   if (GetPlatform.isIOS) {
-    //     AdUtils.instance.adJson = AdUtils.instance.adJsonIosRelease;
-    //   }
-    //   var adData = await AdUtils.instance.initJsonByFireBase();
-    //   AppLog.e("广告配置");
-    //   AppLog.e(adData);
-    // } else {
-    //   if (GetPlatform.isIOS) {
-    //     AdUtils.instance.adJson = AdUtils.instance.adJsonIos;
-    //   }
-    //   var adData = await AdUtils.instance.initJsonByFireBase();
-    //   AppLog.e("广告配置");
-    //   AppLog.e(adData);
-    // }
+    RemoteUtil.shareInstance.initFirebaseRemoteSdk();
   }
 
   initAd() {
@@ -553,7 +527,7 @@ class Application extends GetxService {
 
     await initHive();
     // await initAppsflyer();
-    AdjustUtil.instance.initSdk();
+    AdjustUtil.instance.initSdk(userAppUuid);
 
     await initSdk();
 

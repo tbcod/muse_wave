@@ -41,6 +41,8 @@ class TbaUtils {
       return BaseModel(code: -1);
     }
 
+    AppLog.e("上报install");
+
     // return BaseModel(code: -1);
 
     //android
@@ -77,7 +79,7 @@ class TbaUtils {
   }
 
   Future<BaseModel> postSession() async {
-    AppLog.e("上报session");
+    AppLog.i("上报session");
     if (GetPlatform.isIOS) {
       return BaseModel(code: -1);
     }

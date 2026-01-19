@@ -100,7 +100,7 @@ class RemoteUtil {
 
     try {
       if (jsonString.isNotEmpty) {
-        AppLog.i("获取到云控广告:$jsonString");
+        // AppLog.i("获取到云控广告:$jsonString");
         Map oldMap = jsonDecode(jsonString);
         //map key转为小写
         _adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value)); //key.toLowerCase()

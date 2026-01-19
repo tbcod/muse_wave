@@ -124,15 +124,15 @@ class BaseApi extends GetConnect {
         }
         return data;
       } else {
-        // AppLog.d(
-        //   "${response.request?.url} \n请求失败：\n${response.body},\ncode:${response.statusCode}",
-        // );
+        AppLog.e(
+          "${response.request?.url} \n请求失败：\n${response.bodyString},\ncode:${response.statusCode},${response.statusText}",
+        );
         if (toastError) {
           ToastUtil.showToast(msg: "httpError".tr);
         }
         return BaseModel(
           code: response.statusCode ?? -1,
-          message: "httpError".tr,
+          message: response.statusText ?? "httpError".tr,
         );
       }
     } catch (e) {
@@ -144,7 +144,7 @@ class BaseApi extends GetConnect {
       if (cancelFunc != null) {
         cancelFunc();
       }
-      return BaseModel(code: -1, message: "httpError".tr);
+      return BaseModel(code: -1, message:  e.toString());
     }
   }
 }

@@ -2216,7 +2216,7 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   showItem(MediaItem item) {
     // AppLog.e("showItem==$item");
-    AppLog.i("add mediaItem duration:${item.duration?.inSeconds}, title:${item.title}");
+    // AppLog.i("add mediaItem duration:${item.duration?.inSeconds}, title:${item.title}");
 
     mediaItem.add(item);
 
@@ -2284,7 +2284,7 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   }
 
   _updateState({bool isLoading = false}) async {
-    AppLog.i("updateState:${_player?.value.position.inSeconds}s/${_player?.value.duration.inSeconds}s，isPlaying:${_player?.value.isPlaying}, isLoading:$isLoading");
+    // AppLog.i("updateState:${_player?.value.position.inSeconds}s/${_player?.value.duration.inSeconds}s，isPlaying:${_player?.value.isPlaying}, isLoading:$isLoading");
     playbackState.add(
       PlaybackState(
         controls: [
