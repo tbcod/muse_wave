@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:muse_wave/api/api_main.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ad/topon_util.dart';
 
@@ -69,6 +70,9 @@ class UDebugPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
+            Text('${controller.getAd(ApiMain.instance.playJsonData)}'),
+            const SizedBox(height: 12),
+            Text('ad json:'),
             Text('${controller.getAd(AdUtils.instance.adJson)}'),
           ],
         ),

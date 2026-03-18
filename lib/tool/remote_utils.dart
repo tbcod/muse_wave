@@ -17,6 +17,8 @@ const String museSongRecommonedKey = "museSongRecommonedKeys";
 
 const String mmPageNativeAdClickbait = "mmPageNativeAdClickbait";
 
+const String mmHomeWebParams = "mmHomeWebParams";
+
 class RemoteUtil {
   static RemoteUtil shareInstance = RemoteUtil._();
 
@@ -33,6 +35,8 @@ class RemoteUtil {
   String _listenNowRecom = "";
 
   String _openAdStr = "";
+
+  String _homeWebParams = "";
 
   bool isInitSuc = false;
 
@@ -59,6 +63,8 @@ class RemoteUtil {
     _listenNowRecom = museSp.getString(museSongRecommonedKey) ?? "";
 
     _openAdStr = museSp.getString(mmOpenAd) ?? "";
+
+    _homeWebParams = museSp.getString(mmHomeWebParams) ?? "";
   }
 
   Future<void> initFirebaseRemoteSdk() async {
@@ -130,6 +136,12 @@ class RemoteUtil {
     String openAdStr = FirebaseRemoteConfig.instance.getString("musicmuse_open_ad");
     museSp.setString(mmOpenAd, openAdStr);
     _openAdStr = openAdStr;
+
+    String homeWebParams = FirebaseRemoteConfig.instance.getString("musewave_web_params");
+    if (homeWebParams.isNotEmpty) {
+      museSp.setString(mmHomeWebParams, homeWebParams);
+      _homeWebParams = homeWebParams;
+    }
   }
 
   Map<String, dynamic> get adJson {
@@ -177,5 +189,25 @@ class RemoteUtil {
       return false;
     }
     return true;
+  }
+
+  Map<String, dynamic> get homeWebParams {
+    if (_homeWebParams.isNotEmpty) {
+      try {
+        Map<String, dynamic> config = jsonDecode(_homeWebParams);
+        return config;
+      } catch (e) {
+        AppLog.e("parse home web params error: $e");
+      }
+    }
+    return {
+      "context": {
+        "client": {"clientName": "WEB_REMIX", "clientVersion": "1.20260316.00.00", "platform": "DESKTOP"},
+      },
+      "playbackContext": {
+        "contentPlaybackContext": {"html5Preference": "HTML5_PREF_WANTS", "lactMilliseconds": "23", "signatureTimestamp": 20527, "autoCaptionsDefaultOn": false, "vis": 10},
+        "devicePlaybackCapabilities": {"supportsVp9Encoding": true, "supportXhr": true},
+      },
+    };
   }
 }

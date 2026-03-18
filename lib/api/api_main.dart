@@ -5,6 +5,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/tool/log.dart';
+import 'package:muse_wave/tool/remote_utils.dart';
 import 'package:muse_wave/uinew/main/home/u_play.dart';
 import 'package:muse_wave/uinew/main/u_home.dart';
 
@@ -69,17 +70,31 @@ class ApiMain extends BaseApi {
     // var nowTime = DateTime.now();
     // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
 
-    Map<String, dynamic> body = {
-      "context": _webRemixContext,
-      "browseId": browseId,
-    };
+    Map<String, dynamic> header = _header;
+    Map<String, dynamic> body = {};
+    if(browseId == "FEmusic_home"){
+      body = RemoteUtil.shareInstance.homeWebParams;
+      // body["context"] = _webRemixContext;
+      body["browseId"] = browseId;
+      if (Get.find<Application>().visitorData.isNotEmpty) {
+        body["context"]?["client"]?["visitorData"] = Get.find<Application>().visitorData;
+        body["context"]?["client"]?["gl"] = _gl;
+        body["context"]?["client"]?["hl"] = _hl;
+      }
+      header = {};
+    }else{
+      body = {
+        "context": _webRemixContext,
+        "browseId": browseId,
+      };
+      if (params != null) {
+        body["params"] = params;
+      }
+      if (videoId != null) {
+        body["videoId"] = videoId;
+      }
+    }
 
-    if (params != null) {
-      body["params"] = params;
-    }
-    if (videoId != null) {
-      body["videoId"] = videoId;
-    }
 
     var url = "https://music.youtube.com/youtubei/v1/browse?prettyPrint=false";
 
@@ -89,10 +104,11 @@ class ApiMain extends BaseApi {
       url += "&continuation=$continuation&type=next&itct=$itct";
     }
 
-    var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+
+    var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: header);
     if (result.code == HttpCode.success) {
       //请求成功
-      // AppLog.i("请求首页数据成功: $url, header: $_header , param：$body");
+      AppLog.i("请求首页数据成功: $url, header: $header, param：$body");
 
       if(nextData == null){
         EventUtils.instance.addEvent("source_get");
@@ -305,16 +321,23 @@ class ApiMain extends BaseApi {
     final cnp = _generateRandomId;
     final playlistId = controller.playlistId;
     if (playbackMap[videoId] == null) {
-      Map<String, dynamic> body = {
-        "context": _webRemixContext,
-        "videoId": videoId,
-        "cpn": cnp,
-        "playbackContext": {
-          "contentPlaybackContext": {
-            "html5Preference": "HTML5_PREF_WANTS",
-          }
-        },
-      };
+      // Map<String, dynamic> body = {
+      //   "context": _webRemixContext,
+      //   "videoId": videoId,
+      //   "cpn": cnp,
+      //   "playbackContext": {
+      //     "contentPlaybackContext": {
+      //       "html5Preference": "HTML5_PREF_WANTS",
+      //     }
+      //   },
+      // };
+      Map<String, dynamic> body = RemoteUtil.shareInstance.homeWebParams;
+      body["videoId"] = videoId;
+      body["cpn"] = cnp;
+      body["context"]?["client"]?["visitorData"] = Get.find<Application>().visitorData;
+      body["context"]?["client"]?["gl"] = _gl;
+      body["context"]?["client"]?["hl"] = _hl;
+
       if (controller.playlistId.isNotEmpty) {
         var playlistId = controller.playlistId;
         if (controller.playlistId.startsWith("VL")) {
@@ -330,12 +353,14 @@ class ApiMain extends BaseApi {
       final data = result.data;
       final playbackUrl = data?["playbackTracking"]?["videostatsPlaybackUrl"]?['baseUrl'];
       final watchTimeUrl = data?["playbackTracking"]?["videostatsWatchtimeUrl"]?['baseUrl'];
-      // AppLog.i("postYoutube player title:${controller.nowData["title"]},videoId:$videoId, url:$url, body:$body, header:$header");
       if (playbackUrl == null || watchTimeUrl == null) {
         final playabilityStatus = data?["playabilityStatus"]?["status"];
         final reason = data?["playabilityStatus"]?["reason"];
+        AppLog.e("postYoutube player title:${controller.nowData["title"]},videoId:$videoId, url:$url, body:$body, header:$header");
         AppLog.e("playabilityStatus:$playabilityStatus,$reason");
         return;
+      }else{
+        // AppLog.i("playabilityStatus:ok");
       }
       playbackMap[videoId] = {"playlistId": playlistId, "playbackUrl": playbackUrl, "watchTimeUrl": watchTimeUrl, "cpn": cnp};
     }
@@ -502,7 +527,8 @@ class ApiMain extends BaseApi {
   }
 
   String get _webRemixVersion {
-    return '1.20250804.03.00';
+    // return '1.20250804.03.00';
+    return '1.20260316.00.00';
   }
 
   String get _generateRandomId {

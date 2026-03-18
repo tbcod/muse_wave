@@ -273,7 +273,7 @@ class AdUtils {
             request: AdRequest(),
             adLoadCallback: AppOpenAdLoadCallback(
               onAdLoaded: (ad) {
-                AppLog.e("admob 成功加载open");
+                // AppLog.e("admob 成功加载open");
                 if (onLoad != null) {
                   onLoad(ad.adUnitId, true, null);
                 }

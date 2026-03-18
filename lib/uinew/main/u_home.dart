@@ -62,13 +62,8 @@ class UserHome extends GetView<UserHomeController> {
               decoration: BoxDecoration(color: Colors.white, border: Border.all(color: const Color(0xffA995FF), width: 1.5.w), borderRadius: BorderRadius.circular(22.w)),
               child: Row(
                 children: [
-                  SizedBox(
-                    width: 16.w,
-                  ),
-                  Text(
-                    "Search for music/artist/playlist".tr,
-                    style: TextStyle(fontSize: 12.w, fontWeight: FontWeight.w400, color: const Color(0xff141414).withOpacity(0.56)),
-                  ),
+                  SizedBox(width: 16.w),
+                  Text("Search for music/artist/playlist".tr, style: TextStyle(fontSize: 12.w, fontWeight: FontWeight.w400, color: const Color(0xff141414).withOpacity(0.56))),
                   const Spacer(),
                   Container(
                     height: 28.w,
@@ -76,94 +71,86 @@ class UserHome extends GetView<UserHomeController> {
                     padding: EdgeInsets.symmetric(vertical: 4.w),
                     margin: EdgeInsets.only(right: 8.w),
                     decoration: BoxDecoration(color: const Color(0xffA995FF), borderRadius: BorderRadius.circular(14.w)),
-                    child: Image.asset(
-                      "assets/oimg/icon_search.png",
-                      width: 20.w,
-                      height: 20.w,
-                    ),
-                  )
+                    child: Image.asset("assets/oimg/icon_search.png", width: 20.w, height: 20.w),
+                  ),
                 ],
               ),
             ),
           ),
         ),
         body: controller.obxView(
-                (state) => EasyRefresh.builder(
-                onRefresh: () async {
-                  // Get.find<Application>().visitorData = "";
-                  await controller.bindYoutubeMusicData(source: "drop_down");
-                  await controller.reloadHistory();
-                },
-                triggerAxis: Axis.vertical,
-                childBuilder: (c, p) {
-                  return Obx(
-                        () => ListView.separated(
-                        physics: p,
-                        padding: EdgeInsets.only(bottom: 100.w, top: 24.w),
-                        itemBuilder: (_, i) {
-                          Map item = controller.netList[i];
-                          List childList = item["list"] ?? [];
+          (state) => EasyRefresh.builder(
+            onRefresh: () async {
+              // Get.find<Application>().visitorData = "";
+              await controller.bindYoutubeMusicData(source: "drop_down");
+              await controller.reloadHistory();
+            },
+            triggerAxis: Axis.vertical,
+            childBuilder: (c, p) {
+              return Obx(
+                () => ListView.separated(
+                  physics: p,
+                  padding: EdgeInsets.only(bottom: 100.w, top: 24.w),
+                  itemBuilder: (_, i) {
+                    Map item = controller.netList[i];
+                    List childList = item["list"] ?? [];
 
-                          if (item.isEmpty || childList.isEmpty) {
-                            return Container();
-                          }
+                    if (item.isEmpty || childList.isEmpty) {
+                      return Container();
+                    }
 
-                          var type = item["type"] ?? "";
+                    var type = item["type"] ?? "";
 
-                          // var moreId = item["moreId"] ?? "";
-                          // AppLog.e("moreid====>$moreId");
+                    // var moreId = item["moreId"] ?? "";
+                    // AppLog.e("moreid====>$moreId");
 
-                          return getBigItem(
-                              type: type,
-                              data: childList,
-                              title: item["title"],
-                              onMoreClick: item["title"] == "Artist".tr && Get.find<Application>().typeSo == "ytm"
-                                  ? () {
+                    return getBigItem(
+                      type: type,
+                      data: childList,
+                      title: item["title"],
+                      onMoreClick:
+                          item["title"] == "Artist".tr && Get.find<Application>().typeSo == "ytm"
+                              ? () {
                                 //跳转到全部歌手
                                 Get.to(const UserMoreArtist());
                               }
-                                  : null);
-                        },
-                        separatorBuilder: (_, i) {
-                          if (i == 2) {
-                            return Container(
-                              margin: EdgeInsets.symmetric(vertical: 8.w, horizontal: 16.w),
-                              child: const MyNativeAdView(adKey: "homenative", adScene: AdScene.home),
-                            );
-                          }
-                          Map item = controller.netList[i];
-                          List childList = item["list"] ?? [];
-                          return SizedBox(
-                            height: item.isEmpty || childList.isEmpty ? 0 : 16.w,
-                          );
-                        },
-                        itemCount: controller.netList.length),
-                  );
-                }), onError: (e) {
-          return Container(
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset(
-                  "assets/oimg/icon_wifi.png",
-                  width: 180.w,
-                  height: 180.w,
+                              : null,
+                    );
+                  },
+                  separatorBuilder: (_, i) {
+                    if (i == 2) {
+                      return Container(margin: EdgeInsets.symmetric(vertical: 8.w, horizontal: 16.w), child: const MyNativeAdView(adKey: "homenative", adScene: AdScene.home));
+                    }
+                    Map item = controller.netList[i];
+                    List childList = item["list"] ?? [];
+                    return SizedBox(height: item.isEmpty || childList.isEmpty ? 0 : 16.w);
+                  },
+                  itemCount: controller.netList.length,
                 ),
-                SizedBox(
-                  height: 8.w,
-                ),
-                Text("No network".tr, style: TextStyle(fontSize: 16.w, color: Colors.black)),
-                ElevatedButton(
+              );
+            },
+          ),
+          onError: (e) {
+            return Container(
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset("assets/oimg/icon_wifi.png", width: 180.w, height: 180.w),
+                  SizedBox(height: 8.w),
+                  Text("No network".tr, style: TextStyle(fontSize: 16.w, color: Colors.black)),
+                  ElevatedButton(
                     onPressed: () {
                       controller.bindYoutubeMusicData(source: "reload");
                     },
-                    child: Text("Reload".tr)),
-              ],
-            ),
-          );
-        }),
+                    child: Text("Reload".tr),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -181,19 +168,7 @@ class UserHome extends GetView<UserHomeController> {
     //   AppLog.e("home view item type:$type, $title, ${data.length}");
     // }
 
-    List types = [
-      "MUSIC_VIDEO_TYPE_OMV",
-      "MUSIC_VIDEO_TYPE_ATV",
-      "MUSIC_VIDEO_TYPE_UGC",
-      "MUSIC_PAGE_TYPE_PLAYLIST",
-      "MUSIC_PAGE_TYPE_ALBUM",
-      "MUSIC_PAGE_TYPE_ARTIST",
-      "MUSIC_PAGE_TYPE_TOP_CHART",
-      "My_Playlist",
-      "LOCKUP_CONTENT_TYPE_ALBUM",
-      "LOCKUP_CONTENT_TYPE_PLAYLIST",
-      "Video"
-    ];
+    List types = ["MUSIC_VIDEO_TYPE_OMV", "MUSIC_VIDEO_TYPE_ATV", "MUSIC_VIDEO_TYPE_UGC", "MUSIC_PAGE_TYPE_PLAYLIST", "MUSIC_PAGE_TYPE_ALBUM", "MUSIC_PAGE_TYPE_ARTIST", "MUSIC_PAGE_TYPE_TOP_CHART", "My_Playlist", "LOCKUP_CONTENT_TYPE_ALBUM", "LOCKUP_CONTENT_TYPE_PLAYLIST", "Video"];
     if (!types.contains(type)) return Container();
 
     return Column(
@@ -203,48 +178,28 @@ class UserHome extends GetView<UserHomeController> {
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           child: Row(
             children: [
-              Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold, letterSpacing: -0.5),
-                  )),
+              Expanded(child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold, letterSpacing: -0.5))),
               // Spacer(),
               onMoreClick != null
                   ? InkWell(
-                onTap: () {
-                  onMoreClick();
-                  EventUtils.instance.addEvent("home_artist", data: {"click_type": "more"});
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      "More".tr,
-                      style: TextStyle(fontSize: 12.w, color: const Color(0xffa6a6a6)),
-                    ),
-                    SizedBox(
-                      width: 4.w,
-                    ),
-                    Image.asset(
-                      "assets/oimg/icon_more_right.png",
-                      width: 12.w,
-                      height: 12.w,
-                    )
-                  ],
-                ),
-              )
-                  : Container()
+                    onTap: () {
+                      onMoreClick();
+                      EventUtils.instance.addEvent("home_artist", data: {"click_type": "more"});
+                    },
+                    child: Row(children: [Text("More".tr, style: TextStyle(fontSize: 12.w, color: const Color(0xffa6a6a6))), SizedBox(width: 4.w), Image.asset("assets/oimg/icon_more_right.png", width: 12.w, height: 12.w)]),
+                  )
+                  : Container(),
             ],
           ),
         ),
         SizedBox(height: 10.w),
-        Builder(builder: (c) {
-          if (type == "MUSIC_VIDEO_TYPE_OMV") {
-            //大的视频音乐
-            return Container(
-              height: 185.w,
-              child: ListView.separated(
+        Builder(
+          builder: (c) {
+            if (type == "MUSIC_VIDEO_TYPE_OMV") {
+              //大的视频音乐
+              return Container(
+                height: 185.w,
+                child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_, i) {
@@ -265,45 +220,19 @@ class UserHome extends GetView<UserHomeController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                  width: 248.w,
-                                  height: 140.w,
-                                  clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                                  child: Stack(
-                                    children: [
-                                      Positioned.fill(
-                                        child: NetImageView(
-                                          imgUrl: childItem["cover"] ?? "",
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      isCheck
-                                          ? Positioned(
-                                          left: 6.w,
-                                          top: 6.w,
-                                          child: Image.asset(
-                                            "assets/oimg/icon_s_v_play.png",
-                                            width: 20.w,
-                                            height: 14.w,
-                                          ))
-                                          : Center(
-                                        child: Image.asset(
-                                          "assets/oimg/icon_c_play.png",
-                                          width: 51.w,
-                                          height: 51.w,
-                                        ),
-                                      )
-                                    ],
-                                  )),
-                              SizedBox(
-                                height: 4.w,
+                                width: 248.w,
+                                height: 140.w,
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                                child: Stack(
+                                  children: [
+                                    Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover)),
+                                    isCheck ? Positioned(left: 6.w, top: 6.w, child: Image.asset("assets/oimg/icon_s_v_play.png", width: 20.w, height: 14.w)) : Center(child: Image.asset("assets/oimg/icon_c_play.png", width: 51.w, height: 51.w)),
+                                  ],
+                                ),
                               ),
-                              Text(
-                                childItem["title"],
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(color: isCheck ? const Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
-                              ),
+                              SizedBox(height: 4.w),
+                              Text(childItem["title"], maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: isCheck ? const Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500)),
                               // Text(
                               //   childItem["subtitle"],
                               //   maxLines: 1,
@@ -318,18 +247,17 @@ class UserHome extends GetView<UserHomeController> {
                     });
                   },
                   separatorBuilder: (_, i) {
-                    return SizedBox(
-                      width: 12.w,
-                    );
+                    return SizedBox(width: 12.w);
                   },
-                  itemCount: data.length),
-            );
-          } else if (type == "MUSIC_VIDEO_TYPE_ATV" || type == "MUSIC_VIDEO_TYPE_UGC") {
-            //小的歌曲列表
-            var isRec = title == "Listen now";
-            return Container(
-              height: 226.w,
-              child: ListView.separated(
+                  itemCount: data.length,
+                ),
+              );
+            } else if (type == "MUSIC_VIDEO_TYPE_ATV" || type == "MUSIC_VIDEO_TYPE_UGC") {
+              //小的歌曲列表
+              var isRec = title == "Listen now";
+              return Container(
+                height: 226.w,
+                child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_, i) {
@@ -337,98 +265,66 @@ class UserHome extends GetView<UserHomeController> {
                     List subList = data.sublist(i * 3, i * 3 + 3);
 
                     return Container(
-                        width: 310.w,
-                        height: 218.w,
-                        clipBehavior: Clip.hardEdge,
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: [
-                              Color(0xffE9E9FF),
-                              Color(0xffffffff),
-                            ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-                            borderRadius: BorderRadius.only(topLeft: Radius.circular(12.w), bottomLeft: Radius.circular(12.w), bottomRight: Radius.circular(12.w), topRight: Radius.circular(24.w))),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: subList.map((subItem) {
-                            return InkWell(
-                              onTap: () {
-                                if (isRec) {
-                                  EventUtils.instance.addEvent("home_song", data: {"click_type": "play"});
-                                } else {
-                                  EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
-                                }
+                      width: 310.w,
+                      height: 218.w,
+                      clipBehavior: Clip.hardEdge,
+                      padding: EdgeInsets.all(8.w),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(colors: [Color(0xffE9E9FF), Color(0xffffffff)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(12.w), bottomLeft: Radius.circular(12.w), bottomRight: Radius.circular(12.w), topRight: Radius.circular(24.w)),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children:
+                            subList.map((subItem) {
+                              return InkWell(
+                                onTap: () {
+                                  if (isRec) {
+                                    EventUtils.instance.addEvent("home_song", data: {"click_type": "play"});
+                                  } else {
+                                    EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
+                                  }
 
-                                // AppLog.e(subItem);
-                                var plist = List.of(data);
-                                var pItem = Map.of(subItem);
+                                  // AppLog.e(subItem);
+                                  var plist = List.of(data);
+                                  var pItem = Map.of(subItem);
 
-                                Get.find<UserPlayInfoController>().setDataAndPlayItem([pItem], pItem, clickType: "home", loadNextData: true);
+                                  Get.find<UserPlayInfoController>().setDataAndPlayItem([pItem], pItem, clickType: "home", loadNextData: true);
 
-                                // Get.to(UserPlayInfo());
-                              },
-                              child: Obx(
-                                    () {
+                                  // Get.to(UserPlayInfo());
+                                },
+                                child: Obx(() {
                                   var isCheck = subItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                                   return Container(
                                     padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.w),
                                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w), color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent),
                                     child: Row(
                                       children: [
-                                        Container(
-                                          width: 54.w,
-                                          height: 54.w,
-                                          clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                                          child: NetImageView(
-                                            imgUrl: subItem["cover"],
-                                            fit: BoxFit.cover,
+                                        Container(width: 54.w, height: 54.w, clipBehavior: Clip.hardEdge, decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)), child: NetImageView(imgUrl: subItem["cover"], fit: BoxFit.cover)),
+                                        SizedBox(width: 16.w),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(subItem["title"], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: isCheck ? const Color(0xff8569FF) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500)),
+                                              SizedBox(height: 10.w),
+                                              Row(
+                                                children: [
+                                                  Obx(() {
+                                                    var isLike = LikeUtil.instance.allVideoMap.containsKey(subItem["videoId"]);
+                                                    if (isLike) {
+                                                      return Container(width: 16.w, height: 16.w, margin: EdgeInsets.only(right: 4.w), child: Image.asset("assets/oimg/icon_like_on.png"));
+                                                    }
+
+                                                    return Container();
+                                                  }),
+                                                  Expanded(child: Text(subItem["subtitle"] ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.w, fontWeight: FontWeight.w400, color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75)))),
+                                                ],
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        SizedBox(
-                                          width: 16.w,
-                                        ),
-                                        Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  subItem["title"],
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(color: isCheck ? const Color(0xff8569FF) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
-                                                ),
-                                                SizedBox(
-                                                  height: 10.w,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Obx(() {
-                                                      var isLike = LikeUtil.instance.allVideoMap.containsKey(subItem["videoId"]);
-                                                      if (isLike) {
-                                                        return Container(
-                                                          width: 16.w,
-                                                          height: 16.w,
-                                                          margin: EdgeInsets.only(right: 4.w),
-                                                          child: Image.asset("assets/oimg/icon_like_on.png"),
-                                                        );
-                                                      }
-
-                                                      return Container();
-                                                    }),
-                                                    Expanded(
-                                                        child: Text(
-                                                          subItem["subtitle"] ?? "",
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(fontSize: 12.w, fontWeight: FontWeight.w400, color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75)),
-                                                        ))
-                                                  ],
-                                                ),
-                                              ],
-                                            )),
-                                        SizedBox(
-                                          width: 12.w,
-                                        ),
+                                        SizedBox(width: 12.w),
                                         if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off")
                                           Obx(() {
                                             //获取下载状态
@@ -454,15 +350,11 @@ class UserHome extends GetView<UserHomeController> {
                                                     alignment: Alignment.center,
                                                     padding: EdgeInsets.all(6.w),
                                                     child: Container(
-                                                        width: 20.w,
-                                                        height: 20.w,
-                                                        // padding: EdgeInsets.all(5.w),
-                                                        child: CircularProgressIndicator(
-                                                          value: progress,
-                                                          strokeWidth: 1.5,
-                                                          backgroundColor: const Color(0xffA995FF).withOpacity(0.35),
-                                                          color: const Color(0xffA995FF),
-                                                        )),
+                                                      width: 20.w,
+                                                      height: 20.w,
+                                                      // padding: EdgeInsets.all(5.w),
+                                                      child: CircularProgressIndicator(value: progress, strokeWidth: 1.5, backgroundColor: const Color(0xffA995FF).withOpacity(0.35), color: const Color(0xffA995FF)),
+                                                    ),
                                                   ),
                                                 );
                                               } else if (state == 2) {
@@ -470,15 +362,7 @@ class UserHome extends GetView<UserHomeController> {
                                                   onTap: () {
                                                     DownloadUtils.instance.remove(videoId, state: state);
                                                   },
-                                                  child: Container(
-                                                    height: 50.w,
-                                                    padding: EdgeInsets.all(6.w),
-                                                    child: Image.asset(
-                                                      "assets/oimg/icon_download_ok.png",
-                                                      width: 20.w,
-                                                      height: 20.w,
-                                                    ),
-                                                  ),
+                                                  child: Container(height: 50.w, padding: EdgeInsets.all(6.w), child: Image.asset("assets/oimg/icon_download_ok.png", width: 20.w, height: 20.w)),
                                                 );
                                               }
                                             }
@@ -493,15 +377,7 @@ class UserHome extends GetView<UserHomeController> {
 
                                                 DownloadUtils.instance.download(videoId, subItem, clickType: "home");
                                               },
-                                              child: Container(
-                                                height: 50.w,
-                                                padding: EdgeInsets.all(6.w),
-                                                child: Image.asset(
-                                                  "assets/oimg/icon_download_gray.png",
-                                                  width: 20.w,
-                                                  height: 20.w,
-                                                ),
-                                              ),
+                                              child: Container(height: 50.w, padding: EdgeInsets.all(6.w), child: Image.asset("assets/oimg/icon_download_gray.png", width: 20.w, height: 20.w)),
                                             );
                                           }),
                                         // SizedBox(
@@ -511,37 +387,28 @@ class UserHome extends GetView<UserHomeController> {
                                           onTap: () {
                                             MoreSheetUtil.instance.showVideoMoreSheet(subItem, clickType: "home");
                                           },
-                                          child: Container(
-                                            height: 50.w,
-                                            padding: EdgeInsets.all(6.w),
-                                            child: Container(
-                                              width: 20.w,
-                                              height: 20.w,
-                                              child: Image.asset("assets/oimg/icon_more.png"),
-                                            ),
-                                          ),
-                                        )
+                                          child: Container(height: 50.w, padding: EdgeInsets.all(6.w), child: Container(width: 20.w, height: 20.w, child: Image.asset("assets/oimg/icon_more.png"))),
+                                        ),
                                       ],
                                     ),
                                   );
-                                },
-                              ),
-                            );
-                          }).toList(),
-                        ));
-                  },
-                  separatorBuilder: (_, i) {
-                    return SizedBox(
-                      width: 16.w,
+                                }),
+                              );
+                            }).toList(),
+                      ),
                     );
                   },
-                  itemCount: data.length ~/ 3),
-            );
-          } else if (type == "MUSIC_PAGE_TYPE_PLAYLIST") {
-            //歌单
-            return Container(
-              height: 185.w,
-              child: ListView.separated(
+                  separatorBuilder: (_, i) {
+                    return SizedBox(width: 16.w);
+                  },
+                  itemCount: data.length ~/ 3,
+                ),
+              );
+            } else if (type == "MUSIC_PAGE_TYPE_PLAYLIST") {
+              //歌单
+              return Container(
+                height: 185.w,
+                child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_, i) {
@@ -559,47 +426,25 @@ class UserHome extends GetView<UserHomeController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                                width: 140.w,
-                                height: 140.w,
-                                clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                                child: Stack(
-                                  children: [
-                                    Positioned.fill(
-                                      child: NetImageView(
-                                        imgUrl: childItem["cover"] ?? "",
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  ],
-                                )),
-                            SizedBox(
-                              height: 4.w,
-                            ),
-                            Text(
-                              childItem["title"],
-                              style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            )
+                            Container(width: 140.w, height: 140.w, clipBehavior: Clip.hardEdge, decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)), child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))])),
+                            SizedBox(height: 4.w),
+                            Text(childItem["title"], style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ),
                     );
                   },
                   separatorBuilder: (_, i) {
-                    return SizedBox(
-                      width: 12.w,
-                    );
+                    return SizedBox(width: 12.w);
                   },
-                  itemCount: data.length),
-            );
-          } else if (type == "MUSIC_PAGE_TYPE_ALBUM") {
-            //专辑
-            return Container(
-              height: 185.w,
-              child: ListView.separated(
+                  itemCount: data.length,
+                ),
+              );
+            } else if (type == "MUSIC_PAGE_TYPE_ALBUM") {
+              //专辑
+              return Container(
+                height: 185.w,
+                child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_, i) {
@@ -616,47 +461,25 @@ class UserHome extends GetView<UserHomeController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                                width: 140.w,
-                                height: 140.w,
-                                clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                                child: Stack(
-                                  children: [
-                                    Positioned.fill(
-                                      child: NetImageView(
-                                        imgUrl: childItem["cover"] ?? "",
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  ],
-                                )),
-                            SizedBox(
-                              height: 4.w,
-                            ),
-                            Text(
-                              "${childItem["title"]}",
-                              style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            )
+                            Container(width: 140.w, height: 140.w, clipBehavior: Clip.hardEdge, decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)), child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))])),
+                            SizedBox(height: 4.w),
+                            Text("${childItem["title"]}", style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ),
                     );
                   },
                   separatorBuilder: (_, i) {
-                    return SizedBox(
-                      width: 12.w,
-                    );
+                    return SizedBox(width: 12.w);
                   },
-                  itemCount: data.length),
-            );
-          } else if (type == "MUSIC_PAGE_TYPE_ARTIST") {
-            //歌手
-            return Container(
-              height: 160.w,
-              child: ListView.separated(
+                  itemCount: data.length,
+                ),
+              );
+            } else if (type == "MUSIC_PAGE_TYPE_ARTIST") {
+              //歌手
+              return Container(
+                height: 160.w,
+                child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_, i) {
@@ -680,7 +503,7 @@ class UserHome extends GetView<UserHomeController> {
                           return;
                         }
 
-                        Get.to(()=>UserArtistInfo(), arguments: childItem);
+                        Get.to(() => UserArtistInfo(), arguments: childItem);
                       },
                       child: Container(
                         width: 100.w,
@@ -689,54 +512,26 @@ class UserHome extends GetView<UserHomeController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(
-                              height: 20.w,
-                            ),
-                            Container(
-                                width: 68.w,
-                                height: 68.w,
-                                clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(34.w)),
-                                child: Stack(
-                                  children: [
-                                    Positioned.fill(
-                                      child: NetImageView(
-                                        imgUrl: childItem["cover"] ?? "",
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  ],
-                                )),
-                            SizedBox(
-                              height: 12.w,
-                            ),
-                            Container(
-                              width: 68.w,
-                              child: Text(
-                                childItem["title"],
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
-                              ),
-                            )
+                            SizedBox(height: 20.w),
+                            Container(width: 68.w, height: 68.w, clipBehavior: Clip.hardEdge, decoration: BoxDecoration(borderRadius: BorderRadius.circular(34.w)), child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))])),
+                            SizedBox(height: 12.w),
+                            Container(width: 68.w, child: Text(childItem["title"], maxLines: 2, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500))),
                           ],
                         ),
                       ),
                     );
                   },
                   separatorBuilder: (_, i) {
-                    return SizedBox(
-                      width: 12.w,
-                    );
+                    return SizedBox(width: 12.w);
                   },
-                  itemCount: data.length),
-            );
-          } else if (type == "MUSIC_PAGE_TYPE_TOP_CHART") {
-            //自定义排行榜
-            return Container(
-              height: 185.w,
-              child: ListView.separated(
+                  itemCount: data.length,
+                ),
+              );
+            } else if (type == "MUSIC_PAGE_TYPE_TOP_CHART") {
+              //自定义排行榜
+              return Container(
+                height: 185.w,
+                child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_, i) {
@@ -760,49 +555,27 @@ class UserHome extends GetView<UserHomeController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                                width: 140.w,
-                                height: 140.w,
-                                clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                                child: Stack(
-                                  children: [
-                                    Positioned.fill(
-                                      child: NetImageView(
-                                        imgUrl: childItem["cover"] ?? "",
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  ],
-                                )),
-                            SizedBox(
-                              height: 4.w,
-                            ),
-                            Text(
-                              childItem["title"],
-                              style: TextStyle(height: 1.2, fontSize: 14.w, fontWeight: FontWeight.w500),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            )
+                            Container(width: 140.w, height: 140.w, clipBehavior: Clip.hardEdge, decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)), child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))])),
+                            SizedBox(height: 4.w),
+                            Text(childItem["title"], style: TextStyle(height: 1.2, fontSize: 14.w, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ),
                     );
                   },
                   separatorBuilder: (_, i) {
-                    return SizedBox(
-                      width: 12.w,
-                    );
+                    return SizedBox(width: 12.w);
                   },
-                  itemCount: data.length),
-            );
-          } else if (type == "MUSIC_PAGE_TYPE_MYHISTORY") {
-            //自定义歌曲
-          } else if (type == "My_Playlist") {
-            //自定义歌单
-            return Container(
-              height: 130.w,
-              child: ListView.separated(
+                  itemCount: data.length,
+                ),
+              );
+            } else if (type == "MUSIC_PAGE_TYPE_MYHISTORY") {
+              //自定义歌曲
+            } else if (type == "My_Playlist") {
+              //自定义歌单
+              return Container(
+                height: 130.w,
+                child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_, i) {
@@ -815,9 +588,7 @@ class UserHome extends GetView<UserHomeController> {
                           //我喜欢的
                           EventUtils.instance.addEvent("home_recom", data: {"click_type": "collection"});
 
-                          Get.to(const UserLikeSong(
-                            isFormHome: true,
-                          ));
+                          Get.to(const UserLikeSong(isFormHome: true));
                         } else if (childType == -2) {
                           //我下载的
                           // throw Exception("这是我手动测试的异常2");
@@ -827,9 +598,7 @@ class UserHome extends GetView<UserHomeController> {
                           // await dio.get('https://this-domain-does-not-exist.example.com');
                           // FirebaseCrashlytics.instance.crash();
                           EventUtils.instance.addEvent("home_recom", data: {"click_type": "offline"});
-                          Get.to(const UserDownloadSong(
-                            isFormHome: true,
-                          ));
+                          Get.to(const UserDownloadSong(isFormHome: true));
                         } else {
                           //本地和网络歌单
                           EventUtils.instance.addEvent("home_recom", data: {"click_type": "details"});
@@ -855,56 +624,40 @@ class UserHome extends GetView<UserHomeController> {
                               height: 88.w,
                               clipBehavior: Clip.hardEdge,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w)),
-                              child: Builder(builder: (childC) {
-                                if (childType == -1 || childType == -2) {
-                                  return Image.asset(
-                                    childItem["icon"],
-                                    fit: BoxFit.cover,
-                                  );
-                                } else {
-                                  return NetImageView(
-                                    imgUrl: childItem["cover"],
-                                    fit: BoxFit.cover,
-                                    errorAsset: Assets.oimgIconDItem,
-                                  );
-                                }
-                              }),
+                              child: Builder(
+                                builder: (childC) {
+                                  if (childType == -1 || childType == -2) {
+                                    return Image.asset(childItem["icon"], fit: BoxFit.cover);
+                                  } else {
+                                    return NetImageView(imgUrl: childItem["cover"], fit: BoxFit.cover, errorAsset: Assets.oimgIconDItem);
+                                  }
+                                },
+                              ),
                             ),
-                            SizedBox(
-                              height: 5.w,
-                            ),
+                            SizedBox(height: 5.w),
                             // CachedNetworkImage(
                             //   imageUrl: "123",
                             //   fit: BoxFit.cover,
                             //   width: 10,
                             //   height: 1000,
                             // ),
-                            Container(
-                              width: 88.w,
-                              child: Text(
-                                childItem["title"],
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
-                              ),
-                            )
+                            Container(width: 88.w, child: Text(childItem["title"], maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500))),
                           ],
                         ),
                       ),
                     );
                   },
                   separatorBuilder: (_, i) {
-                    return SizedBox(
-                      width: 12.w,
-                    );
+                    return SizedBox(width: 12.w);
                   },
-                  itemCount: data.length),
-            );
-          } else if (type == "LOCKUP_CONTENT_TYPE_ALBUM" || type == "LOCKUP_CONTENT_TYPE_PLAYLIST") {
-            //youtube的歌单
-            return Container(
-              height: 185.w,
-              child: ListView.separated(
+                  itemCount: data.length,
+                ),
+              );
+            } else if (type == "LOCKUP_CONTENT_TYPE_ALBUM" || type == "LOCKUP_CONTENT_TYPE_PLAYLIST") {
+              //youtube的歌单
+              return Container(
+                height: 185.w,
+                child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_, i) {
@@ -924,47 +677,25 @@ class UserHome extends GetView<UserHomeController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                                width: 140.w,
-                                height: 140.w,
-                                clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                                child: Stack(
-                                  children: [
-                                    Positioned.fill(
-                                      child: NetImageView(
-                                        imgUrl: childItem["cover"] ?? "",
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  ],
-                                )),
-                            SizedBox(
-                              height: 4.w,
-                            ),
-                            Text(
-                              childItem["title"],
-                              style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            )
+                            Container(width: 140.w, height: 140.w, clipBehavior: Clip.hardEdge, decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)), child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))])),
+                            SizedBox(height: 4.w),
+                            Text(childItem["title"], style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ),
                     );
                   },
                   separatorBuilder: (_, i) {
-                    return SizedBox(
-                      width: 12.w,
-                    );
+                    return SizedBox(width: 12.w);
                   },
-                  itemCount: data.length),
-            );
-          } else if (type == "Video") {
-            //youtube的视频列表
-            return Container(
-              height: 185.w,
-              child: ListView.separated(
+                  itemCount: data.length,
+                ),
+              );
+            } else if (type == "Video") {
+              //youtube的视频列表
+              return Container(
+                height: 185.w,
+                child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_, i) {
@@ -985,45 +716,19 @@ class UserHome extends GetView<UserHomeController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                  width: 248.w,
-                                  height: 140.w,
-                                  clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                                  child: Stack(
-                                    children: [
-                                      Positioned.fill(
-                                        child: NetImageView(
-                                          imgUrl: childItem["cover"] ?? "",
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      isCheck
-                                          ? Positioned(
-                                          left: 6.w,
-                                          top: 6.w,
-                                          child: Image.asset(
-                                            "assets/oimg/icon_s_v_play.png",
-                                            width: 20.w,
-                                            height: 14.w,
-                                          ))
-                                          : Center(
-                                        child: Image.asset(
-                                          "assets/oimg/icon_c_play.png",
-                                          width: 51.w,
-                                          height: 51.w,
-                                        ),
-                                      )
-                                    ],
-                                  )),
-                              SizedBox(
-                                height: 4.w,
+                                width: 248.w,
+                                height: 140.w,
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                                child: Stack(
+                                  children: [
+                                    Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover)),
+                                    isCheck ? Positioned(left: 6.w, top: 6.w, child: Image.asset("assets/oimg/icon_s_v_play.png", width: 20.w, height: 14.w)) : Center(child: Image.asset("assets/oimg/icon_c_play.png", width: 51.w, height: 51.w)),
+                                  ],
+                                ),
                               ),
-                              Text(
-                                childItem["title"],
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(color: isCheck ? const Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
-                              ),
+                              SizedBox(height: 4.w),
+                              Text(childItem["title"], maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: isCheck ? const Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500)),
                               // Text(
                               //   childItem["subtitle"],
                               //   maxLines: 1,
@@ -1038,47 +743,37 @@ class UserHome extends GetView<UserHomeController> {
                     });
                   },
                   separatorBuilder: (_, i) {
-                    return SizedBox(
-                      width: 12.w,
-                    );
+                    return SizedBox(width: 12.w);
                   },
-                  itemCount: data.length),
-            );
-          }
+                  itemCount: data.length,
+                ),
+              );
+            }
 
-          return Container(
-            height: 0,
-            color: Colors.red,
-          );
-          return Container(
-            height: 200.w,
-            child: ListView.separated(
+            return Container(height: 0, color: Colors.red);
+            return Container(
+              height: 200.w,
+              child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (_, i) {
                   var childItem = data[i];
 
                   return Column(
                     children: [
-                      Container(
-                        width: 100.w,
-                        height: 100.w,
-                        child: NetImageView(
-                          imgUrl: childItem["cover"] ?? "",
-                        ),
-                      ),
+                      Container(width: 100.w, height: 100.w, child: NetImageView(imgUrl: childItem["cover"] ?? "")),
                       // Text(childItem["title"]),
                       Text(childItem["subtitle"]),
                     ],
                   );
                 },
                 separatorBuilder: (_, i) {
-                  return SizedBox(
-                    width: 10.w,
-                  );
+                  return SizedBox(width: 10.w);
                 },
-                itemCount: data.length),
-          );
-        })
+                itemCount: data.length,
+              ),
+            );
+          },
+        ),
       ],
     );
   }
@@ -1096,6 +791,12 @@ class UserHomeController extends GetxController with StateMixin {
     super.onInit();
     // await DownloadUtils.instance.initData();
 
+
+    if (museSp.getString("visitorDataKey") != null) {
+      Get.find<Application>().visitorData = museSp.getString("visitorDataKey")!;
+    }
+    // SharedPreferences sp = await SharedPreferences.getInstance();
+
     bindLocalData();
     // bindYoutubeMusicData();
   }
@@ -1109,7 +810,6 @@ class UserHomeController extends GetxController with StateMixin {
 
     MyDialogUtils.instance.showOtherAppDialog();
     AdUtils.instance.loadPageNativeAd(AdPosition.nvpage_full.name, adSense: AdScene.play);
-
   }
 
   var nextData = {};
@@ -1148,10 +848,10 @@ class UserHomeController extends GetxController with StateMixin {
     //}
 
     String visitorData = result.data["responseContext"]?["visitorData"] ?? "";
-    if (visitorData.isNotEmpty) {
+    if (visitorData.isNotEmpty && Get.find<Application>().visitorData.isEmpty) {
       Get.find<Application>().visitorData = visitorData;
       // SharedPreferences sp = await SharedPreferences.getInstance();
-      museSp.setString("visitorData", visitorData);
+      museSp.setString("visitorDataKey", visitorData);
     }
 
     try {
@@ -1173,9 +873,7 @@ class UserHomeController extends GetxController with StateMixin {
         List childList = item["musicCarouselShelfRenderer"]?["contents"] ?? [];
 
         //more id
-        moreId = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]?["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["watchPlaylistEndpoint"]
-        ?["playlistId"] ??
-            "";
+        moreId = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]?["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["watchPlaylistEndpoint"]?["playlistId"] ?? "";
 
         List realChildList = [];
 
@@ -1188,9 +886,7 @@ class UserHomeController extends GetxController with StateMixin {
           if (childItem.containsKey("musicResponsiveListItemRenderer")) {
             //音乐
             List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
-            var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]
-            ["watchEndpointMusicConfig"]["musicVideoType"] ??
-                "";
+            var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"] ?? "";
 
             type = musicType;
 
@@ -1212,9 +908,7 @@ class UserHomeController extends GetxController with StateMixin {
           } else if (childItem.containsKey("musicTwoRowItemRenderer")) {
             //歌单
             //歌单、专辑、歌手
-            var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]["browseEndpointContextSupportedConfigs"]
-            ?["browseEndpointContextMusicConfig"]?["pageType"] ??
-                "";
+            var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"] ?? "";
             type = childItemType;
 
             //标题
@@ -1348,9 +1042,7 @@ class UserHomeController extends GetxController with StateMixin {
             //音乐
             List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
             if (flexColumns.isEmpty) continue;
-            var musicType = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]?["text"]?["runs"][0]["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]
-            ?["watchEndpointMusicConfig"]?["musicVideoType"] ??
-                "";
+            var musicType = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]?["text"]?["runs"][0]["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]?["musicVideoType"] ?? "";
 
             type = musicType;
 
@@ -1383,9 +1075,7 @@ class UserHomeController extends GetxController with StateMixin {
             try {
               // List runs = childItem["musicTwoRowItemRenderer"]["title"]["runs"] ?? [];
               // if (runs.isEmpty) continue;
-              var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]["browseEndpointContextSupportedConfigs"]
-              ?["browseEndpointContextMusicConfig"]?["pageType"] ??
-                  "";
+              var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"] ?? "";
 
               type = childItemType;
 
@@ -1410,8 +1100,7 @@ class UserHomeController extends GetxController with StateMixin {
               // AppLog.e("出错的item");
               // AppLog.e(childItem);
 
-              var childItemType =
-                  childItem["musicTwoRowItemRenderer"]?["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]?["musicVideoType"] ?? "";
+              var childItemType = childItem["musicTwoRowItemRenderer"]?["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]?["musicVideoType"] ?? "";
 
               type = childItemType;
 
@@ -1476,9 +1165,10 @@ class UserHomeController extends GetxController with StateMixin {
 
     //获取所有下载完成歌曲
     var allDList = DownloadUtils.instance.allDownLoadingData.values;
-    var downloadedList = allDList.where((e) {
-      return e["state"] == 2;
-    }).toList();
+    var downloadedList =
+        allDList.where((e) {
+          return e["state"] == 2;
+        }).toList();
     var hasDownloadList = downloadedList.isNotEmpty;
     // if (FirebaseRemoteConfig.instance
     //     .getString(
@@ -1501,11 +1191,10 @@ class UserHomeController extends GetxController with StateMixin {
       return bDate.compareTo(aDate);
     });
 
-    List homePlaylist = List.of(oldList)
-      ..removeWhere((e) {
-        List childList = e["list"] ?? [];
-        return childList.isEmpty && e["type"] != 1;
-      });
+    List homePlaylist = List.of(oldList)..removeWhere((e) {
+      List childList = e["list"] ?? [];
+      return childList.isEmpty && e["type"] != 1;
+    });
 
     //添加历史歌单
     myPlaylist.addAll(homePlaylist);
@@ -1621,7 +1310,7 @@ class UserHomeController extends GetxController with StateMixin {
     BaseModel result = await ApiMain.instance.getYoutubeData("UC-9-kyTW8ZkZNDHQJ6FgpwQ");
 
     try {
-      Get.find<Application>().visitorData = result.data["responseContext"]?["visitorData"] ?? "";
+      // Get.find<Application>().visitorData = result.data["responseContext"]?["visitorData"] ?? "";
 
       List oldList = result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]?["sectionListRenderer"]?["contents"] ?? [];
       if (oldList.isEmpty) {
@@ -1670,13 +1359,7 @@ List listenNowListData() {
   List newList = [];
   List list = RemoteUtil.shareInstance.listenNowRecommend;
   for (Map obj in list) {
-    Map map = {
-      "title": obj["muse_name"],
-      "subtitle": obj["muse_artist"],
-      "videoId": obj["muse_song_id"],
-      "cover": "https://i.ytimg.com/vi/${obj["muse_song_id"]}/sddefault.jpg",
-      "type": "MUSIC_VIDEO_TYPE_ATV"
-    };
+    Map map = {"title": obj["muse_name"], "subtitle": obj["muse_artist"], "videoId": obj["muse_song_id"], "cover": "https://i.ytimg.com/vi/${obj["muse_song_id"]}/sddefault.jpg", "type": "MUSIC_VIDEO_TYPE_ATV"};
     newList.add(map);
   }
   return newList;
