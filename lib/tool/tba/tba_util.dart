@@ -1,11 +1,11 @@
 import 'package:android_play_install_referrer/android_play_install_referrer.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/static/db_key.dart';
 import 'package:muse_wave/tool/adjust_util.dart';
 import 'package:muse_wave/tool/bus.dart';
+import 'package:muse_wave/tool/native_utils.dart';
 import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:muse_wave/tool/tba/tba_and.dart';
 
@@ -133,14 +133,16 @@ class TbaUtils {
       AdjustUtil.instance.addRevenueEvent(ad_source, amount: amount, network: ad_network, placement: adPosName);
       AdjustUtil.instance.addPurchaseEvent(name: "ad_impression_and", amount: amount);
 
-      FacebookAppEvents().logEvent(name: "ad_impression_revenue", valueToSum: amount);
-      FacebookAppEvents().logEvent(
-        name: FacebookAppEvents.eventNameAdImpression,
-        parameters: {FacebookAppEvents.paramNameCurrency: "USD", FacebookAppEvents.paramNameAdType: ad_source},
-        valueToSum: amount,
-      );
-      FacebookAppEvents().logPurchase(amount: amount, currency: "USD");
-    } catch (_) {}
+      NativeUtils.instance.logEventFB(name: "ad_impression_revenue", valueToSum: amount);
+      NativeUtils.instance.logEventFB(name: "AdImpression",parameters:  {"fb_currency": "USD", "fb_ad_type": ad_source}, valueToSum: amount);
+      NativeUtils.instance.logPurchaseFB(amount: amount);
+
+      // FacebookAppEvents().logEvent(name: "ad_impression_revenue", valueToSum: amount);
+      // FacebookAppEvents().logEvent(name: FacebookAppEvents.eventNameAdImpression, parameters: {FacebookAppEvents.paramNameCurrency: "USD", FacebookAppEvents.paramNameAdType: ad_source}, valueToSum: amount);
+      // FacebookAppEvents().logPurchase(amount: amount, currency: "USD");
+    } catch (e) {
+      AppLog.e("上报广告价值失败：$e");
+    }
 
     _postAdRevenue001(amount);
 
@@ -182,7 +184,8 @@ class TbaUtils {
       try {
         EventUtils.instance.addEvent("ads_revenue_001", data: {"value": _accumulateAdRevenue, "currency": "USD"});
         AdjustUtil.instance.addPurchaseEvent(amount: _accumulateAdRevenue, name: "ads_revenue_001");
-        FacebookAppEvents().logEvent(name: "ads_revenue_001", valueToSum: _accumulateAdRevenue);
+        NativeUtils.instance.logEventFB(name: "ads_revenue_001", valueToSum: _accumulateAdRevenue, parameters: {"currency": "USD"});
+        // FacebookAppEvents().logEvent(name: "ads_revenue_001", valueToSum: _accumulateAdRevenue);
       } catch (_) {}
       _accumulateAdRevenue = 0;
       museSp.setDouble(DBKey.keyAdImpression001, 0);

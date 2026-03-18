@@ -68,13 +68,14 @@ class MuseSearchBar {
             context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT or
                     PendingIntent.FLAG_IMMUTABLE
         )
+//            .setSmallIcon(R.drawable.ic_launcher_foreground)
 
         mBuilder = NotificationCompat.Builder(context, SEARCH_CHANNEL_ID)
             .setContent(remoteViews)
             .setCustomBigContentView(remoteViews)
             .setContentIntent(pendingIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_launcher)
             .setOngoing(true)
             .setSilent(true)
             .setShowWhen(false)

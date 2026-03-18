@@ -25,9 +25,9 @@ class MaxUtils {
     MaxConfiguration? sdkConfiguration = await AppLovinMAX.initialize(
       "POzCPzJAQ_vi7vlPr0v6dpTw1giLvT2HKZcyQJ27U_0hDMdIeOgvScokaDvmqrXg8AogImcyxb9QMKF5TXSf8U",
     );
-    AppLog.e("max初始化结束");
+    // AppLog.e("max初始化结束");
     AppLovinMAX.setMuted(true);
-    AppLog.e(sdkConfiguration?.toString());
+    AppLog.i("max初始化完成 isTestModeEnabled:${sdkConfiguration?.isTestModeEnabled}");
 
     //IDFA或gaid
     // AppLovinMAX.setTestDeviceAdvertisingIds([""]);

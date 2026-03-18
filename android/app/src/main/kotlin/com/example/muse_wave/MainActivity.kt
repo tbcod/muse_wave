@@ -2,8 +2,6 @@ package com.example.muse_wave
 
 import com.ryanheise.audioservice.AudioServiceActivity
 
-
-//import io.flutter.Log
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
 import io.flutter.plugin.common.MethodCall
@@ -19,6 +17,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.os.IBinder
 import android.os.Build
+import java.util.Currency
 
 class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
     private lateinit var methodChannel: MethodChannel
@@ -66,7 +65,11 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
                 startService(intent)
             }
             result.success(null)
-        } else {
+        }else if (call.method.equals("facebookLogPurchase")) {
+            logPurchaseEventForFacebook(call, result)
+        }  else if (call.method.equals("facebookLogEvent")) {
+            logEventForFacebook(call, result)
+        }  else {
             result.success(false)
         }
     }
@@ -93,9 +96,87 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
         isFBInitFinished = FacebookSdk.isInitialized()
         if (isFBInitFinished) {
             fbAppEventsLogger = AppEventsLogger.newLogger(applicationContext)
+            Log.i("MuseAndroid", "initFacebookSdk res：$isFBInitFinished, $appId, $token")
+        }else{
+            Log.e("MuseAndroid", "initFacebookSdk res：$isFBInitFinished, $appId, $token")
         }
-        Log.i("MuseAndroid", "android facebook sdk init res：$isFBInitFinished, $appId, $token")
     }
 
+
+        private fun logEventForFacebook(call: MethodCall, result: MethodChannel.Result) {
+        if (isFBInitFinished) {
+            val eventName = call.argument("name") as? String
+            val valueToSum = call.argument("_valueToSum") as? Double
+            val parameters = call.argument("parameters") as? Map<String, Any>
+            if (valueToSum != null && parameters != null) {
+                val parameterBundle = createBundleFromFacebookMap(parameters)
+                fbAppEventsLogger.logEvent(eventName, valueToSum, parameterBundle)
+            } else if (valueToSum != null) {
+                fbAppEventsLogger.logEvent(eventName, valueToSum)
+            } else if (parameters != null) {
+                val parameterBundle = createBundleFromFacebookMap(parameters)
+                fbAppEventsLogger.logEvent(eventName, parameterBundle)
+            } else {
+                fbAppEventsLogger.logEvent(eventName)
+            }
+            Log.i("MuseAndroid", "logEventForFacebook：$$eventName, $isFBInitFinished")
+        }else{
+            Log.e("MuseAndroid", "logEventForFacebook isFBInitFinished: $isFBInitFinished")
+        }
+        result.success(isFBInitFinished)
+    }
+
+    private fun logPurchaseEventForFacebook(call: MethodCall, result: MethodChannel.Result) {
+        if (isFBInitFinished) {
+            val parameters = call.argument("parameters") as? Map<String, Any>
+            val parameterBundle = createBundleFromFacebookMap(parameters) ?: Bundle()
+            var amount = (call.argument("amount") as? Double)?.toBigDecimal()
+            var currency = Currency.getInstance(call.argument("currency") as? String)
+            fbAppEventsLogger.logPurchase(amount, currency, parameterBundle)
+            Log.i("MuseAndroid", "logPurchaseEventForFacebook：$amount,$currency, $isFBInitFinished")
+        }else{
+            Log.e("MuseAndroid", "logPurchaseEventForFacebook isFBInitFinished:$isFBInitFinished")
+        }
+
+        result.success(isFBInitFinished)
+    }
+
+    private fun createBundleFromFacebookMap(parameterMap: Map<String, Any>?): Bundle? {
+        if (parameterMap == null) {
+            return null
+        }
+        val bundle = Bundle()
+        for (jsonParam in parameterMap.entries) {
+            val value = jsonParam.value
+            val key = jsonParam.key
+            when (value) {
+                is Map<*, *> -> {
+                    val nestedBundle = createBundleFromFacebookMap(value as Map<String, Any>)
+                    bundle.putBundle(key, nestedBundle as Bundle)
+                }
+                is String -> {
+                    bundle.putString(key, value as String)
+                }
+                is Int -> {
+                    bundle.putInt(key, value as Int)
+                }
+                is Long -> {
+                    bundle.putLong(key, value as Long)
+                }
+                is Double -> {
+                    bundle.putDouble(key, value as Double)
+                }
+                is Boolean -> {
+                    bundle.putBoolean(key, value as Boolean)
+                }
+                else -> {
+                    throw IllegalArgumentException(
+                        "IllegalArgumentException value type: " + value.javaClass.kotlin
+                    )
+                }
+            }
+        }
+        return bundle
+    }
 
 }

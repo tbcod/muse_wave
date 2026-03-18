@@ -2,7 +2,7 @@ import 'package:logger/logger.dart';
 import 'package:muse_wave/muse_config.dart';
 
 class AppLog {
-  static var logger = Logger(filter: LoggerFilter());
+  static var logger = Logger(filter: LoggerFilter(), printer: PrettyPrinter(stackTraceBeginIndex: 1));
 
   static bool get isLog {
     return !MuseConfig.isUser;

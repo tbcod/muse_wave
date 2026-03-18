@@ -18,6 +18,8 @@ class NativeUtils {
     return _instance;
   }
 
+  bool isFacebookInit = false;
+
   bool isStartInForegroundSearch = false;
 
   static const channel = MethodChannel('player.musicmuse.nativemethod');
@@ -72,5 +74,28 @@ class NativeUtils {
 
     var result = await channel.invokeMethod("initFacebook", {"fbid": fbId, "fbtoken": fbToken});
     AppLog.i("原生返回的：$result, fb id:$fbId,fb token:$fbToken");
+    isFacebookInit = true;
   }
+
+
+  Future<void> logEventFB({required String name, Map<String, dynamic>? parameters, double? valueToSum}) async {
+    final args = <String, dynamic>{'name': name};
+    if (parameters != null) {
+      args['parameters'] = parameters;
+    }
+    if (valueToSum != null) {
+      args['_valueToSum'] = valueToSum;
+    }
+    await channel.invokeMethod("facebookLogEvent", args);
+  }
+
+  Future<void> logPurchaseFB({required double amount, Map<String, dynamic>? parameters}) async {
+    final args = <String, dynamic>{'amount': amount, 'currency': "USD"};
+    if (parameters != null) {
+      args['parameters'] = parameters;
+    }
+    await channel.invokeMethod("facebookLogPurchase", args);
+  }
+
+
 }

@@ -741,7 +741,7 @@ class UserPlayInfoController extends GetxController {
       config: AudioServiceConfig(
         androidNotificationChannelId: "muse.wave.playback",
         androidNotificationChannelName: "MuseWave Playback",
-        androidNotificationOngoing: false,
+        androidNotificationOngoing: true,
         androidStopForegroundOnPause: false,
         androidNotificationIcon: "drawable/ic_launcher_foreground",
       ),
