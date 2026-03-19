@@ -171,6 +171,10 @@ class UserHome extends GetView<UserHomeController> {
     List types = ["MUSIC_VIDEO_TYPE_OMV", "MUSIC_VIDEO_TYPE_ATV", "MUSIC_VIDEO_TYPE_UGC", "MUSIC_PAGE_TYPE_PLAYLIST", "MUSIC_PAGE_TYPE_ALBUM", "MUSIC_PAGE_TYPE_ARTIST", "MUSIC_PAGE_TYPE_TOP_CHART", "My_Playlist", "LOCKUP_CONTENT_TYPE_ALBUM", "LOCKUP_CONTENT_TYPE_PLAYLIST", "Video"];
     if (!types.contains(type)) return Container();
 
+    if (type == "MUSIC_VIDEO_TYPE_ATV" && data.length < 3) {
+      return Container();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -255,6 +259,7 @@ class UserHome extends GetView<UserHomeController> {
             } else if (type == "MUSIC_VIDEO_TYPE_ATV" || type == "MUSIC_VIDEO_TYPE_UGC") {
               //小的歌曲列表
               var isRec = title == "Listen now";
+              // AppLog.i("MUSIC_VIDEO_TYPE_ATV type:$type, data:${data.length}");
               return Container(
                 height: 226.w,
                 child: ListView.separated(
@@ -790,7 +795,6 @@ class UserHomeController extends GetxController with StateMixin {
   void onInit() async {
     super.onInit();
     // await DownloadUtils.instance.initData();
-
 
     if (museSp.getString("visitorDataKey") != null) {
       Get.find<Application>().visitorData = museSp.getString("visitorDataKey")!;

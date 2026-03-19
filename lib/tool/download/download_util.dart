@@ -94,8 +94,7 @@ class DownloadUtils {
 
     if (result.code != HttpCode.success) {
       // ToastUtil.showToast(msg: result.message ?? "error");
-      AppLog.e(result.code);
-      AppLog.e("error");
+      AppLog.e("getCacheMap error:${result.code}");
       return {};
     }
     // AppLog.e("返回的缓存数据:\n${result.data["streamingData"]?["formats"] ?? {}}");

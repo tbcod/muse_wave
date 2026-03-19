@@ -151,14 +151,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                               children: [
                                 SizedBox(height: 16.w),
                                 //名字
-                                Obx(
-                                  () => Text(
-                                    controller.nowData["title"] ?? "",
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: 22.w, letterSpacing: -1, fontWeight: FontWeight.w500),
-                                  ),
-                                ),
+                                Obx(() => Text(controller.nowData["title"] ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 22.w, letterSpacing: -1, fontWeight: FontWeight.w500))),
 
                                 SizedBox(height: 12.w),
                                 //歌手
@@ -201,16 +194,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                               // controller
                               //     .playItemWithIndex(controller.nowIndex - 1);
 
-                              EventUtils.instance.addEvent(
-                                "play_click",
-                                data: {
-                                  "song_id": controller.nowData["videoId"],
-                                  "song_name": controller.nowData["title"],
-                                  "artist_name": controller.nowData["subtitle"],
-                                  "playlist_id": controller.playlistId,
-                                  "station": "play_center",
-                                },
-                              );
+                              EventUtils.instance.addEvent("play_click", data: {"song_id": controller.nowData["videoId"], "song_name": controller.nowData["title"], "artist_name": controller.nowData["subtitle"], "playlist_id": controller.playlistId, "station": "play_center"});
 
                               controller.playLast();
                             },
@@ -239,25 +223,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
 
                                           controller.player?.play();
 
-                                          EventUtils.instance.addEvent(
-                                            "play_num",
-                                            data: {
-                                              "song_id": controller.nowData["videoId"],
-                                              "song_name": controller.nowData["title"],
-                                              "artist_name": controller.nowData["subtitle"],
-                                              "playlist_id": controller.playlistId,
-                                            },
-                                          );
-                                          EventUtils.instance.addEvent(
-                                            "play_click",
-                                            data: {
-                                              "song_id": controller.nowData["videoId"],
-                                              "song_name": controller.nowData["title"],
-                                              "artist_name": controller.nowData["subtitle"],
-                                              "playlist_id": controller.playlistId,
-                                              "station": "play_center",
-                                            },
-                                          );
+                                          EventUtils.instance.addEvent("play_num", data: {"song_id": controller.nowData["videoId"], "song_name": controller.nowData["title"], "artist_name": controller.nowData["subtitle"], "playlist_id": controller.playlistId});
+                                          EventUtils.instance.addEvent("play_click", data: {"song_id": controller.nowData["videoId"], "song_name": controller.nowData["title"], "artist_name": controller.nowData["subtitle"], "playlist_id": controller.playlistId, "station": "play_center"});
 
                                           EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"]});
                                         }
@@ -280,16 +247,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                               }
                               EventUtils.instance.addEvent("play_page_click", data: {"click": "switch"});
 
-                              EventUtils.instance.addEvent(
-                                "play_click",
-                                data: {
-                                  "song_id": controller.nowData["videoId"],
-                                  "song_name": controller.nowData["title"],
-                                  "artist_name": controller.nowData["subtitle"],
-                                  "playlist_id": controller.playlistId,
-                                  "station": "play_center",
-                                },
-                              );
+                              EventUtils.instance.addEvent("play_click", data: {"song_id": controller.nowData["videoId"], "song_name": controller.nowData["title"], "artist_name": controller.nowData["subtitle"], "playlist_id": controller.playlistId, "station": "play_center"});
                               // controller.playItemWithIndex(controller.nowIndex + 1);
                               controller.playNext();
                             },
@@ -363,13 +321,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                         Obx(
                           () => Container(
                             padding: EdgeInsets.symmetric(horizontal: 5.w),
-                            child: Row(
-                              children: [
-                                Text(controller.playTime.value, style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
-                                Spacer(),
-                                Text(controller.maxTime.value, style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
-                              ],
-                            ),
+                            child: Row(children: [Text(controller.playTime.value, style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))), Spacer(), Text(controller.maxTime.value, style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75)))]),
                           ),
                         ),
                       ],
@@ -428,12 +380,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                   onTap: () {
                                     controller.removeDownload(state);
                                   },
-                                  child: Container(
-                                    width: 32.w,
-                                    height: 32.w,
-                                    padding: EdgeInsets.all(3.w),
-                                    child: CircularProgressIndicator(value: progress, strokeWidth: 2, backgroundColor: Color(0xffA995FF).withOpacity(0.35), color: Color(0xffA995FF)),
-                                  ),
+                                  child: Container(width: 32.w, height: 32.w, padding: EdgeInsets.all(3.w), child: CircularProgressIndicator(value: progress, strokeWidth: 2, backgroundColor: Color(0xffA995FF).withOpacity(0.35), color: Color(0xffA995FF))),
                                 );
                               } else if (state == 2) {
                                 return InkWell(
@@ -507,9 +454,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                     width: 4.w,
                                     height: 60.w,
                                     // color: Colors.red,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(colors: [Color(0xff9279FE), Color(0xff9279FE).withOpacity(0)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-                                    ),
+                                    decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xff9279FE), Color(0xff9279FE).withOpacity(0)], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
                                   ),
                                   //下载按钮
                                   Container(
@@ -551,12 +496,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                               controller.isShowDownloadGuide.value = false;
                                               controller.removeDownload(state);
                                             },
-                                            child: Container(
-                                              width: 32.w,
-                                              height: 32.w,
-                                              padding: EdgeInsets.all(3.w),
-                                              child: CircularProgressIndicator(value: progress, strokeWidth: 2, backgroundColor: Color(0xffA995FF).withOpacity(0.35), color: Color(0xffA995FF)),
-                                            ),
+                                            child: Container(width: 32.w, height: 32.w, padding: EdgeInsets.all(3.w), child: CircularProgressIndicator(value: progress, strokeWidth: 2, backgroundColor: Color(0xffA995FF).withOpacity(0.35), color: Color(0xffA995FF))),
                                           );
                                         } else if (state == 2) {
                                           return InkWell(
@@ -738,13 +678,7 @@ class UserPlayInfoController extends GetxController {
 
     myHandler = await AudioService.init(
       builder: () => MyVideoHandler(),
-      config: AudioServiceConfig(
-        androidNotificationChannelId: "muse.wave.playback",
-        androidNotificationChannelName: "MuseWave Playback",
-        androidNotificationOngoing: false,
-        androidStopForegroundOnPause: false,
-        androidNotificationIcon: "drawable/ic_launcher_foreground",
-      ),
+      config: AudioServiceConfig(androidNotificationChannelId: "muse.wave.playback", androidNotificationChannelName: "MuseWave Playback", androidNotificationOngoing: false, androidStopForegroundOnPause: false, androidNotificationIcon: "drawable/ic_launcher_foreground"),
     );
 
     checkShowDownloadGuide();
@@ -1059,35 +993,27 @@ class UserPlayInfoController extends GetxController {
 
     var result = await ApiMain.instance.getVideoNext(nowData["videoId"], isMoreVideo: true);
     if (result.code == HttpCode.success) {
-      List oldList =
-          result
-              .data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"] ??
-          [];
-
-      // try {
-      //   moreContinuation =
-      //       result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]
-      //                                   ["tabbedRenderer"]
-      //                               ["watchNextTabbedResultsRenderer"]
-      //                           ["tabs"][0]["tabRenderer"]["content"]
-      //                       ["musicQueueRenderer"]["content"]
-      //                   ["playlistPanelRenderer"]["continuations"][0]
-      //               ["nextRadioContinuationData"]["continuation"] ??
-      //           "";
-      // } catch (e) {
-      //   print(e);
-      //   moreContinuation = "";
-      // }
+      List oldList = [];
+      try {
+        oldList = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"] ?? [];
+      } catch (e) {
+        AppLog.e("解析相似歌曲失败，$e");
+      }
 
       for (Map itemMap in oldList) {
         if (itemMap.containsKey("playlistPanelVideoRenderer")) {
           //歌曲
-          String cover = itemMap["playlistPanelVideoRenderer"]["thumbnail"]["thumbnails"].last["url"] ?? "";
-          String title = itemMap["playlistPanelVideoRenderer"]["title"]["runs"][0]["text"] ?? "";
-          String subtitle = itemMap["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["text"];
-          String videoId = itemMap["playlistPanelVideoRenderer"]["videoId"] ?? "";
-
-          playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likemusic", "videoId": videoId});
+          try {
+            String cover = itemMap["playlistPanelVideoRenderer"]["thumbnail"]["thumbnails"].last["url"] ?? "";
+            String title = itemMap["playlistPanelVideoRenderer"]["title"]["runs"][0]["text"] ?? "";
+            String subtitle = itemMap["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["text"];
+            String videoId = itemMap["playlistPanelVideoRenderer"]["videoId"] ?? "";
+            if (videoId.isNotEmpty && title.isNotEmpty) {
+              playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likemusic", "videoId": videoId});
+            }
+          } catch (e) {
+            AppLog.e("解析相似歌曲失败，$e");
+          }
         }
       }
       canNext.value = canPlayNext();
@@ -1237,6 +1163,9 @@ class UserPlayInfoController extends GetxController {
     // }
 
     maxD = Duration.zero;
+    sliderValue.value = 0;
+    playTime.value = formatDuration(Duration.zero);
+    isPlaying.value = false;
 
     //更新播放
     var item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: Duration.zero, artUri: Uri.parse(nowData["cover"] ?? ""));
@@ -1251,7 +1180,9 @@ class UserPlayInfoController extends GetxController {
       ToastUtil.showToast(msg: "playCopyrightStr".tr);
 
       //如果是自动播放直接切换到一首
-      playNext(isAutoNext: true);
+      if (!isOpenShowBar && isAutoNext) {
+        playNext(isAutoNext: true);
+      }
 
       return;
     }
@@ -1260,24 +1191,16 @@ class UserPlayInfoController extends GetxController {
     Map? downloadData = DownloadUtils.instance.allDownLoadingData[nowData["videoId"]];
     var downloadDic = await getApplicationDocumentsDirectory();
 
-    var downloadPath = "${downloadDic.path}/" + (downloadData?["path"] ?? "");
+    var downloadPath = "${downloadDic.path}/${(downloadData?["path"] ?? "")}";
 
-    if (downloadPath.isEmpty || !(await File(downloadPath).exists())) {
+    if (!(await File(downloadPath).exists())) {
       //判断是否有缓存
       //获取缓存
       var cacheDic = await getTemporaryDirectory();
       Map? cacheData = DownloadUtils.instance.allCacheData[nowData["videoId"]];
       if (cacheData?["path"] != null && (await File("${cacheDic.path}/${cacheData!["path"]}").exists())) {
-        AppLog.e("播放缓存歌曲$downloadPath");
-
-        //有缓存
-        //播放本地文件
-        // var url = cacheData!["url"];
-        // final physicalFilePath =
-        //     await ALDownloaderFileManager.getPhysicalFilePathForUrl(url);
-
         String cachePath = "${cacheDic.path}/${cacheData["path"]}";
-
+        AppLog.i("播放缓存歌曲: $cachePath");
         //加载和播放
         if (player != null) {
           player?.removeListener(playListener);
@@ -1300,28 +1223,12 @@ class UserPlayInfoController extends GetxController {
 
         if (result.code != HttpCode.success) {
           // ToastUtil.showToast(msg: result.message ?? "error");
-          AppLog.e("请求失败。${result.message}");
+          AppLog.e("请求失败: ${result.message}");
           //如果不是当前
           bool hasNetwork = true;
           if (lasthttpvideoId == nowData["videoId"]) {
-            // ToastUtil.showToast(msg: "network error");
-            //播放下一个
-
             //判断是否无网络
             final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
-
-            // AppLog.e("播放网络：$connectivityResult");
-            // if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile)) {
-            //   //没有网络
-            //   AppLog.e("没有网络，不切换下一曲");
-            //   return;
-            // }
-            //
-            // //如果是首页初始化，不播放下一首
-            // if (!isOpenShowBar) {
-            //   playNext(isAutoNext: true);
-            // }
-
             AppLog.i("当前网络：$connectivityResult");
             hasNetwork = connectivityResult.contains(ConnectivityResult.wifi) || connectivityResult.contains(ConnectivityResult.mobile);
             if (!hasNetwork) {
@@ -1329,7 +1236,7 @@ class UserPlayInfoController extends GetxController {
             }
 
             //如果是首页初始化，不播放下一首
-            if (!isOpenShowBar && hasNetwork) {
+            if (!isOpenShowBar && hasNetwork && isAutoNext) {
               if (_playNextCount < 5) {
                 _playNextCount++;
                 playNext(isAutoNext: true);
@@ -1341,10 +1248,8 @@ class UserPlayInfoController extends GetxController {
             if (!isAutoNext) {
               ToastUtil.showToast(msg: "Play failed, Please try again");
             }
-            var andInfo = await DeviceInfoPlugin().androidInfo;
-            String deviceInfo = "${andInfo.version.release}, manufacturer:${andInfo.manufacturer}, model:${andInfo.model}, brand:${andInfo.brand}, isAppBack:${Get.find<Application>().isAppBack}";
             EventUtils.instance.addEvent("play_num", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]});
-            EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "reason": hasNetwork ? "url http fail" : "no network", "deviceInfo": deviceInfo});
+            EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "reason": hasNetwork ? result.message ?? "url http fail" : "no network"});
           }
           _playerReset();
           return;
@@ -1367,19 +1272,15 @@ class UserPlayInfoController extends GetxController {
           AppLog.e("获取url失败: ${result.data}");
 
           //播放下一个
-          if (!isOpenShowBar) {
+          if (!isOpenShowBar && isAutoNext) {
             if (_playNextCount < 5) {
               _playNextCount++;
               playNext(isAutoNext: true);
               return;
             }
-            var andInfo = await DeviceInfoPlugin().androidInfo;
-            String deviceInfo = "${andInfo.version.release}, manufacturer:${andInfo.manufacturer}, model:${andInfo.model}, brand:${andInfo.brand}, isAppBack:${Get.find<Application>().isAppBack}";
+            final reason = result.data?["playabilityStatus"]?["reason"];
             EventUtils.instance.addEvent("play_num", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]});
-            EventUtils.instance.addEvent(
-              "play_fail",
-              data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "deviceInfo": deviceInfo, "reason": "Get url error"},
-            );
+            EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "reason": reason ?? "Get url error"});
             if (!isAutoNext) {
               ToastUtil.showToast(msg: "Get url error".tr);
             }
@@ -1388,18 +1289,14 @@ class UserPlayInfoController extends GetxController {
           return;
         }
 
-        //获取是否下载过了
-
+        if (player != null) {
+          player?.removeListener(playListener);
+          player?.dispose();
+        }
         player = VideoPlayerController.networkUrl(Uri.parse(nowPlayUrl), videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
       }
     } else {
-      AppLog.e("播放下载歌曲$downloadPath");
-
-      //播放本地文件
-      // var url = downloadData["url"];
-      // final physicalFilePath =
-      //     await ALDownloaderFileManager.getPhysicalFilePathForUrl(url);
-
+      AppLog.i("播放下载歌曲$downloadPath");
       //加载和播放
       if (player != null) {
         player?.removeListener(playListener);
@@ -1414,10 +1311,7 @@ class UserPlayInfoController extends GetxController {
       final errorCode = player?.value.errorDescription ?? 'initialize error';
       if (!isOpenShowBar) {
         EventUtils.instance.addEvent("play_num", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]});
-        EventUtils.instance.addEvent(
-          "play_fail",
-          data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "reason": "initialize error", "detail": errorCode},
-        );
+        EventUtils.instance.addEvent("play_fail", data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"], "reason": "initialize error", "detail": errorCode});
         if (!isAutoNext) {
           ToastUtil.showToast(msg: "Get url error".tr);
         }
@@ -1471,7 +1365,7 @@ class UserPlayInfoController extends GetxController {
       try {
         DownloadUtils.instance.cacheSong(playList[nowIndex + 1]["videoId"], Map.of(playList[nowIndex + 1]));
       } catch (e) {
-        print(e);
+        AppLog.e("缓冲出错：$e");
       }
     }
 
@@ -1551,10 +1445,7 @@ class UserPlayInfoController extends GetxController {
       //随机播放一首
       var rIndex = getRIndex();
       if (isNotif) {
-        EventUtils.instance.addEvent(
-          "play_click",
-          data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "background"},
-        );
+        EventUtils.instance.addEvent("play_click", data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "background"});
       }
       playItemWithIndex(rIndex, clickNext: true);
       return;
@@ -1562,16 +1453,7 @@ class UserPlayInfoController extends GetxController {
 
     if (canLast.value) {
       if (isNotif) {
-        EventUtils.instance.addEvent(
-          "play_click",
-          data: {
-            "song_id": playList[nowIndex - 1]["videoId"],
-            "song_name": playList[nowIndex - 1]["title"],
-            "artist_name": playList[nowIndex - 1]["subtitle"],
-            "playlist_id": playlistId,
-            "station": "background",
-          },
-        );
+        EventUtils.instance.addEvent("play_click", data: {"song_id": playList[nowIndex - 1]["videoId"], "song_name": playList[nowIndex - 1]["title"], "artist_name": playList[nowIndex - 1]["subtitle"], "playlist_id": playlistId, "station": "background"});
       }
 
       playItemWithIndex(nowIndex - 1, clickNext: true);
@@ -1583,16 +1465,10 @@ class UserPlayInfoController extends GetxController {
       //随机播放一首
       var rIndex = getRIndex();
       if (isBar) {
-        EventUtils.instance.addEvent(
-          "play_click",
-          data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "tab"},
-        );
+        EventUtils.instance.addEvent("play_click", data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "tab"});
       } else {
         if (isNotif) {
-          EventUtils.instance.addEvent(
-            "play_click",
-            data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "background"},
-          );
+          EventUtils.instance.addEvent("play_click", data: {"song_id": playList[rIndex]["videoId"], "song_name": playList[rIndex]["title"], "artist_name": playList[rIndex]["subtitle"], "playlist_id": playlistId, "station": "background"});
         }
       }
       playItemWithIndex(rIndex, isAutoNext: isAutoNext, clickNext: true);
@@ -1601,28 +1477,10 @@ class UserPlayInfoController extends GetxController {
 
     if (canNext.value) {
       if (isBar) {
-        EventUtils.instance.addEvent(
-          "play_click",
-          data: {
-            "song_id": playList[nowIndex + 1]["videoId"],
-            "song_name": playList[nowIndex + 1]["title"],
-            "artist_name": playList[nowIndex + 1]["subtitle"],
-            "playlist_id": playlistId,
-            "station": "tab",
-          },
-        );
+        EventUtils.instance.addEvent("play_click", data: {"song_id": playList[nowIndex + 1]["videoId"], "song_name": playList[nowIndex + 1]["title"], "artist_name": playList[nowIndex + 1]["subtitle"], "playlist_id": playlistId, "station": "tab"});
       } else {
         if (isNotif) {
-          EventUtils.instance.addEvent(
-            "play_click",
-            data: {
-              "song_id": playList[nowIndex + 1]["videoId"],
-              "song_name": playList[nowIndex + 1]["title"],
-              "artist_name": playList[nowIndex + 1]["subtitle"],
-              "playlist_id": playlistId,
-              "station": "background",
-            },
-          );
+          EventUtils.instance.addEvent("play_click", data: {"song_id": playList[nowIndex + 1]["videoId"], "song_name": playList[nowIndex + 1]["title"], "artist_name": playList[nowIndex + 1]["subtitle"], "playlist_id": playlistId, "station": "background"});
         }
       }
 
@@ -1673,10 +1531,7 @@ class UserPlayInfoController extends GetxController {
     Get.bottomSheet(
       Container(
         padding: EdgeInsets.only(top: 24.w),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)), gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
         child: Column(
           children: [
             Container(
@@ -1700,11 +1555,7 @@ class UserPlayInfoController extends GetxController {
               onTap: () {
                 showAddView(list);
               },
-              child: Container(
-                height: 72.w,
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Row(children: [Image.asset("assets/oimg/icon_add.png", width: 56.w, height: 56.w), SizedBox(width: 22.w), Text("New list".tr)]),
-              ),
+              child: Container(height: 72.w, padding: EdgeInsets.symmetric(horizontal: 16.w), child: Row(children: [Image.asset("assets/oimg/icon_add.png", width: 56.w, height: 56.w), SizedBox(width: 22.w), Text("New list".tr)])),
             ),
 
             Expanded(
@@ -1734,10 +1585,7 @@ class UserPlayInfoController extends GetxController {
     Get.bottomSheet(
       Container(
         padding: EdgeInsets.only(top: 24.w),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)), gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1800,12 +1648,7 @@ class UserPlayInfoController extends GetxController {
 
                         Get.back();
                       },
-                      child: Container(
-                        height: 48.w,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(color: Color(0xff824EFF).withOpacity(0.5), borderRadius: BorderRadius.circular(24.w)),
-                        child: Text("Confirm".tr, style: TextStyle(fontSize: 14.w, color: Colors.white)),
-                      ),
+                      child: Container(height: 48.w, alignment: Alignment.center, decoration: BoxDecoration(color: Color(0xff824EFF).withOpacity(0.5), borderRadius: BorderRadius.circular(24.w)), child: Text("Confirm".tr, style: TextStyle(fontSize: 14.w, color: Colors.white))),
                     ),
                   ),
                 ],
@@ -1829,10 +1672,7 @@ class UserPlayInfoController extends GetxController {
     Get.bottomSheet(
       Container(
         padding: EdgeInsets.only(top: 24.w),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)), gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)])),
         child: Column(
           children: [
             Container(
@@ -1979,11 +1819,7 @@ class UserPlayInfoController extends GetxController {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(item["title"], maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
-                  SizedBox(height: 12.w),
-                  Text("${childList.length} songs", style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5))),
-                ],
+                children: [Text(item["title"], maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)), SizedBox(height: 12.w), Text("${childList.length} songs", style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5)))],
               ),
             ),
             SizedBox(width: 12.w),
@@ -2014,10 +1850,7 @@ class UserPlayInfoController extends GetxController {
             if (isCheck) {
               return;
             }
-            EventUtils.instance.addEvent(
-              "play_click",
-              data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": playlistId, "station": "play_center"},
-            );
+            EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": playlistId, "station": "play_center"});
 
             //切换播放
             playItemWithIndex(i);
@@ -2030,13 +1863,7 @@ class UserPlayInfoController extends GetxController {
             child: Row(
               children: [
                 //封面
-                Container(
-                  height: 52.w,
-                  width: 52.w,
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                  child: NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
-                ),
+                Container(height: 52.w, width: 52.w, clipBehavior: Clip.hardEdge, decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)), child: NetImageView(imgUrl: item["cover"], fit: BoxFit.cover)),
                 SizedBox(width: 12.w),
 
                 Expanded(
@@ -2182,8 +2009,7 @@ class UserPlayInfoController extends GetxController {
       //没有上次的数据使用默认第一首歌
       await HistoryUtil.instance.initData();
       List dList = List.of(HistoryUtil.instance.songHistoryList);
-      AppLog.e("使用默认播放");
-      AppLog.e(dList);
+      AppLog.i("使用默认播放;${dList.length}");
       setDataAndPlayItem(dList, dList[0], clickType: "appOpen");
       return;
     }
@@ -2202,10 +2028,7 @@ class UserPlayInfoController extends GetxController {
       return;
     }
 
-    EventUtils.instance.addEvent(
-      "play_click",
-      data: {"song_id": playList[nowIndex]["videoId"], "song_name": playList[nowIndex]["title"], "artist_name": playList[nowIndex]["subtitle"], "playlist_id": playlistId, "station": "background"},
-    );
+    EventUtils.instance.addEvent("play_click", data: {"song_id": playList[nowIndex]["videoId"], "song_name": playList[nowIndex]["title"], "artist_name": playList[nowIndex]["subtitle"], "playlist_id": playlistId, "station": "background"});
 
     realPlay(nowIndex);
   }
@@ -2241,15 +2064,9 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     await _player?.play();
     final controller = Get.find<UserPlayInfoController>();
     controller.isPlaying.value = true;
-    EventUtils.instance.addEvent(
-      "play_num",
-      data: {"song_id": controller.nowData["videoId"] ?? "", "song_name": controller.nowData["title"] ?? "", "artist_name": controller.nowData["subtitle"] ?? ""},
-    );
+    EventUtils.instance.addEvent("play_num", data: {"song_id": controller.nowData["videoId"] ?? "", "song_name": controller.nowData["title"] ?? "", "artist_name": controller.nowData["subtitle"] ?? ""});
     EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"] ?? ""});
-    EventUtils.instance.addEvent(
-      "play_click",
-      data: {"song_id": controller.nowData["videoId"] ?? "", "song_name": controller.nowData["title"] ?? "", "artist_name": controller.nowData["subtitle"] ?? "", "station": "tab"},
-    );
+    EventUtils.instance.addEvent("play_click", data: {"song_id": controller.nowData["videoId"] ?? "", "song_name": controller.nowData["title"] ?? "", "artist_name": controller.nowData["subtitle"] ?? "", "station": "tab"});
   }
 
   @override

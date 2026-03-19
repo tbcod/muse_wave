@@ -147,7 +147,7 @@ class AppController extends SuperController {
     // var sp = await SharedPreferences.getInstance();
     var isPostInstall = museSp.getBool("isPostInstall");
 
-    AppLog.e("是否已经安装上报:$isPostInstall");
+    // AppLog.e("是否已经安装上报:$isPostInstall");
 
     if (!isPostInstall) {
       // var isNewUser = false;

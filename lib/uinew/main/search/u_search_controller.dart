@@ -111,8 +111,8 @@ class UserSearchController extends GetxController with StateMixin {
       historyList.value = oldList;
     }
 
-    AppLog.e("共有以下条数历史记录");
-    AppLog.e(historyList.length);
+    // AppLog.e("共有以下条数历史记录");
+    // AppLog.e(historyList.length);
   }
 
   String youtubeMoreToken = "";
@@ -374,7 +374,7 @@ class UserSearchController extends GetxController with StateMixin {
       }
     }
     final param = _tabParamsMap[fullTitle];
-    AppLog.i("title:$title,param:$param");
+    // AppLog.i("title:$title,param:$param");
     return param;
   }
 
