@@ -45,14 +45,14 @@ class AdjustUtil {
     adjustAdRevenue.adRevenueNetwork = network;
     adjustAdRevenue.adRevenuePlacement = placement;
     Adjust.trackAdRevenue(adjustAdRevenue);
-    AppLog.i('【Adjust】价值上报 amount:$amount, source:$source, network:$network');
+    // AppLog.i('【Adjust】价值上报 amount:$amount, source:$source, network:$network');
   }
 
   void addPurchaseEvent({required double amount, required String name}) {
     AdjustEvent event = AdjustEvent(_getTokenName(name));
     event.setRevenue(amount, 'USD');
     Adjust.trackEvent(event);
-    AppLog.i('【Adjust】事件上报 amount:$amount, name:$name');
+    // AppLog.i('【Adjust】事件上报 amount:$amount, name:$name');
   }
 
 

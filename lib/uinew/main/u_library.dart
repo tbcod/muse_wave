@@ -379,7 +379,7 @@ class UserLibrary extends GetView<UserLibraryController> {
 
               Container(
                 alignment: Alignment.center,
-                child: MyNativeAdView(
+                child: BannerNativeAdView(
                   adKey: "pagebanner",
                   adScene: AdScene.library,
                 ),

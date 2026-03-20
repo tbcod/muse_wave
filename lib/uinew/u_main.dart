@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/native_utils.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -91,7 +92,7 @@ class UserMain extends GetView<UserMainController> {
                     }).toList(),
               ),
             ),
-            Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "normalbanner", adScene: AdScene.home, isSmall: true)),
+            Container(alignment: Alignment.center, child: BannerNativeAdView(adKey: "normalbanner", adScene: AdScene.home, isSmall: true)),
             SizedBox(height: Get.mediaQuery.padding.bottom),
           ],
         ),
@@ -149,11 +150,11 @@ class UserMainController extends GetxController {
     initData();
 
     //预加载广告
-    AdUtils.instance.loadAd("behavior",adSense: AdScene.play);
+    AdUtils.instance.loadAd(AdPosId.behavior,adSense: AdScene.play, forceLocalJson: bus.isFirstAppLaunch);
 
 
     StreamSubscription<List<ConnectivityResult>> subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
-      AppLog.e("网络变化${result}");
+      AppLog.i("网络变化 onConnectivityChanged:$result");
 
       //网络变化
       if (result.contains(ConnectivityResult.wifi)) {

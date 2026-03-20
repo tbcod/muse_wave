@@ -139,6 +139,7 @@ class AppController extends SuperController {
   @override
   void onInit() async {
     super.onInit();
+    AppLog.i("App开始启动");
     bindData();
   }
 
@@ -196,7 +197,7 @@ class AppController extends SuperController {
     AppStateEventNotifier.appStateStream.forEach((state) async {
       if (state == AppState.foreground) {
         Get.find<Application>().isAppBack = false;
-        AppLog.e("前台");
+        AppLog.i("前台");
         TbaUtils.instance.postSession();
 
         //判断新老用户
@@ -218,11 +219,11 @@ class AppController extends SuperController {
           EventUtils.instance.addEvent("home_no");
         }
         TbaUtils.instance.checkUnFinishedEvent();
-        AdUtils.instance.showAd("open", adScene: AdScene.open_hot);
+        AdUtils.instance.showAd(AdPosId.open, adSense: AdScene.open_hot);
       } else if (state == AppState.background) {
         Get.find<Application>().isAppBack = true;
         TbaUtils.instance.checkUnFinishedEvent();
-        AppLog.e("后台");
+        AppLog.i("后台");
       }
     });
   }
@@ -262,9 +263,9 @@ class Application extends GetxService {
     //   return;
     // }
 
-    AppLog.e("开始初始化通知");
+    // AppLog.e("开始初始化通知");
     NotificationSettings settings = await FirebaseMessaging.instance.requestPermission();
-    AppLog.e("开始初始化通知结果：${settings.authorizationStatus.name}");
+    // AppLog.e("开始初始化通知结果：${settings.authorizationStatus.name}");
 
     isInitMessage = true;
     if (settings.authorizationStatus != AuthorizationStatus.authorized) {
@@ -275,11 +276,11 @@ class Application extends GetxService {
 
     try {
       final fcmToken = await FirebaseMessaging.instance.getToken();
-      AppLog.e("推送token:$fcmToken");
+      AppLog.i("推送token:$fcmToken");
       // await Clipboard.setData(ClipboardData(text: fcmToken ?? ""));
       // a terminated state.
     } catch (e) {
-      print(e);
+      // print(e);
     }
 
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
@@ -377,7 +378,7 @@ class Application extends GetxService {
   Future<void> initSdk() async {
     RemoteUtil.shareInstance.init();
     await Firebase.initializeApp();
-    AppLog.e("firebase初始化完成");
+    // AppLog.e("firebase初始化完成");
     //异步，否则会卡在启动
     initFireBaseOther();
 
@@ -442,7 +443,7 @@ class Application extends GetxService {
       //和上次一样不切换源
       return;
     }
-    AppLog.e("typeSo切换了数据：$typeSo");
+    AppLog.i("typeSo切换了数据：$typeSo");
 
     typeSo = str;
     //保存到本地
@@ -465,14 +466,14 @@ class Application extends GetxService {
       Get.find<UserHomeController>().reloadHistory();
     }
 
-    AppLog.e("nowtypeso:$typeSo");
+    AppLog.i("nowtypeso:$typeSo");
   }
 
   Future initLocTypeSo() async {
     var sp = await SharedPreferences.getInstance();
     typeSo = sp.getString("lastTypeSo") ?? "no";
 
-    AppLog.e("nowtypeso:$typeSo");
+    AppLog.i("nowtypeso:$typeSo");
   }
 
   Future<Application> init() async {

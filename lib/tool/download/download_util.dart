@@ -157,7 +157,7 @@ class DownloadUtils {
       ToastUtil.showToast(msg: "addedDownloadQueue".tr);
     }
     if (showAd) {
-      AdUtils.instance.showAd("behavior", adScene: AdScene.download);
+      AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.download);
       //好评引导
       Future.delayed(const Duration(milliseconds: 500)).then((_) {
         //延迟后显示好评引导
@@ -449,7 +449,7 @@ class DownloadUtils {
     //判断是否已经下载
     if (allDownLoadingData.containsKey(videoId)) {
       if (allDownLoadingData[videoId]["state"] == 2) {
-        AppLog.e("已经下载，不缓存");
+        AppLog.i("已经下载，不缓存");
         return;
       }
     }

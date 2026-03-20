@@ -30,7 +30,13 @@ class TbaAnd extends BaseApi {
   Future<BaseModel> postData(TbaType type, {Map<String, dynamic>? eventData, String? eventId, String? positionKey}) async {
     // AppLog.e("事件上报：${type.name}:\n${eventId ?? ""}\n事件数据：$eventData");
     // AppLog.e("事件数据：$eventData");
-    AppLog.i("事件上报：${type.name}, ${(eventId ?? "").replaceAll("mw_", "")}, $eventData");
+    if (type == TbaType.ad) {
+      AppLog.i("事件: ad_impression, ${eventData ?? "{}"}");
+    } else if (type == TbaType.event) {
+      AppLog.i("事件：${(eventId ?? "").replaceAll("mw_", "")}, ${eventData ?? "{}"}");
+    } else {
+      AppLog.i("事件：${type.name}, ${(eventId ?? "").replaceAll("mw_", "")}, ${eventData ?? "{}"}");
+    }
     //通用参数
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     AndroidDeviceInfo andDeviceInfo = await DeviceInfoPlugin().androidInfo;
@@ -64,13 +70,7 @@ class TbaAnd extends BaseApi {
     Map<String, dynamic> generalMap = {};
 
     Map<String, dynamic> otherMap = {
-      "queue": {
-        "canadian": DateTime.now().millisecondsSinceEpoch,
-        "flatbed": Get.find<Application>().userAppUuid,
-        "snook": "${languageCode}_$countryCode",
-        "muriatic": logId,
-        "clinch": andDeviceInfo.supportedAbis.toString(),
-      },
+      "queue": {"canadian": DateTime.now().millisecondsSinceEpoch, "flatbed": Get.find<Application>().userAppUuid, "snook": "${languageCode}_$countryCode", "muriatic": logId, "clinch": andDeviceInfo.supportedAbis.toString()},
       "chamfer": {"crowbar": packageInfo.version, "stark": advertisingId, "chauncey": "titanium"},
       "kiss": {
         "fortieth": andDeviceInfo.manufacturer,

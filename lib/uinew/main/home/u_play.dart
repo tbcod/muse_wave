@@ -138,8 +138,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                 // ),
                                 //广告
                                 if (!Get.isRegistered<UserMainController>() || (Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1))
-                                  Positioned.fill(child: Container(alignment: Alignment.center, child: MyNativeAdView(adKey: "pagebanner", adScene: AdScene.play))),
-                                Positioned.fill(child: Container(alignment: Alignment.center, child: PageAdmobNativeView())),
+                                  Positioned.fill(child: Container(alignment: Alignment.center, child: BannerNativeAdView(adKey: "pagebanner", adScene: AdScene.play))),
+                                // Positioned.fill(child: Container(alignment: Alignment.center, child: PageAdmobNativeView())),
                               ],
                             ),
                           ),
@@ -216,10 +216,10 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                         }
 
                                         if (controller.isPlaying.value) {
-                                          AdUtils.instance.showAd("behavior", adScene: AdScene.pause);
+                                          AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.pause);
                                           controller.player?.pause();
                                         } else {
-                                          AdUtils.instance.showAd("behavior", adScene: AdScene.play);
+                                          AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
 
                                           controller.player?.play();
 
@@ -1139,7 +1139,7 @@ class UserPlayInfoController extends GetxController {
     }
 
     if (!isAutoNext && !isOpenShowBar) {
-      AdUtils.instance.showAd("behavior", adScene: AdScene.play);
+      AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
       Future.delayed(Duration(milliseconds: 500)).then((_) {
         //延迟后显示好评引导
         MyDialogUtils.instance.showRateDialog();

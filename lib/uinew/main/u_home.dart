@@ -118,9 +118,9 @@ class UserHome extends GetView<UserHomeController> {
                     );
                   },
                   separatorBuilder: (_, i) {
-                    if (i == 2) {
-                      return Container(margin: EdgeInsets.symmetric(vertical: 8.w, horizontal: 16.w), child: const MyNativeAdView(adKey: "homenative", adScene: AdScene.home));
-                    }
+                    // if (i == 2) {
+                    //   return Container(margin: EdgeInsets.symmetric(vertical: 8.w, horizontal: 16.w), child: const MyNativeAdView(adKey: "homenative", adScene: AdScene.home));
+                    // }
                     Map item = controller.netList[i];
                     List childList = item["list"] ?? [];
                     return SizedBox(height: item.isEmpty || childList.isEmpty ? 0 : 16.w);
@@ -813,7 +813,7 @@ class UserHomeController extends GetxController with StateMixin {
     await Future.delayed(const Duration(seconds: 1));
 
     MyDialogUtils.instance.showOtherAppDialog();
-    AdUtils.instance.loadPageNativeAd(AdPosition.nvpage_full.name, adSense: AdScene.play);
+    // AdUtils.instance.loadPageNativeAd(AdPosId.nvpage_full.name, adSense: AdScene.play);
   }
 
   var nextData = {};

@@ -13,6 +13,8 @@ import 'package:muse_wave/api/api_main.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ad/topon_util.dart';
 
+import 'muse_logger.dart';
+
 
 class UDebugPage extends StatelessWidget {
   UDebugPage({super.key});
@@ -35,11 +37,12 @@ class UDebugPage extends StatelessWidget {
           //       NativeUtils.instance.test();
           //     },
           //     child: const Text('A')),
-          // CupertinoButton(
-          //     onPressed: () {
-          //       controller.exceptionTest();
-          //     },
-          //     child: const Text('AB')),
+          CupertinoButton(
+              onPressed: () {
+                Get.to(() => MuseLogger());
+                // controller.exceptionTest();
+              },
+              child: const Text('Logger')),
         ],
       ),
       body: Container(

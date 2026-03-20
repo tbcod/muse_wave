@@ -271,7 +271,7 @@ class UserSearch extends GetView<UserSearchController> {
                             , Container(
                               padding: EdgeInsets.symmetric(vertical:0),
                               alignment: Alignment.center,
-                              child: MyNativeAdView(
+                              child: BannerNativeAdView(
                                 adKey: "pagebanner",
                                 adScene: AdScene.search,
                               ),

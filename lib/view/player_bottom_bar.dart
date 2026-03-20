@@ -108,7 +108,7 @@ class PlayerBottomBarView extends StatelessWidget {
 
                                       if (controller.isPlaying.value) {
                                         await controller.player?.pause();
-                                        AdUtils.instance.showAd("behavior", adScene: AdScene.pause);
+                                        AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.pause);
                                       } else {
                                         await controller.player?.play();
                                         //暂停其他页面的播放
@@ -124,7 +124,7 @@ class PlayerBottomBarView extends StatelessWidget {
                                           "artist_name": controller.nowData["subtitle"] ?? "",
                                           "station":"tab"
                                         });
-                                        AdUtils.instance.showAd("behavior", adScene: AdScene.play);
+                                        AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
                                       }
                                       controller.isPlaying.toggle();
                                     },

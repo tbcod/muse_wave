@@ -30,6 +30,18 @@ class Bus {
   void setAppLaunchCount() {
     museSp.setInt('KeyAppLaunchCount', getAppLaunchCount + 1);
   }
+
+  bool get isFirstShowAd {
+    bool isFirst = museSp.getBool('KeyIsFirstShowAd', def: true);
+    return isFirst;
+  }
+
+  void setFirstShowAd() {
+    museSp.setBool('KeyIsFirstShowAd', false);
+  }
+
+
+
 }
 
 MuseSP get museSp => MuseSP.instance;
@@ -70,8 +82,8 @@ class MuseSP {
     await _museSp.setBool(key, value);
   }
 
-  bool getBool(String key) {
-    return _museSp.getBool(key) ?? false;
+  bool getBool(String key,{bool def = false}) {
+    return _museSp.getBool(key) ?? def;
   }
 
   Future setString(String key, String value) async {

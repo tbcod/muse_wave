@@ -79,7 +79,7 @@ class TbaUtils {
   }
 
   Future<BaseModel> postSession() async {
-    AppLog.i("上报session");
+    // AppLog.i("上报session");
     if (GetPlatform.isIOS) {
       return BaseModel(code: -1);
     }
@@ -116,7 +116,8 @@ class TbaUtils {
 
     // final adMoney = realMoney.toDouble();
     //不是admob广告，其他平台不是admob聚合
-    double amount = (num.tryParse(ad_pre_ecpm) ?? 0).toDouble();
+    // double amount = (num.tryParse(ad_pre_ecpm) ?? 0).toDouble();
+    double amount = realMoney / 1000000;
     if (ad_source != "admob" && (!ad_network.toLowerCase().contains("admob"))) {
       FirebaseAnalytics.instance.logAdImpression(
         adFormat: ad_format,
@@ -146,7 +147,7 @@ class TbaUtils {
 
     _postAdRevenue001(amount);
 
-    AppLog.i("ad_impression广告价值:$ad_pre_ecpm, adSource:$ad_source, adFormat:${adPosName}_$ad_format, adSense:$adSense, adPosId:$adPosName,  adNetwork:$ad_network, $ad_unit_id");
+    AppLog.i("广告价值 ad_impression:$ad_pre_ecpm, adSource:$ad_source, adFormat:$ad_format, adSense:$adSense, adPosId:$adPosName,  adNetwork:$ad_network, $ad_unit_id");
 
     return TbaAnd.instance.postData(
       TbaType.ad,
@@ -154,7 +155,7 @@ class TbaUtils {
         "ketch": ad_network,
         "corey": ad_source, //广告SDK，admob，max等
         "century": ad_unit_id, //广告id
-        "ploy": "${adPosName}_$ad_format", //广告类型，插屏，原生，banner，激励视频等
+        "ploy": ad_format, //广告类型，插屏，原生，banner，激励视频等
         "coppery": adPosName, //广告位逻辑编号，例如：page1_bottom, connect_finished
         "victrola": realMoney.toString(),
         "habitant": currency,

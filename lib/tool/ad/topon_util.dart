@@ -39,7 +39,7 @@ class TopOnUtils {
         appidkeyStr: 'a683874a73857b711c0b8df1b71deb07b',
       );
     } else {
-      AppLog.e("topon init start");
+      // AppLog.e("topon init start");
       try {
         ATInitManger.setLogEnabled(logEnabled: false);
         var str = await ATInitManger.initAnyThinkSDK(
@@ -70,7 +70,10 @@ class TopOnUtils {
       AppLog.e("topon banner只能显示一个");
       return false;
     }
-    AppLog.e("topon banner开始加载");
+    AppLog.i("topon banner开始加载");
+    EventUtils.instance.addEvent("ad_request", data: {"ad_format": "banner", "ad_source_client": "topon", "ad_pos_id": key, "ad_sense": adScene.name, "ad_code_id": adId});
+    DateTime now = DateTime.now();
+
 
     allCom[adId] = Completer<bool>();
 
@@ -79,15 +82,16 @@ class TopOnUtils {
       // AppLog.e("topon ${e.placementID}");
       // AppLog.e("${e.requestMessage}");
       if (e.bannerStatus == BannerStatus.bannerAdDidFinishLoading) {
+        EventUtils.instance.addEvent("ad_return", data: {"ad_format": "banner", "ad_sense": adScene.name, "ad_id": adId, "ad_source_client": "topon", "ad_request_time": DateTime.now().difference(now).inMilliseconds});
         allCom[e.placementID]?.complete(true);
       } else if (e.bannerStatus == BannerStatus.bannerAdFailToLoadAD) {
+          EventUtils.instance.addEvent("ad_return_fail", data: {"ad_format": "banner", "ad_sense": adScene.name, "ad_id": adId, "ad_source_client": "topon", "ad_request_time": DateTime.now().difference(now).inMilliseconds, "reason": e.requestMessage});
         allCom[e.placementID]?.complete(false);
       } else if (e.bannerStatus == BannerStatus.bannerAdUnknown) {
         allCom[e.placementID]?.complete(false);
       } else if (e.bannerStatus == BannerStatus.bannerAdDidShowSucceed) {
         //展示成功
         var revenueData = e.extraMap;
-        EventUtils.instance.addEvent("ad_req", data: {"ad_format": "${key}_banner", "ad_sense": adScene.name,"ad_id": adId, "ad_source_client": "topon", "ad_type": "banner"});
         //上传收益
         TbaUtils.instance.postAd(
           ad_network: revenueData["network_name"] ?? "",
@@ -144,6 +148,9 @@ class TopOnUtils {
       return false;
     }
 
+    EventUtils.instance.addEvent("ad_request", data: {"ad_format": "native", "ad_source_client": "topon", "ad_pos_id": key, "ad_sense": adScene.name, "ad_code_id": adId});
+    DateTime now = DateTime.now();
+
     // var nativeCom = Completer<bool>();
 
     allCom[adId] = Completer<bool>();
@@ -154,8 +161,10 @@ class TopOnUtils {
       AppLog.e("${e.requestMessage}");
       if (e.nativeStatus == NativeStatus.nativeAdDidFinishLoading) {
         allCom[e.placementID]?.complete(true);
+        EventUtils.instance.addEvent("ad_return", data: {"ad_format": "native", "ad_sense": adScene.name, "ad_id": adId, "ad_source_client": "topon", "ad_request_time": DateTime.now().difference(now).inMilliseconds});
       } else if (e.nativeStatus == NativeStatus.nativeAdFailToLoadAD) {
         allCom[e.placementID]?.complete(false);
+        EventUtils.instance.addEvent("ad_return_fail", data: {"ad_format": "native", "ad_sense": adScene.name, "ad_id": adId, "ad_source_client": "topon", "ad_request_time": DateTime.now().difference(now).inMilliseconds, "reason": e.requestMessage});
       } else if (e.nativeStatus == NativeStatus.nativeAdUnknown) {
         allCom[e.placementID]?.complete(false);
       } else if (e.nativeStatus == NativeStatus.nativeAdDidShowNativeAd) {

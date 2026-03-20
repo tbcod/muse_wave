@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:muse_wave/generated/assets.dart';
+import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -82,7 +84,7 @@ class MainPageController extends GetxController {
     EventUtils.instance.addEvent("home_no");
 
     //预加载广告
-    AdUtils.instance.loadAd("behavior", adSense: AdScene.play);
+    AdUtils.instance.loadAd(AdPosId.behavior, adSense: AdScene.play, forceLocalJson: bus.isFirstAppLaunch);
 
     //设置网络监听，成功后打开B面
     subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {

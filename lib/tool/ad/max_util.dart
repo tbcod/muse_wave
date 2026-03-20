@@ -21,10 +21,8 @@ class MaxUtils {
 
   Future init() async {
     //TODO 注意切换正式的app key;
-    AppLog.e("max初始化开始");
-    MaxConfiguration? sdkConfiguration = await AppLovinMAX.initialize(
-      "POzCPzJAQ_vi7vlPr0v6dpTw1giLvT2HKZcyQJ27U_0hDMdIeOgvScokaDvmqrXg8AogImcyxb9QMKF5TXSf8U",
-    );
+    // AppLog.e("max初始化开始");
+    MaxConfiguration? sdkConfiguration = await AppLovinMAX.initialize("POzCPzJAQ_vi7vlPr0v6dpTw1giLvT2HKZcyQJ27U_0hDMdIeOgvScokaDvmqrXg8AogImcyxb9QMKF5TXSf8U");
     // AppLog.e("max初始化结束");
     AppLovinMAX.setMuted(true);
     AppLog.i("max初始化完成 isTestModeEnabled:${sdkConfiguration?.isTestModeEnabled}");
@@ -33,19 +31,15 @@ class MaxUtils {
     // AppLovinMAX.setTestDeviceAdvertisingIds([""]);
   }
 
-  Future<bool> loadNativeAd(
-    String adId,
-    String key,
-    AdScene adScene,
-    Rx<Widget> adView,
-  ) async {
+  Future<bool> loadNativeAd(String adId, String key, AdScene adSense, Rx<Widget> adView) async {
     Completer<bool> completer = Completer();
-    MaxNativeAdViewController nativeAdViewController =
-        MaxNativeAdViewController();
+    MaxNativeAdViewController nativeAdViewController = MaxNativeAdViewController();
 
     var view = Container();
 
     var adLoaded = false.obs;
+    EventUtils.instance.addEvent("ad_request", data: {"ad_format": "native", "ad_source_client": "max", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId});
+    DateTime now = DateTime.now();
 
     view = Container(
       child: Obx(
@@ -55,10 +49,7 @@ class MaxUtils {
           child: Stack(
             children: [
               Container(
-                constraints: BoxConstraints(
-                  maxWidth: double.infinity,
-                  maxHeight: 250,
-                ),
+                constraints: BoxConstraints(maxWidth: double.infinity, maxHeight: 250),
                 child: MaxNativeAdView(
                   adUnitId: adId,
                   controller: nativeAdViewController,
@@ -67,17 +58,20 @@ class MaxUtils {
                       AppLog.e("max native加载成功");
                       adLoaded.value = true;
                       completer.complete(true);
+                      EventUtils.instance.addEvent("ad_return", data: {"ad_format": "native", "ad_source_client": "max", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId, "ad_request_time": DateTime.now().difference(now).inMilliseconds});
                     },
                     onAdLoadFailedCallback: (adUnitId, error) {
-                      AppLog.e("max原生加载失败");
-                      AppLog.e(error);
+                      AppLog.e("max原生加载失败:$error");
                       completer.complete(false);
+                      EventUtils.instance.addEvent("ad_return_fail", data: {"ad_format": "native", "ad_source_client": "max", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId, "ad_request_time": DateTime.now().difference(now).inMilliseconds, "reason": error.message});
                     },
-                    onAdClickedCallback: (ad) {},
+                    onAdClickedCallback: (ad) {
+                      EventUtils.instance.addEvent("ad_click", data: {"ad_format": "native", "ad_source_client": "max", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId});
+                    },
                     onAdRevenuePaidCallback: (ad) {
                       TbaUtils.instance.postAd(
                         ad_network: ad.networkName,
-                        adSense: adScene.name,
+                        adSense: adSense.name,
                         ad_source: "max",
                         ad_unit_id: ad.adUnitId,
                         ad_format: "native",
@@ -94,9 +88,7 @@ class MaxUtils {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        Expanded(
-                          child: Container(child: MaxNativeAdMediaView()),
-                        ),
+                        Expanded(child: Container(child: MaxNativeAdMediaView())),
                         Container(
                           height: 60,
                           child: Row(
@@ -106,35 +98,15 @@ class MaxUtils {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    MaxNativeAdTitleView(
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.visible,
-                                    ),
-                                    MaxNativeAdAdvertiserView(
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(0.75),
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 10,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.fade,
-                                    ),
+                                    MaxNativeAdTitleView(style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14), maxLines: 1, overflow: TextOverflow.visible),
+                                    MaxNativeAdAdvertiserView(style: TextStyle(color: Colors.white.withOpacity(0.75), fontWeight: FontWeight.normal, fontSize: 10), maxLines: 1, overflow: TextOverflow.fade),
                                   ],
                                 ),
                               ),
                               MaxNativeAdCallToActionView(
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStatePropertyAll(
-                                    Color(0xff985CFF),
-                                  ),
-                                  foregroundColor: MaterialStatePropertyAll(
-                                    Colors.white,
-                                  ),
+                                  backgroundColor: MaterialStatePropertyAll(Color(0xff985CFF)),
+                                  foregroundColor: MaterialStatePropertyAll(Colors.white),
                                   textStyle: MaterialStatePropertyAll(
                                     TextStyle(
                                       // color: Colors.white,
@@ -163,15 +135,11 @@ class MaxUtils {
     return completer.future;
   }
 
-  Future<bool> loadBanner(
-    String adId,
-    String key,
-    AdScene adScene,
-    Rx<Widget> adView, {
-    required bool isSmall,
-  }) {
+  Future<bool> loadBanner(String adId, String key, AdScene adSense, Rx<Widget> adView, {required bool isSmall}) {
     Completer<bool> completer = Completer();
     var adLoaded = false.obs;
+    EventUtils.instance.addEvent("ad_request", data: {"ad_format": "banner", "ad_source_client": "max", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId});
+    DateTime now = DateTime.now();
 
     var adC = Container(
       child: Obx(
@@ -185,27 +153,28 @@ class MaxUtils {
               adFormat: isSmall ? AdFormat.banner : AdFormat.mrec,
               listener: AdViewAdListener(
                 onAdLoadedCallback: (ad) {
-                  AppLog.e("原生广告max banner加载失败");
+                  AppLog.i("原生广告max banner加载完成");
                   adLoaded.value = true;
                   completer.complete(true);
+                  EventUtils.instance.addEvent("ad_return", data: {"ad_format": "banner", "ad_sense": adSense.name, "ad_pos_id": key, "ad_id": adId, "ad_source_client": "max", "ad_request_time": DateTime.now().difference(now).inMilliseconds});
+                  EventUtils.instance.addEvent("ad_chance", data: {"ad_sense": adSense.name, "ad_pos_id": key});
                 },
                 onAdLoadFailedCallback: (adUnitId, error) {
-                  AppLog.e("原生广告max banner加载失败");
-                  AppLog.e(error);
+                  AppLog.e("原生广告max banner加载失败：$error");
                   completer.complete(false);
+                  EventUtils.instance.addEvent("ad_return_fail", data: {"ad_format": "banner", "ad_sense": adSense.name, "ad_pos_id": key, "ad_id": adId, "ad_source_client": "max", "ad_request_time": DateTime.now().difference(now).inMilliseconds, "reason": error.message});
                 },
                 onAdClickedCallback: (ad) {},
                 onAdRevenuePaidCallback: (ad) {
-                  EventUtils.instance.addEvent("ad_req", data: {"ad_format": "${key}_banner", "ad_sense": adScene.name,"ad_id": adId, "ad_source_client": "max", "ad_type": "banner"});
                   TbaUtils.instance.postAd(
                     ad_network: ad.networkName,
-                    adSense: adScene.name,
+                    adSense: adSense.name,
                     ad_source: "max",
                     ad_unit_id: ad.adUnitId,
                     ad_format: "banner",
                     ad_pre_ecpm: ad.revenue.toString(),
                     currency: "",
-                    adPosName: key
+                    adPosName: key,
                     // precision_type: ad.revenuePrecision,
                     // positionKey: positionKey,
                   );
