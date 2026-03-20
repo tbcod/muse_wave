@@ -65,7 +65,8 @@ dependencies:
     path: plugin/anythink_sdk-1.0.5
 #  anythink_sdk: ^1.0.8
 #  secmtp_sdk: ^1.0.8
-
+  waveandsosa:
+    path: plugin/waveandsosa
 
 #  facebook_app_events:
 #    git:

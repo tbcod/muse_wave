@@ -1480,7 +1480,7 @@ class BannerNativeAdViewController extends GetxController {
       String type = item["adtype"];
       String source = item["adsource"];
       String ad_id = item["placementid"];
-      AppLog.e("开始加载原生广告:$type,$source,${adSense.name},$ad_id");
+      AppLog.i("开始加载原生广告:$type, $source, ${adSense.name}, $ad_id");
 
       var isOk = false;
       if (source == "admob") {
@@ -1532,7 +1532,7 @@ class BannerNativeAdViewController extends GetxController {
       }
 
       adId = ad_id;
-      AppLog.i("结束加载原生广告: ${isOk ? "成功" : "失败"}---$type,$source,$ad_id");
+      AppLog.i("结束加载原生广告: ${isOk ? "成功" : "失败"}---$type, $source, $ad_id");
       if (isOk) {
         //加载成功跳出循环
         // EventUtils.instance.addEvent("succ_ad_req", data: {"ad_format": "${key}_$type", "ad_sense": adSense.name, "ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_type": type, "reason": "load fail"});
