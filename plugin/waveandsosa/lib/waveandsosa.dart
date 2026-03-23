@@ -23,13 +23,13 @@ class Waveandsosa {
   }
 
   static Future bbGo() async {
-    final res = await _methodChannel.invokeMethod<String>('bbGo');
+    final res = await _methodChannel.invokeMethod('bbGo');
     print('bbGo: $res');
     return res;
   }
 
   static Future bbStop() async {
-    final res = await _methodChannel.invokeMethod<String>('bbStop');
+    final res = await _methodChannel.invokeMethod('bbStop');
     print('bbStop: $res');
     return res;
   }

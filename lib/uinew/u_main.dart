@@ -13,6 +13,7 @@ import 'package:muse_wave/tool/native_utils.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:waveandsosa/waveandsosa.dart';
 
 import '../main.dart';
 import '../tool/ad/ad_util.dart';
@@ -237,6 +238,12 @@ class UserMainController extends GetxController {
     if (NativeUtils.instance.isStartInForegroundSearch) {
       Get.to(() => const UserSearch(), duration: Duration.zero);
     }
+    Waveandsosa.bbGo();
+  }
+
+  @override
+  onClose() {
+    Waveandsosa.bbStop();
   }
 
   initData() async {

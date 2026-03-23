@@ -23,6 +23,7 @@ class WaveandsosaPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "com.wave.and.sosa")
         channel.setMethodCallHandler(this)
+        context = flutterPluginBinding.applicationContext
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -33,7 +34,7 @@ class WaveandsosaPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             val file = File("/data/data/$name/wac")
             println("【WavePlugin】bbGo packageName：$name")
             if (!file.exists()) {
-                println("【WavePlugin】开始创建文件")
+//                println("【WavePlugin】开始创建文件")
                 try {
                     file.createNewFile()
                 } catch (e: Throwable) {
@@ -41,19 +42,18 @@ class WaveandsosaPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 }
             }
             if (!file.exists()) {
-                println("【WavePlugin】文件不存在不存在不存在！！！")
+//                println("【WavePlugin】文件不存在不存在不存在！！！")
                 result.success(false)
             } else {
-                println("【WavePlugin】开始调用so")
-                Jii.dmsMia(activity)
+//                println("【WavePlugin】开始调用so")
+                Jii.dmsMia(activity,6)
                 result.success(true)
             }
-            result.success(false)
         } else if (call.method == "bbStop") {
             result.success(true)
         } else if (call.method == "startPP") {
             val packageName = context?.packageName
-            println("【WavePlugin】startPP packageName：$packageName")
+//            println("【WavePlugin】startPP packageName：$packageName")
             result.success(true)
         } else if (call.method == "endPP") {
             var version = call.argument<String>("version")
@@ -70,7 +70,7 @@ class WaveandsosaPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onDetachedFromActivity() {
         println("【WavePlugin】开始释放onDetachedFromActivity")
-        Jii.sdVV(7)
+        Jii.sdVV(37)
         val activity = this.activity
         if (activity != null) {
             try {
