@@ -2,6 +2,7 @@ import 'package:advertising_id/advertising_id.dart';
 import 'package:android_id/android_id.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
 import 'package:muse_wave/muse_config.dart';
@@ -20,12 +21,13 @@ class CUtil extends BaseApi {
   }
 
   Future<BaseModel> checkCloak() async {
-    // httpClient.baseUrl =
-    //     GetPlatform.isIOS ? "https://jocose.littlemusicmuse.com" : "";
+
+    // if(kDebugMode)  return BaseModel(code: -1);
+
 
     var packageInfo = await PackageInfo.fromPlatform();
     var userAppUuid = Get.find<Application>().userAppUuid;
-    var netResult = await Connectivity().checkConnectivity();
+    // var netResult = await Connectivity().checkConnectivity();
 
     if (GetPlatform.isAndroid) {
       var androidId = await AndroidId().getId();
@@ -35,10 +37,9 @@ class CUtil extends BaseApi {
       String advertisingId = "";
       try {
         advertisingId = (await AdvertisingId.id(true)) ?? "";
-        AppLog.e("获取gaid成功:$advertisingId");
+        AppLog.i("获取gaid成功:$advertisingId");
       } catch (e) {
-        AppLog.e("获取gaid出错");
-        AppLog.e(e);
+        AppLog.e("获取gaid出错:$e");
       }
 
       return httpRequest(

@@ -31,6 +31,17 @@ class SettingPage extends GetView<SettingPageController> {
                 centerTitle: false,
                 titleSpacing: 12.w,
                 title: Text("Setting"),
+                actions: [
+                  GestureDetector(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4),
+                      child: Image.asset("assets/img/icon_set_game.png", width: 32, height: 32),
+                    ),
+                    onTap: () async {
+                      Get.to(() => OnlyWeb(), arguments: 3);
+                    },
+                  ),
+                ],
               ),
               Expanded(
                 child: MediaQuery.removePadding(
@@ -38,16 +49,9 @@ class SettingPage extends GetView<SettingPageController> {
                   context: context,
                   child: SingleChildScrollView(
                     child: Container(
-                      margin: EdgeInsets.only(
-                        left: 20.w,
-                        right: 20.w,
-                        top: 5.w,
-                      ),
+                      margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 5.w),
                       clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.w),
-                      ),
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20.w)),
                       child: ListView.separated(
                         itemBuilder: (_, i) {
                           return getItem(i);
@@ -85,10 +89,7 @@ class SettingPage extends GetView<SettingPageController> {
           children: [
             Image.asset(controller.listIcon[i], width: 24.w, height: 24.w),
             SizedBox(width: 16.w),
-            Text(
-              controller.listTitle[i],
-              style: TextStyle(fontSize: 14.w, color: Color(0xff4d4d4d)),
-            ),
+            Text(controller.listTitle[i], style: TextStyle(fontSize: 14.w, color: Color(0xff4d4d4d))),
             Spacer(),
             Image.asset(Assets.imgIconMeR, width: 16.w, height: 16.w),
           ],
@@ -125,19 +126,13 @@ class SettingPage extends GetView<SettingPageController> {
           //     ),
           //     barrierDismissible: true);
         } else if (itemTitle == "Share") {
-          var url =
-              GetPlatform.isAndroid
-                  ? "https://play.google.com/store/apps/details?id=com.musewave.player.music"
-                  : "";
+          var url = GetPlatform.isAndroid ? "https://play.google.com/store/apps/details?id=com.musewave.player.music" : "";
           await Clipboard.setData(ClipboardData(text: url));
           ToastUtil.showToast(msg: "Copy download link ok!");
 
           Share.share(url);
         } else if (itemTitle == "Evaluate") {
-          var url =
-              GetPlatform.isAndroid
-                  ? "https://play.google.com/store/apps/details?id=com.musewave.player.music"
-                  : "";
+          var url = GetPlatform.isAndroid ? "https://play.google.com/store/apps/details?id=com.musewave.player.music" : "";
           if (await canLaunchUrl(Uri.parse(url))) {
             launchUrl(Uri.parse(url));
           } else {

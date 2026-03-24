@@ -220,7 +220,7 @@ class AdUtils {
                 if (!isCompleter.isCompleted) isCompleter.complete(true);
               },
               onAdFailedToLoad: (e) {
-                AppLog.e("admob 加载失败interstitial:${e.message}");
+                AppLog.e("广告加载失败：$key， $source, $type, $ad_id, $ad_weight,error:${e.code},${e.message}");
                 if (onLoad != null) {
                   onLoad(ad_id, false, e);
                 }
@@ -289,13 +289,14 @@ class AdUtils {
                 AppLog.i("原生广告onAdImpression:${ad.adUnitId}");
               },
               onAdClosed: (ad) {
+                EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
+
                 //关闭
                 // adIsShowing = false;
                 // //设置显示时间以判断广告间隔
                 // setShowTime();
                 // //重新加载一轮广告
                 // loadAd(key);
-                EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
               },
               onAdWillDismissScreen: (ad) {
                 // AppLog.i("原生广告onAdWillDismissScreen:${ad.adUnitId}");
@@ -639,6 +640,8 @@ class AdUtils {
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             },
             onAdDismissedFullScreenContent: (ad) {
+              EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
+
               adIsShowing = false;
               //广告关闭
               //删除缓存
@@ -646,13 +649,13 @@ class AdUtils {
               ad.dispose();
               //设置显示时间以判断广告间隔
               setShowTime();
+
               //重新加载一轮广告
               loadAd(adPosId, adSense: adSense);
 
               if (onShow != null) {
                 onShow.onClose!(ad.adUnitId);
               }
-              EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
               if (!isCompleter.isCompleted) isCompleter.complete(true);
             },
             onAdShowedFullScreenContent: (ad) {
@@ -705,6 +708,8 @@ class AdUtils {
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             },
             onAdDismissedFullScreenContent: (ad) {
+              EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
+
               adIsShowing = false;
               //广告关闭
               //删除缓存
@@ -714,7 +719,6 @@ class AdUtils {
               setShowTime();
               //重新加载一轮广告
               loadAd(adPosId, adSense: adSense);
-              EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
               if (onShow != null) {
                 onShow.onClose!(ad.adUnitId);
               }
@@ -769,6 +773,8 @@ class AdUtils {
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             },
             onAdDismissedFullScreenContent: (ad) {
+              EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
+
               adIsShowing = false;
               //广告关闭
               //删除缓存
@@ -782,7 +788,6 @@ class AdUtils {
               if (onShow != null) {
                 onShow.onClose!(ad.adUnitId);
               }
-              EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
               if (!isCompleter.isCompleted) isCompleter.complete(true);
             },
             onAdShowedFullScreenContent: (ad) {
@@ -883,6 +888,8 @@ class AdUtils {
                   EventUtils.instance.addEvent("ad_click", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
                 },
                 onAdHiddenCallback: (ad) {
+                  EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
+
                   adIsShowing = false;
                   //广告关闭
                   //删除缓存
@@ -895,7 +902,6 @@ class AdUtils {
                   if (onShow != null) {
                     onShow.onClose!(ad.adUnitId);
                   }
-                  EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
                   if (!isCompleter.isCompleted) isCompleter.complete(true);
                 },
                 onAdRevenuePaidCallback: (ad) {
@@ -955,6 +961,8 @@ class AdUtils {
                   EventUtils.instance.addEvent("ad_click", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
                 },
                 onAdHiddenCallback: (ad) {
+                  EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
+
                   adIsShowing = false;
                   //广告关闭
                   //删除缓存
@@ -967,7 +975,6 @@ class AdUtils {
                   if (onShow != null) {
                     onShow.onClose!(ad.adUnitId);
                   }
-                  EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
                   if (!isCompleter.isCompleted) isCompleter.complete(true);
                 },
                 onAdRevenuePaidCallback: (ad) {
@@ -1027,6 +1034,8 @@ class AdUtils {
                   EventUtils.instance.addEvent("ad_click", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
                 },
                 onAdHiddenCallback: (ad) {
+                  EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
+
                   adIsShowing = false;
                   //广告关闭
                   //删除缓存
@@ -1039,7 +1048,6 @@ class AdUtils {
                   if (onShow != null) {
                     onShow.onClose!(ad.adUnitId);
                   }
-                  EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
                   if (!isCompleter.isCompleted) isCompleter.complete(true);
                 },
                 onAdRevenuePaidCallback: (ad) {
@@ -1108,6 +1116,8 @@ class AdUtils {
                   // positionKey: loadedItem["load_pos"],
                 );
               } else if (e.interstatus == InterstitialStatus.interstitialAdDidClose) {
+                EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
+
                 //关闭
                 adIsShowing = false;
                 //设置显示时间以判断广告间隔
@@ -1121,7 +1131,6 @@ class AdUtils {
                 if (onShow != null) {
                   onShow.onShow!(e.placementID);
                 }
-                EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
                 if (!isCompleter.isCompleted) isCompleter.complete(true);
               } else if (e.interstatus == InterstitialStatus.interstitialAdDidClick) {
                 if (onShow != null) {
@@ -1171,6 +1180,8 @@ class AdUtils {
                   // positionKey: loadedItem["load_pos"],
                 );
               } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidClose) {
+                EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
+
                 //关闭
                 adIsShowing = false;
                 //设置显示时间以判断广告间隔
@@ -1184,7 +1195,6 @@ class AdUtils {
                 if (onShow != null) {
                   onShow.onShow!(e.placementID);
                 }
-                EventUtils.instance.addEvent("ad_close", data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name});
                 if (!isCompleter.isCompleted) isCompleter.complete(true);
               } else if (e.rewardStatus == RewardedStatus.rewardedVideoDidClick) {
                 if (onShow != null) {

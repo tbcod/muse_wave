@@ -31,7 +31,7 @@ class LaunchPageController extends GetxController {
     bindData();
   }
 
-  var isB = false;
+  bool get isB => bus.isBMode;
 
   bool get isA => !isB;
 
@@ -48,7 +48,6 @@ class LaunchPageController extends GetxController {
       //已经是用户模式，不用再请求
       await Get.find<Application>().initNetPush();
       NativeUtils.instance.startSearchNotificationBar();
-      isB = true;
       _isCloakComplete = true;
       return;
     }
@@ -68,9 +67,6 @@ class LaunchPageController extends GetxController {
     if (result.data == okStr) {
       //缓存
       await sp.setBool("isOpenUser", true);
-      isB = true;
-    } else {
-      isB = false;
     }
   }
 
@@ -107,7 +103,7 @@ class LaunchPageController extends GetxController {
     // await AdUtils.instance.loadAd(AdPosId.open, adSense: AdScene.open_cool);
 
     bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
-    AppLog.i("启动页加载广告 isB：$isB, isBShowOpenAd:$isBShowOpenAd，isFirstAppLaunch:${bus.isFirstAppLaunch}");
+    AppLog.i("启动页加载广告 isB：$isB，isFirstAppLaunch:${bus.isFirstAppLaunch}, remote first open:$isBShowOpenAd");
 
     if (isA) {
       if (bus.isFirstAppLaunch) {

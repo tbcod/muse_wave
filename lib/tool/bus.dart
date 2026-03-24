@@ -12,7 +12,7 @@ class Bus {
 
   bool get isBMode {
     bool isOpenUser = museSp.getBool("isOpenUser");
-    AppLog.i("isBMode:$isOpenUser");
+    // AppLog.i("isBMode:$isOpenUser");
     return isOpenUser;
   }
 

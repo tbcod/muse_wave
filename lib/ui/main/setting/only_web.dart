@@ -9,62 +9,18 @@ class OnlyWeb extends GetView<OnlyWebController> {
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => OnlyWebController());
-    var isLoading = true.obs;
-    //1用户协议2隐私政策
-    var type = Get.arguments;
-    var url = "https://";
-    var title = "";
-    //TODO 隐私和协议
-    if (type == 1) {
-      url = GetPlatform.isIOS ? "" : "https://muse-wave.com/terms/";
-      title = "Terms of Service".tr;
-    } else if (type == 2) {
-      url = GetPlatform.isIOS ? "" : "https://muse-wave.com/privacy/";
-      title = "Privacy Policy".tr;
-    }
-
-    var webC =
-        WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          // ..setBackgroundColor(const Color(0x00000000))
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onProgress: (int progress) {
-                // Update loading bar.
-              },
-              onPageStarted: (String url) {
-                isLoading.value = true;
-              },
-              onPageFinished: (String url) {
-                isLoading.value = false;
-              },
-              onWebResourceError: (WebResourceError error) {
-                isLoading.value = false;
-              },
-              // onNavigationRequest: (NavigationRequest request) {
-              //   if (request.url.startsWith('https://www.youtube.com/')) {
-              //     return NavigationDecision.prevent;
-              //   }
-              //   return NavigationDecision.navigate;
-              // },
-            ),
-          )
-          ..loadRequest(Uri.parse(url));
 
     return BasePage(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
-            AppBar(title: Text(title)),
+            AppBar(title: Text(controller.title)),
             Expanded(
-              child: Container(
-                child: Obx(
-                  () =>
-                      isLoading.value
-                          ? Center(child: CircularProgressIndicator())
-                          : WebViewWidget(controller: webC),
-                ),
+              child: Obx(
+                () => controller.isLoading.value
+                    ? Center(child: CircularProgressIndicator(strokeWidth: 2.5))
+                    : WebViewWidget(controller: controller.webC),
               ),
             ),
             SizedBox(height: Get.mediaQuery.padding.bottom),
@@ -75,4 +31,52 @@ class OnlyWeb extends GetView<OnlyWebController> {
   }
 }
 
-class OnlyWebController extends GetxController {}
+class OnlyWebController extends GetxController {
+  late final WebViewController webC;
+  final isLoading = true.obs;
+  String title = '';
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    //1用户协议2隐私政策
+    var type = Get.arguments;
+    var url = "https://";
+    //TODO 隐私和协议
+    if (type == 1) {
+      url = GetPlatform.isIOS ? "" : "https://muse-wave.com/terms/";
+      title = "Terms of Service".tr;
+    } else if (type == 2) {
+      url = GetPlatform.isIOS ? "" : "https://muse-wave.com/privacy/";
+      title = "Privacy Policy".tr;
+    } else if (type == 3) {
+      url = GetPlatform.isIOS ? "" : "https://tinyurl.com/23kn5asf";
+      title = "";
+    }
+
+    webC = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {},
+          onPageStarted: (String url) {
+            isLoading.value = true;
+          },
+          onPageFinished: (String url) {
+            isLoading.value = false;
+          },
+          onWebResourceError: (WebResourceError error) {
+            isLoading.value = false;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(url));
+  }
+
+  @override
+  void onClose() {
+    webC.loadRequest(Uri.parse('about:blank'));
+    super.onClose();
+  }
+}
