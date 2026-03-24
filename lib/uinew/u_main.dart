@@ -93,7 +93,7 @@ class UserMain extends GetView<UserMainController> {
                     }).toList(),
               ),
             ),
-            Container(alignment: Alignment.center, child: BannerNativeAdView(adKey: "normalbanner", adScene: AdScene.home, isSmall: true)),
+            Container(alignment: Alignment.center, child: BannerNativeAdView(posId: AdPosId.normalbanner, adScene: AdScene.home, isSmall: true)),
             SizedBox(height: Get.mediaQuery.padding.bottom),
           ],
         ),

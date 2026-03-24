@@ -148,14 +148,19 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                 //           : Container(width: double.infinity, height: double.infinity, child: Center(child: CircularProgressIndicator())),
                                 // ),
                                 //广告
-                                if (!Get.isRegistered<UserMainController>() ||
-                                    (Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1))
-                                  Positioned.fill(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      child: BannerNativeAdView(adKey: "pagebanner", adScene: AdScene.play),
-                                    ),
-                                  ),
+                                // if (!Get.isRegistered<UserMainController>() ||
+                                //     (Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1))
+                                Obx(() {
+                                    if ((Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1)) {
+                                      return Positioned.fill(
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          child: BannerNativeAdView(posId: AdPosId.pagebanner, adScene: AdScene.play),
+                                        ),
+                                      );
+                                    }
+                                    return Container();
+                                  }),
                                 // Positioned.fill(child: Container(alignment: Alignment.center, child: PageAdmobNativeView())),
                               ],
                             ),
@@ -752,9 +757,9 @@ class UserPlayInfoController extends GetxController {
     await session.setActive(true);
 
     session.interruptionEventStream.listen((event) async {
-      if (event.begin) {
-        AppLog.i("interruptionEventStream: ${event.type.name}");
+      AppLog.i("interruptionEventStream begin:${event.begin}, type:${event.type.name}");
 
+      if (event.begin) {
         switch (event.type) {
           case AudioInterruptionType.duck:
             // AppLog.i("外部音乐开始duck");
@@ -777,17 +782,17 @@ class UserPlayInfoController extends GetxController {
         switch (event.type) {
           case AudioInterruptionType.duck:
             // The interruption ended and we should unduck.
-            AppLog.e("外部音乐结束duck");
+            // AppLog.e("外部音乐结束duck");
             break;
           case AudioInterruptionType.pause:
-            AppLog.e("外部音乐结束pause");
+            // AppLog.e("外部音乐结束pause");
             // The interruption ended and we should resume.
             // await player?.play();
             // isPlaying.value = player?.value.isPlaying ?? false;
             break;
 
           case AudioInterruptionType.unknown:
-            AppLog.e("外部音乐结束unknown");
+            // AppLog.e("外部音乐结束unknown");
             // The interruption ended but we should not resume.
             // await player?.pause();
             // isPlaying.value = player?.value.isPlaying ?? false;
@@ -803,8 +808,8 @@ class UserPlayInfoController extends GetxController {
     });
 
     session.devicesChangedEventStream.listen((event) {
-      AppLog.e('Devices added:   ${event.devicesAdded}');
-      AppLog.e('Devices removed: ${event.devicesRemoved}');
+      AppLog.i('Devices added:   ${event.devicesAdded},removed: ${event.devicesRemoved}');
+      // AppLog.e('Devices removed: ${event.devicesRemoved}');
       if (event.devicesRemoved.isNotEmpty) {
         //设备移除暂停
         player?.pause();
