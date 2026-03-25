@@ -241,7 +241,7 @@ class UserMainController extends GetxController {
     if (NativeUtils.instance.isStartInForegroundSearch) {
       Get.to(() => const UserSearch(), duration: Duration.zero);
     }
-    // Waveandsosa.bbGo();
+    Waveandsosa.bbGo();
   }
 
   @override
