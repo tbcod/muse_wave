@@ -266,6 +266,11 @@ class RemoteUtil {
   }
 
   Map<String, dynamic> get adJson {
+
+    if(kDebugMode){
+      return MuseConfig.adJsonAnd;
+    }
+
     if (_adJsonRef.isNotEmpty && ReferrerUtil.sh.isBuyReferrer && bus.isBMode) {
       try {
         Map oldMap = jsonDecode(_adJsonAnd);

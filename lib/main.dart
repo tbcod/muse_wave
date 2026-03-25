@@ -28,6 +28,7 @@ import 'package:muse_wave/tool/remote_utils.dart';
 import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:muse_wave/tool/tba/tba_util.dart';
 import 'package:muse_wave/ui/launch.dart';
+import 'package:muse_wave/uinew/main/home/u_play.dart';
 import 'package:muse_wave/uinew/main/u_home.dart';
 import 'package:muse_wave/uinew/main/u_library.dart';
 import 'package:path_provider/path_provider.dart';
@@ -281,7 +282,7 @@ class Application extends GetxService {
 
     FlutterError.onError = (errorDetails) {
       if (isIgnoreError(errorDetails.exception)) {
-        AppLog.e("异常【不上报】：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
+        AppLog.e("异常：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
       } else {
         AppLog.e("异常上报：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
         FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
@@ -290,7 +291,7 @@ class Application extends GetxService {
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
     PlatformDispatcher.instance.onError = (error, stack) {
       if (isIgnoreError(error)) {
-        AppLog.e("异常【不上报】PlatformDispatcher type:${error.runtimeType}, $error, $stack");
+        AppLog.e("异常PlatformDispatcher type:${error.runtimeType}, $error, $stack");
       } else {
         AppLog.e("异常上报：PlatformDispatcher onError:$error,$stack");
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);

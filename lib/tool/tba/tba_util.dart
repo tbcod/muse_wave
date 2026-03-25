@@ -41,7 +41,7 @@ class TbaUtils {
       return BaseModel(code: -1);
     }
 
-    AppLog.e("上报install");
+    AppLog.i("上报install");
 
     // return BaseModel(code: -1);
 
@@ -50,7 +50,7 @@ class TbaUtils {
 
     ReferrerDetails referrerDetails = await AndroidPlayInstallReferrer.installReferrer;
 
-    referrerDetails.googlePlayInstantParam;
+    // referrerDetails.googlePlayInstantParam;
 
     return TbaAnd.instance.postData(
       TbaType.install,

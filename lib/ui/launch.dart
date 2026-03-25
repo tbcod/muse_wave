@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -56,28 +58,41 @@ class LaunchPageController extends GetxController {
 
     var tempTime = DateTime.now();
     var result = await CUtil.instance.checkCloak();
-    _isCloakComplete = true;
+    if (result.data == null) {
+      await Future.delayed(Duration(seconds: 1));
+      result = await CUtil.instance.checkCloak();
+    }
 
-    AppLog.i("获取cloak结果:${result.data}， ${result.data == 'diesel' ? "user" : "cloak"}");
+    // if (kDebugMode && !MuseConfig.isUser) {
+    //   await Future.delayed(Duration(seconds: 3));
+    //   await sp.setBool("isOpenUser", false);
+    //   _isCloakComplete = true;
+    //   return;
+    // }
 
-    var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
-    EventUtils.instance.addEvent("cloak_get", data: {"time": doTime});
+
     //命中黑名单：sardonic
     //正常模式：excerpt
     var okStr = GetPlatform.isIOS ? "excerpt" : "diesel";
 
     if (result.data == okStr) {
-      //缓存
       await sp.setBool("isOpenUser", true);
     }
+    AppLog.i("获取user结果:${result.data}， ${result.data == 'diesel' ? "user" : "cloak"}");
+    var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
+    EventUtils.instance.addEvent("cloak_get", data: {"time": doTime});
+    _isCloakComplete = true;
   }
 
   @override
   void onReady() async {
     super.onReady();
     countdown();
+    await _userCheck();
     try {
-      await loadAd().timeout(Duration(seconds: _maxAppLaunchTime));
+      int timeoutSeconds = max(1, _maxAppLaunchTime - DateTime.now().difference(startTime).inSeconds);
+      AppLog.i("开始加载广告，剩余时间: ${timeoutSeconds}s");
+      await loadAd().timeout(Duration(seconds: timeoutSeconds));
       await showAd();
     } on TimeoutException catch (e) {
       AppLog.e("loadAd time out: ${e.duration?.inSeconds}s");
@@ -87,25 +102,21 @@ class LaunchPageController extends GetxController {
     toMainPage();
   }
 
-  Future loadAd() async {
-    // AppLog.e("启动页加载广告");
-    //
-    // //判断第一次是否加载
-    // // var sp = await SharedPreferences.getInstance();
-    // // var isFirstLoadAd = sp.getBool("isFirstLoadAd") ?? true;
-    //
-    // if (bus.isFirstAppLaunch && !RemoteUtil.shareInstance.isShowOpenAd) {
-    //   AppLog.i("第一次不加载广告");
-    //   // sp.setBool("isFirstLoadAd", false);
-    //   AdUtils.instance.loadAd(AdPosId.open, adSense: AdScene.open_cool);
-    //   return;
-    // }
-    // AppLog.i("不是第一次启动或者开关打开了，即将加载广告");
-    // // sp.setBool("isFirstLoadAd", false);
-    // await AdUtils.instance.loadAd(AdPosId.open, adSense: AdScene.open_cool);
+  Future _userCheck() async {
+    if (isA && !_isCloakComplete) {
+      double diff = (DateTime.now().difference(startTime)).inMilliseconds / 1000;
+      if (diff < _maxAppLaunchTime) {
+        AppLog.i("等待user请求完成，已等待${diff}s");
+        await Future.delayed(const Duration(milliseconds: 500));
+        await _userCheck();
+        return;
+      }
+    }
+  }
 
+  Future loadAd() async {
     bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
-    AppLog.i("启动页加载广告 isB：$isB，首次启动:${bus.isFirstAppLaunch}, remote first open:$isBShowOpenAd");
+    AppLog.i("启动页加载广告 isB：$isB，首次启动:${bus.isFirstAppLaunch}, first open:$isBShowOpenAd");
 
     if (isA) {
       if (bus.isFirstAppLaunch) {
@@ -139,15 +150,6 @@ class LaunchPageController extends GetxController {
       return;
     }
 
-    if (!_isCloakComplete && isA) {
-      int diff = (DateTime.now().difference(startTime)).inSeconds;
-      if (diff >= _maxAppLaunchTime) {
-        return false;
-      }
-      await Future.delayed(const Duration(seconds: 1));
-      return showAd();
-    }
-
     if (isA) {
       if (!bus.isFirstAppLaunch) {
         AppLog.i("准备展示开屏广告(A非首次展示本地&local int)： ");
@@ -155,11 +157,10 @@ class LaunchPageController extends GetxController {
       }
     } else {
       if (!bus.isFirstAppLaunch || RemoteUtil.shareInstance.isShowOpenAd) {
-        AppLog.i("准备展示开屏广告(B展示open");
+        AppLog.i("准备展示开屏广告(B展示open)");
         await AdUtils.instance.showAd(AdPosId.open, adSense: AdScene.open_cool, forceLocalJson: bus.isFirstAppLaunch);
       }
     }
-
   }
 
   Future countdown() async {
@@ -173,10 +174,12 @@ class LaunchPageController extends GetxController {
       progress.value += 1 / seconds / 100;
     }
 
-    if (!isAdShow) {
-      //没有显示广告时才跳转
-      toMainPage();
-    }
+    // if (!isAdShow) {
+    //   //没有显示广告时才跳转
+    //   toMainPage();
+    // }
+
+    progress.value = 1;
 
     return true;
   }
@@ -185,38 +188,15 @@ class LaunchPageController extends GetxController {
   var isToMain = false;
 
   toMainPage() async {
-    if (!isToMain && !isClosed) {
-      isToMain = true;
-      progress.value = 1;
-
-      // Get.off(const MainPage());
-      // return;
-
-      // if (!MuseConfig.isUser) {
-      //   //TODO 测试A
-      //   // Get.off(const MainPage(), routeName: "/MainPage");
-      //   // return;
-      //
-      //   // EventUtils.instance.addEvent("enter_home");
-      //   // EventUtils.instance.addEvent("home_source");
-      //   Get.off(const UserMain(), routeName: "/UserMain");
-      //   return;
-      // }
-
-      var sp = await SharedPreferences.getInstance();
-
-      var isOpenUser = sp.getBool("isOpenUser") ?? false;
-
-      if (isB) {
-        // EventUtils.instance.addEvent("enter_home");
-        // EventUtils.instance.addEvent("home_source");
-        Get.off(const UserMain(), routeName: "/UserMain");
-        return;
-      }
-      // EventUtils.instance.addEvent("enter_home");
-      // EventUtils.instance.addEvent("home_no");
-
-      Get.off(isOpenUser ? const UserMain() : const MainPage(), routeName: isOpenUser ? "/UserMain" : "/MainPage");
+    // if (!isToMain && !isClosed) {
+    //
+    // }
+    isToMain = true;
+    progress.value = 1;
+    if (isB) {
+      Get.off(const UserMain(), routeName: "/UserMain");
+    } else {
+      Get.off(const MainPage(), routeName: "/MainPage");
     }
   }
 }
@@ -238,7 +218,11 @@ class LaunchPage extends GetView<LaunchPageController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(clipBehavior: Clip.hardEdge, decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)), child: Image.asset("assets/img/logo.png", fit: BoxFit.cover, width: 36.w, height: 36.w)),
+                Container(
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
+                  child: Image.asset("assets/img/logo.png", fit: BoxFit.cover, width: 36.w, height: 36.w),
+                ),
                 SizedBox(width: 12.w),
                 Text(MuseConfig.appName, style: TextStyle(fontSize: 16.w)),
               ],

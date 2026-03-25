@@ -1341,9 +1341,14 @@ class HomePageController extends GetxController
 
       var file = result.files.single;
 
-      final metadata = await readMetadata(File(file.path!), getImage: true);
+      final metadata =   readMetadata(File(file.path!), getImage: true);
       // final metadata = await MetadataRetriever.fromFile(File(file.path!));
-      String? trackName = "${metadata.title} - ${metadata.artist}";
+      String? trackName;
+      if(metadata.title != null && metadata.artist != null) {
+        trackName = "${metadata.title} - ${metadata.artist}";
+      }else{
+        trackName = metadata.title ?? file.name;
+      }
 
       AppLog.e("pictures:${metadata.pictures.length}");
       AppLog.e("album:${metadata.album}");
@@ -1381,17 +1386,17 @@ class HomePageController extends GetxController
       var id = Uuid().v8();
 
       //名字
-      var musicName = "";
-      if (trackName.isEmpty) {
-        musicName = file.name;
-      } else {
-        musicName = trackName;
-      }
+      // var musicName = "";
+      // if (trackName.isEmpty) {
+      //   musicName = file.name;
+      // } else {
+      //   musicName = trackName;
+      // }
 
       var itemData = {
         "id": id,
         "saveTime": DateTime.now(),
-        "title": musicName,
+        "title": trackName,
         "cover": albumArt,
         "fileData": file.bytes,
         // "mimeType": metadata.,

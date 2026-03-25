@@ -126,7 +126,8 @@ class AdUtils {
         //如果已经加载了并且没有超时就跳过
         int timeMs = loadedAdMap[ad_id]["timeMs"] ?? 0;
         //缓存过期时间
-        if (timeMs < DateTime.now().subtract(Duration(minutes: 55)).millisecondsSinceEpoch) {
+        int time = adPosId == AdPosId.open ? 1300 : 55; //分钟
+        if (timeMs < DateTime.now().subtract(Duration(minutes: time)).millisecondsSinceEpoch) {
           //已过期,删除广告重新加载
           //销毁广告后删除
 
@@ -643,7 +644,7 @@ class AdUtils {
     });
 
     //循环判断广告是否加载
-    AppLog.i("开始显示广告位:$key， ${configList.length}层， 场景：${adSense.name}， 本地json：$isLocalJson");
+    AppLog.i("开始显示广告位:$key，场景：${adSense.name}， 共${configList.length}层， 本地json：$isLocalJson");
 
     EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key, "ad_sense": adSense.name});
     var isShowAd = false;

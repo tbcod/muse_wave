@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:android_intent_plus/flag.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:muse_wave/generated/assets.dart';
+import 'package:muse_wave/muse_config.dart';
+import 'package:muse_wave/tool/ad/ump_util.dart';
 import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -83,11 +86,21 @@ class MainPageController extends GetxController {
     EventUtils.instance.addEvent("enter_home", data: {"source": "a"});
     EventUtils.instance.addEvent("home_no");
 
+    UmpUtil.sh.showUMP();
+
     //预加载广告
     AdUtils.instance.loadAd(AdPosId.behavior, adSense: AdScene.play, forceLocalJson: bus.isFirstAppLaunch);
 
     //设置网络监听，成功后打开B面
     subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
+
+      // if (kDebugMode && !MuseConfig.isUser) {
+      //   await Future.delayed(Duration(seconds: 3));
+      //   await museSp.setBool("isOpenUser", false);
+      //   return;
+      // }
+
+
       var result = await CUtil.instance.checkCloak();
 
       //监听到网络变化重新请求一次

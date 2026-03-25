@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ump_util.dart';
 import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/native_utils.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
@@ -146,6 +147,8 @@ class UserMainController extends GetxController {
     EventUtils.instance.addEvent("home_source");
 
     Get.put(UserPlayInfoController());
+
+    UmpUtil.sh.showUMP();
 
     //注册下载
     initData();

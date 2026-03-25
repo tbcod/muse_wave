@@ -68,21 +68,12 @@ class PlayPage extends GetView<PlayPageController> {
                             child: Obx(
                               () => Text(
                                 "Song",
-                                style: TextStyle(
-                                  color:
-                                      controller.tabIndex.value == 0
-                                          ? Color(0xff141414)
-                                          : Color(0xff141414).withOpacity(0.5),
-                                ),
+                                style: TextStyle(color: controller.tabIndex.value == 0 ? Color(0xff141414) : Color(0xff141414).withOpacity(0.5)),
                               ),
                             ),
                           ),
                         ),
-                        Container(
-                          width: 2.w,
-                          height: 14.w,
-                          color: Color(0xff141414).withOpacity(0.15),
-                        ),
+                        Container(width: 2.w, height: 14.w, color: Color(0xff141414).withOpacity(0.15)),
                         InkWell(
                           onTap: () {
                             controller.tabIndex.value = 1;
@@ -92,12 +83,7 @@ class PlayPage extends GetView<PlayPageController> {
                             child: Obx(
                               () => Text(
                                 "Lyrics",
-                                style: TextStyle(
-                                  color:
-                                      controller.tabIndex.value == 1
-                                          ? Color(0xff141414)
-                                          : Color(0xff141414).withOpacity(0.5),
-                                ),
+                                style: TextStyle(color: controller.tabIndex.value == 1 ? Color(0xff141414) : Color(0xff141414).withOpacity(0.5)),
                               ),
                             ),
                           ),
@@ -110,8 +96,7 @@ class PlayPage extends GetView<PlayPageController> {
                             controller.tabIndex.value == 0
                                 ? Container(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       // Container(
@@ -120,28 +105,17 @@ class PlayPage extends GetView<PlayPageController> {
                                       //   color: Colors.grey,
                                       // ),
                                       Obx(() {
-                                        Uint8List? cover =
-                                            controller.nowData["cover"];
+                                        Uint8List? cover = controller.nowData["cover"];
 
                                         return Container(
                                           height: 327.w,
                                           width: 327.w,
                                           clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              15.w,
-                                            ),
-                                          ),
+                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.w)),
                                           child:
                                               cover == null
-                                                  ? Image.asset(
-                                                    Assets.imgIconPcover,
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                  : Image.memory(
-                                                    cover,
-                                                    fit: BoxFit.cover,
-                                                  ),
+                                                  ? Image.asset(Assets.imgIconPcover, fit: BoxFit.cover)
+                                                  : Image.memory(cover, fit: BoxFit.cover),
                                         );
                                       }),
 
@@ -151,10 +125,7 @@ class PlayPage extends GetView<PlayPageController> {
                                         width: 327.w,
                                         child: Obx(() {
                                           return TextScroll(
-                                            (controller.nowData["title"]
-                                                        ?.toString() ??
-                                                    "")
-                                                .replaceAll("\n", ""),
+                                            (controller.nowData["title"]?.toString() ?? "").replaceAll("\n", ""),
                                             // maxLines: 2,
                                             // overflow: TextOverflow.ellipsis,
                                             style: TextStyle(fontSize: 22.w),
@@ -167,26 +138,16 @@ class PlayPage extends GetView<PlayPageController> {
                                 : Obx(() {
                                   return Container(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Container(
                                           height: 327.w,
                                           width: 327.w,
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 30.w,
-                                            vertical: 10.w,
-                                          ),
+                                          padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.w),
                                           alignment: Alignment.center,
                                           clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              15.w,
-                                            ),
-                                            color: Color(0xffF3F3F3),
-                                          ),
+                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.w), color: Color(0xffF3F3F3)),
                                           child: SingleChildScrollView(
                                             child: Container(
                                               width: double.infinity,
@@ -199,14 +160,9 @@ class PlayPage extends GetView<PlayPageController> {
                                               //     BoxConstraints(maxHeight: 300.w),
                                               alignment: Alignment.center,
                                               child: Text(
-                                                controller.nowData["lyrics"] ??
-                                                    "No lyrics",
+                                                controller.nowData["lyrics"] ?? "No lyrics",
                                                 textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 14.w,
-                                                  color: Colors.black
-                                                      .withOpacity(0.5),
-                                                ),
+                                                style: TextStyle(fontSize: 14.w, color: Colors.black.withOpacity(0.5)),
                                               ),
                                             ),
                                           ),
@@ -223,10 +179,7 @@ class PlayPage extends GetView<PlayPageController> {
                                           width: 327.w,
                                           child: Obx(() {
                                             return TextScroll(
-                                              (controller.nowData["title"]
-                                                          ?.toString() ??
-                                                      "")
-                                                  .replaceAll("\n", ""),
+                                              (controller.nowData["title"]?.toString() ?? "").replaceAll("\n", ""),
                                               // maxLines: 1,
                                               // overflow: TextOverflow.ellipsis,
                                               style: TextStyle(fontSize: 22.w),
@@ -356,24 +309,16 @@ class PlayPage extends GetView<PlayPageController> {
                                   trackHeight: 6,
                                   overlayShape: SliderComponentShape.noOverlay,
                                   // trackMargin: EdgeInsets.all(0),
-                                  allowedInteraction:
-                                      SliderInteraction.tapAndSlide,
-                                  tickMarkShape: RoundSliderTickMarkShape(
-                                    tickMarkRadius: 6,
-                                  ),
-                                  thumbShape: RoundSliderThumbShape(
-                                    enabledThumbRadius: 7,
-                                    disabledThumbRadius: 7,
-                                  ),
+                                  allowedInteraction: SliderInteraction.tapAndSlide,
+                                  tickMarkShape: RoundSliderTickMarkShape(tickMarkRadius: 6),
+                                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 7, disabledThumbRadius: 7),
                                 ),
                                 child: Slider(
                                   value: controller.sliderValue.value,
                                   onChanged: (value) {
                                     //计算时间
                                     controller.sliderValue.value = value;
-                                    controller.player.seek(
-                                      controller.maxD * value,
-                                    );
+                                    controller.player.seek(controller.maxD * value);
                                   },
 
                                   // onChangeEnd: (value) async {
@@ -391,9 +336,7 @@ class PlayPage extends GetView<PlayPageController> {
                                   // secondaryTrackValue: maxBuffering / duration,
                                   // secondaryActiveColor:
                                   //     Color(0xff8C48FF).withOpacity(0.35),
-                                  inactiveColor: Color(
-                                    0xffFF9020,
-                                  ).withOpacity(0.2),
+                                  inactiveColor: Color(0xffFF9020).withOpacity(0.2),
                                 ),
                               ),
                             ),
@@ -404,25 +347,9 @@ class PlayPage extends GetView<PlayPageController> {
                               padding: EdgeInsets.symmetric(horizontal: 5.w),
                               child: Row(
                                 children: [
-                                  Text(
-                                    controller.playTime.value,
-                                    style: TextStyle(
-                                      fontSize: 10.w,
-                                      color: Color(
-                                        0xff141414,
-                                      ).withOpacity(0.75),
-                                    ),
-                                  ),
+                                  Text(controller.playTime.value, style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
                                   Spacer(),
-                                  Text(
-                                    controller.maxTime.value,
-                                    style: TextStyle(
-                                      fontSize: 10.w,
-                                      color: Color(
-                                        0xff141414,
-                                      ).withOpacity(0.75),
-                                    ),
-                                  ),
+                                  Text(controller.maxTime.value, style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
                                 ],
                               ),
                             ),
@@ -438,11 +365,7 @@ class PlayPage extends GetView<PlayPageController> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           InkWell(
-                            child: Container(
-                              width: 32.w,
-                              height: 32.w,
-                              child: Image.asset("assets/img/icon_p_add.png"),
-                            ),
+                            child: Container(width: 32.w, height: 32.w, child: Image.asset("assets/img/icon_p_add.png")),
                             onTap: () {
                               controller.showAddList();
                             },
@@ -453,13 +376,7 @@ class PlayPage extends GetView<PlayPageController> {
                               child: Container(
                                 width: 32.w,
                                 height: 32.w,
-                                child: Image.asset(
-                                  Assets.imgIconPL,
-                                  color:
-                                      controller.canLast.value
-                                          ? Colors.black
-                                          : Colors.grey,
-                                ),
+                                child: Image.asset(Assets.imgIconPL, color: controller.canLast.value ? Colors.black : Colors.grey),
                               ),
                               onTap: () {
                                 if (!controller.canLast.value) {
@@ -475,11 +392,7 @@ class PlayPage extends GetView<PlayPageController> {
                               child: Container(
                                 width: 48.w,
                                 height: 48.w,
-                                child: Image.asset(
-                                  controller.isPlaying.value
-                                      ? "assets/img/icon_p_pause.png"
-                                      : "assets/img/icon_p_play.png",
-                                ),
+                                child: Image.asset(controller.isPlaying.value ? "assets/img/icon_p_pause.png" : "assets/img/icon_p_play.png"),
                               ),
                               onTap: () async {
                                 if (controller.isPlaying.value) {
@@ -497,13 +410,7 @@ class PlayPage extends GetView<PlayPageController> {
                               child: Container(
                                 width: 32.w,
                                 height: 32.w,
-                                child: Image.asset(
-                                  Assets.imgIconPN,
-                                  color:
-                                      controller.canNext.value
-                                          ? Colors.black
-                                          : Colors.grey,
-                                ),
+                                child: Image.asset(Assets.imgIconPN, color: controller.canNext.value ? Colors.black : Colors.grey),
                               ),
                               onTap: () {
                                 if (!controller.canNext.value) {
@@ -515,13 +422,7 @@ class PlayPage extends GetView<PlayPageController> {
                           }),
                           SizedBox(width: 35.w),
                           InkWell(
-                            child: Container(
-                              width: 32.w,
-                              height: 32.w,
-                              child: Image.asset(
-                                "assets/img/icon_p_playlist.png",
-                              ),
-                            ),
+                            child: Container(width: 32.w, height: 32.w, child: Image.asset("assets/img/icon_p_playlist.png")),
                             onTap: () {
                               controller.showPlaylist();
                             },
@@ -545,6 +446,7 @@ class PlayPage extends GetView<PlayPageController> {
 class PlayPageController extends GetxController {
   var tabIndex = 0.obs;
   var sliderValue = 0.0.obs;
+
   // FlutterSoundPlayer playerModule = FlutterSoundPlayer();
 
   var player = AudioPlayer(playerId: "music_muse_app_player");
@@ -560,6 +462,7 @@ class PlayPageController extends GetxController {
 
   //播放时长
   var playTime = "".obs;
+
   //最大时长
   var maxTime = "".obs;
   var maxD = Duration.zero;
@@ -595,6 +498,7 @@ class PlayPageController extends GetxController {
   StreamSubscription? _positionSubscription;
   StreamSubscription? _playerCompleteSubscription;
   StreamSubscription? _playerStateChangeSubscription;
+
   playMusic(int index) async {
     if (isPlaying.value) {
       await player.pause();
@@ -623,12 +527,7 @@ class PlayPageController extends GetxController {
     canNext.value = canPlayNext();
 
     player.setReleaseMode(ReleaseMode.stop);
-    player.play(
-      BytesSource(
-        playList[index]["fileData"],
-        mimeType: playList[index]["mimeType"] ?? "audio/mp3",
-      ),
-    );
+    player.play(BytesSource(playList[index]["fileData"], mimeType: playList[index]["mimeType"] ?? "audio/mp3"));
 
     isPlaying.value = true;
 
@@ -652,33 +551,24 @@ class PlayPageController extends GetxController {
       var coverPath = "";
       if (nowData["cover"] != null) {
         //有封面图
-        var file =
-            await File(
-              "${(await getTemporaryDirectory()).path}/img_${Uuid().v8()}.jpg",
-            ).create();
+        var file = await File("${(await getTemporaryDirectory()).path}/img_${Uuid().v8()}.jpg").create();
         await file.writeAsBytes(nowData["cover"]);
         coverPath = file.path;
       }
-      var item = MediaItem(
-        id: nowData["id"],
-        title: nowData["title"],
-        duration: maxD,
-        artUri: coverPath.isEmpty ? null : Uri.file(coverPath),
-      );
+      var item = MediaItem(id: nowData["id"], title: nowData["title"], duration: maxD, artUri: coverPath.isEmpty ? null : Uri.file(coverPath));
       myHandler?.showItem(item);
     });
     _positionSubscription = player.onPositionChanged.listen((p) {
-      sliderValue.value =
-          p.inMilliseconds.toDouble() / maxD.inMilliseconds.toDouble();
+      sliderValue.value = maxD.inMilliseconds > 0
+          ? (p.inMilliseconds.toDouble() / maxD.inMilliseconds.toDouble()).clamp(0.0, 1.0)
+          : 0.0;
 
       playTime.value = formatDuration(p);
 
       //更新进度
       myHandler?._updateState();
     });
-    _playerStateChangeSubscription = player.onPlayerStateChanged.listen((
-      state,
-    ) {
+    _playerStateChangeSubscription = player.onPlayerStateChanged.listen((state) {
       AppLog.e(state.name);
       isPlaying.value = state == PlayerState.playing;
       //更新状态
@@ -717,6 +607,7 @@ class PlayPageController extends GetxController {
   }
 
   OverlayEntry? _overlayEntry;
+
   showFloatingWidget() {
     if (nowData.isEmpty) {
       return;
@@ -726,12 +617,7 @@ class PlayPageController extends GetxController {
       builder: (c) {
         return Obx(() {
           return Positioned(
-            bottom:
-                (Get.find<Application>().isMainPage.value
-                    ? kBottomNavigationBarHeight
-                    : 0) +
-                Get.mediaQuery.padding.bottom +
-                8.w,
+            bottom: (Get.find<Application>().isMainPage.value ? kBottomNavigationBarHeight : 0) + Get.mediaQuery.padding.bottom + 8.w,
             left: 0,
             right: 0,
             child: Material(
@@ -744,22 +630,11 @@ class PlayPageController extends GetxController {
                     },
                     child: Container(
                       width: double.infinity,
-                      padding: EdgeInsets.only(
-                        left: 24.w,
-                        right: 16.w,
-                        top: 9.w,
-                        bottom: 9.w,
-                      ),
+                      padding: EdgeInsets.only(left: 24.w, right: 16.w, top: 9.w, bottom: 9.w),
                       margin: EdgeInsets.symmetric(horizontal: 8.w),
                       decoration: BoxDecoration(
                         color: Color(0xffE8EFFD),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0xff474747).withOpacity(0.06),
-                            blurRadius: 5.w,
-                            spreadRadius: 2.w,
-                          ),
-                        ],
+                        boxShadow: [BoxShadow(color: Color(0xff474747).withOpacity(0.06), blurRadius: 5.w, spreadRadius: 2.w)],
                         borderRadius: BorderRadius.circular(27.w),
                       ),
                       child: Row(
@@ -772,30 +647,14 @@ class PlayPageController extends GetxController {
                               height: 36.w,
                               width: 36.w,
                               clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(2.w),
-                              ),
-                              child:
-                                  cover == null
-                                      ? Image.asset(
-                                        Assets.imgIconDef,
-                                        fit: BoxFit.cover,
-                                      )
-                                      : Image.memory(cover, fit: BoxFit.cover),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
+                              child: cover == null ? Image.asset(Assets.imgIconDef, fit: BoxFit.cover) : Image.memory(cover, fit: BoxFit.cover),
                             );
                           }),
 
                           SizedBox(width: 12.w),
                           //标题
-                          Expanded(
-                            child: Obx(
-                              () => Text(
-                                nowData["title"],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
+                          Expanded(child: Obx(() => Text(nowData["title"], maxLines: 1, overflow: TextOverflow.ellipsis))),
 
                           //按钮
                           Obx(
@@ -803,11 +662,7 @@ class PlayPageController extends GetxController {
                               child: Container(
                                 width: 32.w,
                                 height: 32.w,
-                                child: Image.asset(
-                                  isPlaying.value
-                                      ? Assets.imgIconBarS
-                                      : Assets.imgIconBarP,
-                                ),
+                                child: Image.asset(isPlaying.value ? Assets.imgIconBarS : Assets.imgIconBarP),
                               ),
                               onTap: () async {
                                 if (isPlaying.value) {
@@ -817,31 +672,18 @@ class PlayPageController extends GetxController {
 
                                   //暂停其他页面的播放
                                   if (Get.isRegistered<AddLyricsController>()) {
-                                    if (Get.find<AddLyricsController>()
-                                        .isPlaying
-                                        .value) {
-                                      Get.find<AddLyricsController>()
-                                          .pausePlay();
+                                    if (Get.find<AddLyricsController>().isPlaying.value) {
+                                      Get.find<AddLyricsController>().pausePlay();
                                     }
                                   }
-                                  if (Get.isRegistered<
-                                    LyricsInfoController
-                                  >()) {
-                                    if (Get.find<LyricsInfoController>()
-                                        .isPlaying
-                                        .value) {
-                                      Get.find<LyricsInfoController>()
-                                          .pausePlay();
+                                  if (Get.isRegistered<LyricsInfoController>()) {
+                                    if (Get.find<LyricsInfoController>().isPlaying.value) {
+                                      Get.find<LyricsInfoController>().pausePlay();
                                     }
                                   }
-                                  if (Get.isRegistered<
-                                    CreateMusicLyricsController
-                                  >()) {
-                                    if (Get.find<CreateMusicLyricsController>()
-                                        .isPlaying
-                                        .value) {
-                                      Get.find<CreateMusicLyricsController>()
-                                          .pausePlay();
+                                  if (Get.isRegistered<CreateMusicLyricsController>()) {
+                                    if (Get.find<CreateMusicLyricsController>().isPlaying.value) {
+                                      Get.find<CreateMusicLyricsController>().pausePlay();
                                     }
                                   }
                                 }
@@ -856,13 +698,7 @@ class PlayPageController extends GetxController {
                               child: Container(
                                 width: 32.w,
                                 height: 32.w,
-                                child: Image.asset(
-                                  Assets.imgIconBarN,
-                                  color:
-                                      canNext.value
-                                          ? Colors.black
-                                          : Colors.grey,
-                                ),
+                                child: Image.asset(Assets.imgIconBarN, color: canNext.value ? Colors.black : Colors.grey),
                               ),
                               onTap: () {
                                 if (!canNext.value) {
@@ -916,11 +752,7 @@ class PlayPageController extends GetxController {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffE9F0FC), Color(0xfffafafa)],
-          ),
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffE9F0FC), Color(0xfffafafa)]),
         ),
         child: Column(
           children: [
@@ -928,10 +760,7 @@ class PlayPageController extends GetxController {
               margin: EdgeInsets.symmetric(horizontal: 16.w),
               child: Row(
                 children: [
-                  Text(
-                    "Playlist（${playList.length}）",
-                    style: TextStyle(fontSize: 20.w),
-                  ),
+                  Text("Playlist（${playList.length}）", style: TextStyle(fontSize: 20.w)),
                   // Spacer(),
                   // IconButton(
                   //     onPressed: () {
@@ -980,11 +809,7 @@ class PlayPageController extends GetxController {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffE9F0FC), Color(0xfffafafa)],
-          ),
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffE9F0FC), Color(0xfffafafa)]),
         ),
         child: Column(
           children: [
@@ -1002,19 +827,12 @@ class PlayPageController extends GetxController {
                       Get.to(AddList(addMap: Map.of(nowData.value)));
                     },
                     child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.w),
-                        color: Color(0xffBAD1FF),
-                      ),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w), color: Color(0xffBAD1FF)),
                       height: 30.w,
                       width: 72.w,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add, size: 14.w),
-                          SizedBox(width: 6.w),
-                          Text("New", style: TextStyle(fontSize: 12.w)),
-                        ],
+                        children: [Icon(Icons.add, size: 14.w), SizedBox(width: 6.w), Text("New", style: TextStyle(fontSize: 12.w))],
                       ),
                     ),
                   ),
@@ -1079,13 +897,8 @@ class PlayPageController extends GetxController {
                 height: 52.w,
                 width: 52.w,
                 clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6.w),
-                ),
-                child:
-                    cover == null
-                        ? Image.asset(Assets.imgIconDef)
-                        : Image.memory(cover),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                child: cover == null ? Image.asset(Assets.imgIconDef) : Image.memory(cover),
               ),
               SizedBox(width: 12.w),
 
@@ -1094,9 +907,7 @@ class PlayPageController extends GetxController {
                   item["title"],
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: isCheck ? Color(0xff6898FC) : Colors.black,
-                  ),
+                  style: TextStyle(color: isCheck ? Color(0xff6898FC) : Colors.black),
                 ),
               ),
               SizedBox(width: 35.w),
@@ -1142,9 +953,7 @@ class PlayPageController extends GetxController {
         //判断是否添加过当前歌曲
         if (childList.map((e) => e["id"]).toList().contains(nowData["id"])) {
           //已经添加过
-          ToastUtil.showToast(
-            msg: "This song has already been added to this playlist",
-          );
+          ToastUtil.showToast(msg: "This song has already been added to this playlist");
           return;
         }
 
@@ -1193,19 +1002,13 @@ class PlayPageController extends GetxController {
                             ? Container(
                               width: 50.w,
                               height: 50.w,
-                              decoration: BoxDecoration(
-                                color: Color(0xff191919),
-                                borderRadius: BorderRadius.circular(25.w),
-                              ),
+                              decoration: BoxDecoration(color: Color(0xff191919), borderRadius: BorderRadius.circular(25.w)),
                             )
                             : Container(
                               width: 46.w,
                               height: 46.w,
                               margin: EdgeInsets.only(right: 6.w),
-                              decoration: BoxDecoration(
-                                color: Color(0xff141414).withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(4.w),
-                              ),
+                              decoration: BoxDecoration(color: Color(0xff141414).withOpacity(0.2), borderRadius: BorderRadius.circular(4.w)),
                             ),
                   ),
 
@@ -1213,13 +1016,8 @@ class PlayPageController extends GetxController {
                     height: 56.w,
                     width: 56.w,
                     clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6.w),
-                    ),
-                    child:
-                        cover == null
-                            ? Image.asset(Assets.imgIconDef)
-                            : Image.memory(cover, fit: BoxFit.cover),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                    child: cover == null ? Image.asset(Assets.imgIconDef) : Image.memory(cover, fit: BoxFit.cover),
                   ),
                 ],
               ),
@@ -1231,20 +1029,9 @@ class PlayPageController extends GetxController {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    item["title"],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 16.w),
-                  ),
+                  Text(item["title"], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.w)),
                   SizedBox(height: 12.w),
-                  Text(
-                    "${childList.length} songs",
-                    style: TextStyle(
-                      fontSize: 12.w,
-                      color: Color(0xff141414).withOpacity(0.75),
-                    ),
-                  ),
+                  Text("${childList.length} songs", style: TextStyle(fontSize: 12.w, color: Color(0xff141414).withOpacity(0.75))),
                 ],
               ),
             ),
@@ -1301,6 +1088,7 @@ class PlayPageController extends GetxController {
   }
 
   AudioSession? session;
+
   @override
   void onInit() async {
     super.onInit();
@@ -1316,7 +1104,7 @@ class PlayPageController extends GetxController {
           case AudioInterruptionType.unknown:
             // Another app started playing audio and we should pause.
 
-            await player.pause();
+            // await player.pause();
             // if (Get.find<Application>().isAppBack) {
             //   isPlaying.value = player?.value.isPlaying ?? false;
             // }
@@ -1330,11 +1118,11 @@ class PlayPageController extends GetxController {
             break;
           case AudioInterruptionType.pause:
             // The interruption ended and we should resume.
-            await player.pause();
+            // await player.pause();
             break;
           case AudioInterruptionType.unknown:
             // The interruption ended but we should not resume.
-            await player.resume();
+            // await player.resume();
 
             break;
         }
@@ -1403,33 +1191,29 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   }
 
   @override
-  Future<void> skipToNext() {
-    return Get.find<PlayPageController>().playNext();
+  Future<void> skipToNext() async {
+    if (Get.find<PlayPageController>().canNext.value) {
+      return Get.find<PlayPageController>().playNext();
+    }
   }
 
   @override
-  Future<void> skipToPrevious() {
-    return Get.find<PlayPageController>().playLast();
+  Future<void> skipToPrevious() async {
+    if (Get.find<PlayPageController>().canLast.value) {
+      return Get.find<PlayPageController>().playLast();
+    }
   }
 
   _updateState() async {
     playbackState.add(
       PlaybackState(
         controls: [
-          if (Get.find<PlayPageController>().canLast.value)
-            MediaControl.skipToPrevious,
-          _player.state == PlayerState.playing
-              ? MediaControl.pause
-              : MediaControl.play,
-          if (Get.find<PlayPageController>().canNext.value)
-            MediaControl.skipToNext,
+          MediaControl.skipToPrevious,
+          _player.state == PlayerState.playing ? MediaControl.pause : MediaControl.play,
+          MediaControl.skipToNext,
         ],
         // Which other actions should be enabled in the notification
-        systemActions: {
-          MediaAction.seek,
-          MediaAction.seekForward,
-          MediaAction.seekBackward,
-        },
+        systemActions: {MediaAction.seek, MediaAction.seekForward, MediaAction.seekBackward},
         // Which controls to show in Android's compact view.
         // androidCompactActionIndices: const [0, 1, 3],
         // Whether audio is ready, buffering, ...
