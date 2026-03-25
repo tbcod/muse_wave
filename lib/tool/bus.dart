@@ -31,7 +31,7 @@ class Bus {
     museSp.setInt('KeyAppLaunchCount', getAppLaunchCount + 1);
   }
 
-  bool get isFirstShowAd {
+  bool get isBehaviorFirstShowAd {
     bool isFirst = museSp.getBool('KeyIsFirstShowAd', def: true);
     return isFirst;
   }

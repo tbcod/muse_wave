@@ -8,6 +8,7 @@ import 'package:muse_wave/main.dart';
 import 'package:muse_wave/muse_config.dart';
 import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/native_utils.dart';
+import 'package:muse_wave/tool/referrer_util.dart';
 import 'package:muse_wave/tool/remote_utils.dart';
 import 'package:muse_wave/ui/main_page.dart';
 import 'package:muse_wave/view/base_view.dart';
@@ -40,6 +41,7 @@ class LaunchPageController extends GetxController {
   bindData() async {
     EventUtils.instance.addEvent("open_click");
     bus.setAppLaunchCount();
+    ReferrerUtil.sh.init();
 
     var sp = await SharedPreferences.getInstance();
 
@@ -103,7 +105,7 @@ class LaunchPageController extends GetxController {
     // await AdUtils.instance.loadAd(AdPosId.open, adSense: AdScene.open_cool);
 
     bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
-    AppLog.i("启动页加载广告 isB：$isB，isFirstAppLaunch:${bus.isFirstAppLaunch}, remote first open:$isBShowOpenAd");
+    AppLog.i("启动页加载广告 isB：$isB，首次启动:${bus.isFirstAppLaunch}, remote first open:$isBShowOpenAd");
 
     if (isA) {
       if (bus.isFirstAppLaunch) {

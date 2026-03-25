@@ -151,16 +151,16 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                 // if (!Get.isRegistered<UserMainController>() ||
                                 //     (Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1))
                                 Obx(() {
-                                    if ((Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1)) {
-                                      return Positioned.fill(
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          child: BannerNativeAdView(posId: AdPosId.pagebanner, adScene: AdScene.play),
-                                        ),
-                                      );
-                                    }
-                                    return Container();
-                                  }),
+                                  if ((Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1)) {
+                                    return Positioned.fill(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        child: BannerNativeAdView(posId: AdPosId.pagebanner, adScene: AdScene.play),
+                                      ),
+                                    );
+                                  }
+                                  return Container();
+                                }),
                                 // Positioned.fill(child: Container(alignment: Alignment.center, child: PageAdmobNativeView())),
                               ],
                             ),
@@ -1374,13 +1374,14 @@ class UserPlayInfoController extends GetxController {
         player = VideoPlayerController.file(File(cachePath), videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
       } else {
         //请求播放数据
-        AppLog.i("请求播放数据");
 
         //加载和播放
         if (player != null) {
           player?.removeListener(playListener);
           player?.dispose();
         }
+
+        AppLog.i("请求播放数据: ${nowData["videoId"]}");
 
         var lasthttpvideoId = nowData["videoId"];
         var result = await ApiMain.instance.getVideoInfo(nowData["videoId"]);
@@ -1394,25 +1395,8 @@ class UserPlayInfoController extends GetxController {
           if (lasthttpvideoId == nowData["videoId"]) {
             //判断是否无网络
             final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
-            AppLog.i("当前网络：$connectivityResult");
             hasNetwork = connectivityResult.contains(ConnectivityResult.wifi) || connectivityResult.contains(ConnectivityResult.mobile);
-            if (!hasNetwork) {
-              AppLog.e("没有网络，不切换下一曲");
-            }
 
-            //如果是首页初始化，不播放下一首
-            if (!isOpenShowBar && hasNetwork && isAutoNext) {
-              if (_playNextCount < 5) {
-                _playNextCount++;
-                playNext(isAutoNext: true);
-                return;
-              }
-            }
-          }
-          if (!isOpenShowBar) {
-            if (!isAutoNext) {
-              ToastUtil.showToast(msg: "Play failed, Please try again");
-            }
             EventUtils.instance.addEvent(
               "play_num",
               data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]},
@@ -1426,6 +1410,23 @@ class UserPlayInfoController extends GetxController {
                 "reason": hasNetwork ? result.message ?? "url http fail" : "no network",
               },
             );
+
+            //如果是首页初始化，不播放下一首
+            if (!isOpenShowBar && hasNetwork && isAutoNext) {
+              if (_playNextCount < 6) {
+                _playNextCount++;
+                playNext(isAutoNext: true);
+                return;
+              }
+            }
+          }
+
+          if (!isOpenShowBar && !isAutoNext) {
+            if (!hasNetwork) {
+              ToastUtil.showToast(msg: "noNetwork".tr);
+            } else {
+              ToastUtil.showToast(msg: "Play failed, Please try again");
+            }
           }
           _playerReset();
           return;
@@ -1447,27 +1448,31 @@ class UserPlayInfoController extends GetxController {
         if (nowPlayUrl.isEmpty) {
           AppLog.e("获取url失败: ${result.data}");
 
+          final reason = result.data?["playabilityStatus"]?["reason"];
+          EventUtils.instance.addEvent(
+            "play_num",
+            data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]},
+          );
+          EventUtils.instance.addEvent(
+            "play_fail",
+            data: {
+              "song_id": nowData["videoId"],
+              "song_name": nowData["title"],
+              "artist_name": nowData["subtitle"],
+              "reason": reason ?? "Get url error",
+            },
+          );
+
           //播放下一个
-          if (!isOpenShowBar && isAutoNext) {
-            if (_playNextCount < 5) {
-              _playNextCount++;
-              playNext(isAutoNext: true);
-              return;
+          if (!isOpenShowBar) {
+            if (isAutoNext) {
+              if (_playNextCount < 6) {
+                _playNextCount++;
+                playNext(isAutoNext: true);
+                return;
+              }
             }
-            final reason = result.data?["playabilityStatus"]?["reason"];
-            EventUtils.instance.addEvent(
-              "play_num",
-              data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]},
-            );
-            EventUtils.instance.addEvent(
-              "play_fail",
-              data: {
-                "song_id": nowData["videoId"],
-                "song_name": nowData["title"],
-                "artist_name": nowData["subtitle"],
-                "reason": reason ?? "Get url error",
-              },
-            );
+
             if (!isAutoNext) {
               ToastUtil.showToast(msg: "Get url error".tr);
             }

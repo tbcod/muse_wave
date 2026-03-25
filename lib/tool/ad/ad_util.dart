@@ -56,6 +56,7 @@ class AdUtils {
     num wait = num.tryParse(adJson["sameinterval"].toString()) ?? 60;
     // AppLog.e("广告间隔\n${lastShowTime}\n${nowTime}\n${temp.inSeconds}---${wait}");
 
+
     if (temp.inSeconds > wait || temp.inSeconds < 0) {
       return true;
     } else {
@@ -87,7 +88,7 @@ class AdUtils {
       }
     }
 
-    AppLog.i("开始加载广告位:$key");
+    AppLog.i("开始加载广告位:$key, 场景：${adSense.name}，本地：$forceLocalJson");
     Map adJson = this.adJson;
     if (forceLocalJson) {
       adJson = MuseConfig.adJsonAnd;
@@ -566,13 +567,16 @@ class AdUtils {
 
     String key = adPosId.name;
     Map adJson = this.adJson;
+    bool isLocalJson = false;
     if (forceLocalJson) {
       adJson = MuseConfig.adJsonAnd;
+      isLocalJson = true;
     }
 
-    if (adPosId == AdPosId.behavior && bus.isFirstShowAd) {
+    if (adPosId == AdPosId.behavior && bus.isBehaviorFirstShowAd) {
       adJson = MuseConfig.adJsonAnd;
       bus.setFirstShowAd();
+      isLocalJson = true;
     }
 
     if (!adJson.containsKey(key)) {
@@ -639,7 +643,7 @@ class AdUtils {
     });
 
     //循环判断广告是否加载
-    AppLog.i("开始显示广告位:$key， ${configList.length}层");
+    AppLog.i("开始显示广告位:$key， ${configList.length}层， 场景：${adSense.name}， 本地json：$isLocalJson");
 
     EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key, "ad_sense": adSense.name});
     var isShowAd = false;

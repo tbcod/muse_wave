@@ -32,9 +32,10 @@ class TopOnUtils {
   StreamSubscription? rewardedStream;
 
   Future init() async {
+    DateTime start = DateTime.now();
     if (MuseConfig.isUser) {
       //正式环境
-      ATInitManger.initAnyThinkSDK(
+     await ATInitManger.initAnyThinkSDK(
         appidStr: 'h67d906f010107',
         appidkeyStr: 'a683874a73857b711c0b8df1b71deb07b',
       );
@@ -52,6 +53,8 @@ class TopOnUtils {
         print(e);
       }
     }
+    EventUtils.instance.addEvent("ad_initsuc", data: {"ad_source_client": "topon", "ad_init_time": DateTime.now().difference(start).inMilliseconds});
+
   }
 
   StreamSubscription? nativeStream;

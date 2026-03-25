@@ -1,10 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
-
-// import 'package:appsflyer_sdk/appsflyer_sdk.dart';
-import 'package:adjust_sdk/adjust.dart';
-import 'package:adjust_sdk/adjust_config.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_refresh/easy_refresh.dart';
@@ -38,7 +34,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:timezone/timezone.dart' as tz;
-// import 'package:video_player_media_kit/video_player_media_kit.dart';
 
 import 'lang/my_tr.dart';
 import 'muse_config.dart';
@@ -49,199 +44,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // VideoPlayerMediaKit.ensureInitialized(android: true);
   NativeUtils.instance.init();
+  AppLog.i("App开始启动");
   await Get.putAsync(() => Application().init());
   runApp(const MyApp());
-}
-
-class MyApp extends GetView {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // bindData();
-    Get.put(AppController());
-    final botToastBuilder = BotToastInit();
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      builder: (_, otherChild) {
-        return GetMaterialApp(
-          // color: Color(0xffECECF4),
-          builder: (c, child) {
-            child = GestureDetector(
-              child: Container(
-                // decoration: BoxDecoration(
-                //     color: Color(0xffECECF4),
-                //     image: DecorationImage(
-                //         fit: BoxFit.fill,
-                //         image: AssetImage("assets/img/bg_all.png"))),
-                child: child,
-              ),
-              onTap: () {
-                //空白处收起键盘
-                Get.focusScope?.unfocus();
-              },
-            );
-
-            child = botToastBuilder(c, child);
-            return child;
-          },
-          //1. call BotToastInit
-          navigatorObservers: [BotToastNavigatorObserver()],
-          //2. registered route observer
-          theme: ThemeData(
-            scaffoldBackgroundColor: Color(0xfff9f9f9),
-            splashColor: Colors.transparent,
-            // 点击时的高亮效果设置为透明
-            highlightColor: Colors.transparent,
-
-            // 长按时的扩散效果设置为透明
-            textTheme: TextTheme(bodyMedium: TextStyle(height: 1.2)),
-            bottomSheetTheme: BottomSheetThemeData(modalBarrierColor: Colors.red.withOpacity(0.43)),
-            appBarTheme: AppBarTheme(
-              systemOverlayStyle: getWhiteBarStyle(),
-              foregroundColor: Colors.black,
-              scrolledUnderElevation: 0,
-              titleSpacing: 0,
-              elevation: 0,
-              centerTitle: true,
-              titleTextStyle: TextStyle(fontSize: 18.w, color: Colors.black, fontWeight: FontWeight.bold),
-              backgroundColor: Colors.transparent,
-            ),
-          ),
-          title: MuseConfig.appName,
-          home: LaunchPage(),
-          localizationsDelegates: const [GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-          locale: MyTranslations.locale,
-          fallbackLocale: MyTranslations.fallbackLocale,
-          translations: MyTranslations(),
-          supportedLocales: const [
-            // Locale('cn', 'US'),
-            Locale('zh', 'CN'),
-          ],
-
-          routingCallback: (Routing? routing) async {
-            //路由跳转
-            if (routing?.current == "/MainPage" || routing?.current == "/UserMain") {
-              Get.find<Application>().isMainPage.value = true;
-            } else {
-              Get.find<Application>().isMainPage.value = false;
-            }
-          },
-        );
-      },
-    );
-  }
-}
-
-class AppController extends SuperController {
-  static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
-
-  @override
-  void onInit() async {
-    super.onInit();
-    AppLog.i("App开始启动");
-    bindData();
-  }
-
-  bindData() async {
-    TbaUtils.instance.postSession();
-    // var sp = await SharedPreferences.getInstance();
-    var isPostInstall = museSp.getBool("isPostInstall");
-
-    // AppLog.e("是否已经安装上报:$isPostInstall");
-
-    if (!isPostInstall) {
-      // var isNewUser = false;
-      //安装时间
-      await museSp.setInt("installTimeMs", DateTime.now().millisecondsSinceEpoch);
-      //安装上报
-      TbaUtils.instance.postInstall().then((value) {
-        AppLog.i("install事件:${value.toJson()}");
-        museSp.setBool("isPostInstall", true);
-        TbaUtils.instance.postUserData({"new_user": "new"});
-      });
-    } else {
-      //已经安装过了，先判断是否已经上报次留
-      // var isPostRated = sp.getBool("isPostRated") ?? false;
-      // if (!isPostRated) {
-      //   //判断是否是次留
-      //   var installTimeMs = sp.getInt("installTimeMs") ?? 0;
-      //   var tempTime = DateTime.fromMillisecondsSinceEpoch(installTimeMs)
-      //       .add(Duration(days: 1));
-      //   var nowT = DateTime.now();
-      //   if (tempTime.year == nowT.year &&
-      //       tempTime.month == nowT.month &&
-      //       tempTime.day == nowT.day) {
-      //     //是次留
-      //     FacebookAppEvents().logRated();
-      //     sp.setBool("isPostRated", true);
-      //   }
-      // }
-
-      //判断是否新用户
-      var isNewUser = false;
-      var installTimeMs = museSp.getInt("installTimeMs");
-      // var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs).difference(DateTime.now());
-      // isNewUser = tempD.inHours < 24;
-      // TbaUtils.instance.postUserData({"mw_new_user": isNewUser ? "new" : "old"});
-      if (installTimeMs > 0) {
-        var tempD = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(installTimeMs));
-        isNewUser = tempD.inHours < 24;
-        TbaUtils.instance.postUserData({"new_user": isNewUser ? "new" : "old"});
-      } else {
-        TbaUtils.instance.postUserData({"new_user": "new"});
-      }
-    }
-
-    AppStateEventNotifier.startListening();
-    AppStateEventNotifier.appStateStream.forEach((state) async {
-      if (state == AppState.foreground) {
-        Get.find<Application>().isAppBack = false;
-        AppLog.i("前台");
-        TbaUtils.instance.postSession();
-
-        //判断新老用户
-        var isNewUser = false;
-        var installTimeMs = museSp.getInt("installTimeMs");
-        if (installTimeMs > 0) {
-          var tempD = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(installTimeMs));
-          isNewUser = tempD.inHours < 24;
-          TbaUtils.instance.postUserData({"new_user": isNewUser ? "new" : "old"});
-        } else {
-          TbaUtils.instance.postUserData({"new_user": "new"});
-        }
-        var isOpenUser = museSp.getBool("isOpenUser");
-        if (isOpenUser) {
-          EventUtils.instance.addEvent("enter_home", data: {"source": "b"});
-          EventUtils.instance.addEvent("home_source");
-        } else {
-          EventUtils.instance.addEvent("enter_home", data: {"source": "a"});
-          EventUtils.instance.addEvent("home_no");
-        }
-        TbaUtils.instance.checkUnFinishedEvent();
-        AdUtils.instance.showAd(AdPosId.open, adSense: AdScene.open_hot);
-      } else if (state == AppState.background) {
-        Get.find<Application>().isAppBack = true;
-        TbaUtils.instance.checkUnFinishedEvent();
-        AppLog.i("后台");
-      }
-    });
-  }
-
-  @override
-  void onDetached() {}
-
-  @override
-  void onInactive() {}
-
-  @override
-  void onPaused() async {}
-
-  @override
-  void onResumed() async {}
-
-  @override
-  void onHidden() {}
 }
 
 class Application extends GetxService {
@@ -257,6 +62,68 @@ class Application extends GetxService {
   var isAppBack = false;
 
   bool isInitMessage = false;
+
+
+  Future<Application> init() async {
+
+    PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 1024 * 5; //设置缓存为5GB，避免图片太多经常重新加载
+    //竖屏
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    //沉浸状态栏
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
+    await MuseSP.instance.init();
+
+    // final sp = await SharedPreferences.getInstance();
+    //设置设备的uuid,每次重新安装后不一样
+    userAppUuid = museSp.getString("userAppUuid") ?? "";
+    if (userAppUuid.isEmpty) {
+      userAppUuid = const Uuid().v4();
+      await museSp.setString("userAppUuid", userAppUuid);
+    }
+
+    //设置语言
+    var lastLangCode = museSp.getString("lastLangCode") ?? "";
+    var lastLangCountryCode = museSp.getString("lastLangCountryCode") ?? "";
+    if (lastLangCode.isNotEmpty) {
+      MyTranslations.locale = Locale(lastLangCode, lastLangCountryCode);
+    }
+
+
+    // //设置下拉刷新
+    EasyRefresh.defaultHeaderBuilder = () {
+      return const ClassicHeader(iconTheme: IconThemeData(color: Color(0xff8569FF)), showMessage: false, showText: false, infiniteHitOver: true, processedDuration: Duration.zero);
+    };
+
+    EasyRefresh.defaultFooterBuilder = () {
+      return ClassicFooter(
+        iconTheme: IconThemeData(color: Color(0xff8569FF)),
+        failedText: "loadMoreFailStr".tr,
+        noMoreText: "noMoreStr".tr,
+        textStyle: TextStyle(color: Colors.black),
+        showMessage: false,
+        infiniteHitOver: true,
+        processedDuration: Duration.zero,
+      );
+    };
+
+    await initHive();
+
+    await initSdk();
+
+    await initLocTypeSo();
+
+    return this;
+  }
+
+
 
   Future initNetPush() async {
     // if (!MuseConfig.isUser) {
@@ -378,11 +245,13 @@ class Application extends GetxService {
   Future<void> initSdk() async {
     RemoteUtil.shareInstance.init();
     await Firebase.initializeApp();
-    // AppLog.e("firebase初始化完成");
-    //异步，否则会卡在启动
+
     initFireBaseOther();
 
+    AdjustUtil.instance.initSdk(userAppUuid);
+
     initAd();
+
   }
 
   initFireBaseOther() async {
@@ -466,75 +335,13 @@ class Application extends GetxService {
       Get.find<UserHomeController>().reloadHistory();
     }
 
-    AppLog.i("nowtypeso:$typeSo");
+    AppLog.i("changeTypeSo:$typeSo");
   }
 
   Future initLocTypeSo() async {
-    var sp = await SharedPreferences.getInstance();
-    typeSo = sp.getString("lastTypeSo") ?? "no";
-
-    AppLog.i("nowtypeso:$typeSo");
+    typeSo = museSp.getString("lastTypeSo") ?? "no";
+    AppLog.i("initLocTypeSo:$typeSo");
   }
-
-  Future<Application> init() async {
-    PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 1024 * 5; //设置缓存为5GB，避免图片太多经常重新加载
-    //竖屏
-    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    //沉浸状态栏
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-        statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Colors.white,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
-    );
-    await MuseSP.instance.init();
-
-    // final sp = await SharedPreferences.getInstance();
-    //设置设备的uuid,每次重新安装后不一样
-    userAppUuid = museSp.getString("userAppUuid") ?? "";
-    if (userAppUuid.isEmpty) {
-      userAppUuid = const Uuid().v4();
-      await museSp.setString("userAppUuid", userAppUuid);
-    }
-
-    //设置语言
-    var lastLangCode = museSp.getString("lastLangCode") ?? "";
-    var lastLangCountryCode = museSp.getString("lastLangCountryCode") ?? "";
-    if (lastLangCode.isNotEmpty) {
-      MyTranslations.locale = Locale(lastLangCode, lastLangCountryCode);
-    }
-
-    await initLocTypeSo();
-
-    // //设置下拉刷新
-    EasyRefresh.defaultHeaderBuilder = () {
-      return const ClassicHeader(iconTheme: IconThemeData(color: Color(0xff8569FF)), showMessage: false, showText: false, infiniteHitOver: true, processedDuration: Duration.zero);
-    };
-
-    EasyRefresh.defaultFooterBuilder = () {
-      return ClassicFooter(
-        iconTheme: IconThemeData(color: Color(0xff8569FF)),
-        failedText: "loadMoreFailStr".tr,
-        noMoreText: "noMoreStr".tr,
-        textStyle: TextStyle(color: Colors.black),
-        showMessage: false,
-        infiniteHitOver: true,
-        processedDuration: Duration.zero,
-      );
-    };
-
-    await initHive();
-    // await initAppsflyer();
-    AdjustUtil.instance.initSdk(userAppUuid);
-
-    await initSdk();
-
-    return this;
-  }
-
 
 
   // AppsflyerSdk? appsflyerSdk;
@@ -560,6 +367,198 @@ class Application extends GetxService {
     Hive.init(path.path);
   }
 }
+
+
+class MyApp extends GetView {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // bindData();
+    Get.put(MyAppController());
+    final botToastBuilder = BotToastInit();
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      builder: (_, otherChild) {
+        return GetMaterialApp(
+          // color: Color(0xffECECF4),
+          builder: (c, child) {
+            child = GestureDetector(
+              child: Container(
+                // decoration: BoxDecoration(
+                //     color: Color(0xffECECF4),
+                //     image: DecorationImage(
+                //         fit: BoxFit.fill,
+                //         image: AssetImage("assets/img/bg_all.png"))),
+                child: child,
+              ),
+              onTap: () {
+                //空白处收起键盘
+                Get.focusScope?.unfocus();
+              },
+            );
+
+            child = botToastBuilder(c, child);
+            return child;
+          },
+          //1. call BotToastInit
+          navigatorObservers: [BotToastNavigatorObserver()],
+          //2. registered route observer
+          theme: ThemeData(
+            scaffoldBackgroundColor: Color(0xfff9f9f9),
+            splashColor: Colors.transparent,
+            // 点击时的高亮效果设置为透明
+            highlightColor: Colors.transparent,
+
+            // 长按时的扩散效果设置为透明
+            textTheme: TextTheme(bodyMedium: TextStyle(height: 1.2)),
+            bottomSheetTheme: BottomSheetThemeData(modalBarrierColor: Colors.red.withOpacity(0.43)),
+            appBarTheme: AppBarTheme(
+              systemOverlayStyle: getWhiteBarStyle(),
+              foregroundColor: Colors.black,
+              scrolledUnderElevation: 0,
+              titleSpacing: 0,
+              elevation: 0,
+              centerTitle: true,
+              titleTextStyle: TextStyle(fontSize: 18.w, color: Colors.black, fontWeight: FontWeight.bold),
+              backgroundColor: Colors.transparent,
+            ),
+          ),
+          title: MuseConfig.appName,
+          home: LaunchPage(),
+          localizationsDelegates: const [GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+          locale: MyTranslations.locale,
+          fallbackLocale: MyTranslations.fallbackLocale,
+          translations: MyTranslations(),
+          supportedLocales: const [
+            // Locale('cn', 'US'),
+            Locale('zh', 'CN'),
+          ],
+
+          routingCallback: (Routing? routing) async {
+            //路由跳转
+            if (routing?.current == "/MainPage" || routing?.current == "/UserMain") {
+              Get.find<Application>().isMainPage.value = true;
+            } else {
+              Get.find<Application>().isMainPage.value = false;
+            }
+          },
+        );
+      },
+    );
+  }
+}
+
+class MyAppController extends SuperController {
+  static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
+  @override
+  void onInit() async {
+    super.onInit();
+    bindData();
+  }
+
+  bindData() async {
+    TbaUtils.instance.postSession();
+    // var sp = await SharedPreferences.getInstance();
+    var isPostInstall = museSp.getBool("isPostInstall");
+
+    // AppLog.e("是否已经安装上报:$isPostInstall");
+
+    if (!isPostInstall) {
+      // var isNewUser = false;
+      //安装时间
+      await museSp.setInt("installTimeMs", DateTime.now().millisecondsSinceEpoch);
+      //安装上报
+      TbaUtils.instance.postInstall().then((value) {
+        AppLog.i("install事件:${value.toJson()}");
+        museSp.setBool("isPostInstall", true);
+        TbaUtils.instance.postUserData({"new_user": "new"});
+      });
+    } else {
+      //已经安装过了，先判断是否已经上报次留
+      // var isPostRated = sp.getBool("isPostRated") ?? false;
+      // if (!isPostRated) {
+      //   //判断是否是次留
+      //   var installTimeMs = sp.getInt("installTimeMs") ?? 0;
+      //   var tempTime = DateTime.fromMillisecondsSinceEpoch(installTimeMs)
+      //       .add(Duration(days: 1));
+      //   var nowT = DateTime.now();
+      //   if (tempTime.year == nowT.year &&
+      //       tempTime.month == nowT.month &&
+      //       tempTime.day == nowT.day) {
+      //     //是次留
+      //     FacebookAppEvents().logRated();
+      //     sp.setBool("isPostRated", true);
+      //   }
+      // }
+
+      //判断是否新用户
+      var isNewUser = false;
+      var installTimeMs = museSp.getInt("installTimeMs");
+      // var tempD = DateTime.fromMillisecondsSinceEpoch(installTimeMs).difference(DateTime.now());
+      // isNewUser = tempD.inHours < 24;
+      // TbaUtils.instance.postUserData({"mw_new_user": isNewUser ? "new" : "old"});
+      if (installTimeMs > 0) {
+        var tempD = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(installTimeMs));
+        isNewUser = tempD.inHours < 24;
+        TbaUtils.instance.postUserData({"new_user": isNewUser ? "new" : "old"});
+      } else {
+        TbaUtils.instance.postUserData({"new_user": "new"});
+      }
+    }
+
+    AppStateEventNotifier.startListening();
+    AppStateEventNotifier.appStateStream.forEach((state) async {
+      if (state == AppState.foreground) {
+        Get.find<Application>().isAppBack = false;
+        AppLog.i("前台");
+        TbaUtils.instance.postSession();
+
+        //判断新老用户
+        var isNewUser = false;
+        var installTimeMs = museSp.getInt("installTimeMs");
+        if (installTimeMs > 0) {
+          var tempD = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(installTimeMs));
+          isNewUser = tempD.inHours < 24;
+          TbaUtils.instance.postUserData({"new_user": isNewUser ? "new" : "old"});
+        } else {
+          TbaUtils.instance.postUserData({"new_user": "new"});
+        }
+        var isOpenUser = museSp.getBool("isOpenUser");
+        if (isOpenUser) {
+          EventUtils.instance.addEvent("enter_home", data: {"source": "b"});
+          EventUtils.instance.addEvent("home_source");
+        } else {
+          EventUtils.instance.addEvent("enter_home", data: {"source": "a"});
+          EventUtils.instance.addEvent("home_no");
+        }
+        TbaUtils.instance.checkUnFinishedEvent();
+        AdUtils.instance.showAd(AdPosId.open, adSense: AdScene.open_hot);
+      } else if (state == AppState.background) {
+        Get.find<Application>().isAppBack = true;
+        TbaUtils.instance.checkUnFinishedEvent();
+        AppLog.i("后台");
+      }
+    });
+  }
+
+  @override
+  void onDetached() {}
+
+  @override
+  void onInactive() {}
+
+  @override
+  void onPaused() async {}
+
+  @override
+  void onResumed() async {}
+
+  @override
+  void onHidden() {}
+}
+
 
 getWhiteBarStyle() {
   return SystemUiOverlayStyle(

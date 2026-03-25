@@ -20,12 +20,14 @@ class MaxUtils {
   }
 
   Future init() async {
-    //TODO 注意切换正式的app key;
-    // AppLog.e("max初始化开始");
+
+    DateTime start = DateTime.now();
     MaxConfiguration? sdkConfiguration = await AppLovinMAX.initialize("POzCPzJAQ_vi7vlPr0v6dpTw1giLvT2HKZcyQJ27U_0hDMdIeOgvScokaDvmqrXg8AogImcyxb9QMKF5TXSf8U");
     // AppLog.e("max初始化结束");
     AppLovinMAX.setMuted(true);
     AppLog.i("max初始化完成 isTestModeEnabled:${sdkConfiguration?.isTestModeEnabled}");
+
+    EventUtils.instance.addEvent("ad_initsuc", data: {"ad_source_client": "max", "ad_init_time": DateTime.now().difference(start).inMilliseconds});
 
     //IDFA或gaid
     // AppLovinMAX.setTestDeviceAdvertisingIds([""]);
