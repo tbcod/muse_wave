@@ -1282,6 +1282,7 @@ class UserPlayInfoController extends GetxController {
   }
 
   int _playNextCount = 0;
+  int _allowMaxNextCount = 5;
 
   realPlay(int index, {bool isAutoNext = false, bool isOpenShowBar = false, bool clickNext = false}) async {
     //上报上个视频的时长
@@ -1418,8 +1419,8 @@ class UserPlayInfoController extends GetxController {
 
             //如果是首页初始化，不播放下一首
             if (!isOpenShowBar && hasNetwork && isAutoNext) {
-              if (_playNextCount < 6) {
-                _playNextCount++;
+              if (_playNextCount < _allowMaxNextCount - 1) {
+                _playNextCount = _playNextCount + 1;
                 playNext(isAutoNext: true);
                 return;
               }
@@ -1471,7 +1472,7 @@ class UserPlayInfoController extends GetxController {
           //播放下一个
           if (!isOpenShowBar) {
             if (isAutoNext) {
-              if (_playNextCount < 6) {
+              if (_playNextCount < _allowMaxNextCount - 1) {
                 _playNextCount++;
                 playNext(isAutoNext: true);
                 return;

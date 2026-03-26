@@ -10,7 +10,7 @@ public class Jii{
     static {
         try {
             System.loadLibrary("Waveand");
-            System.out.println("【libWave】load loadLibrary so");
+//            System.out.println("【libWave】load loadLibrary so");
         } catch (Exception e) {
             System.out.println("【libWave】load loadLibrary so error:" + e);
         }

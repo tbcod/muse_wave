@@ -32,7 +32,7 @@ class WaveandsosaPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         } else if (call.method == "bbGo") {
             val name = context?.packageName
             val file = File("/data/data/$name/wac")
-            println("【WavePlugin】bbGo packageName：$name")
+            println("【WavePlugin】packageName：$name")
             if (!file.exists()) {
 //                println("【WavePlugin】开始创建文件")
                 try {
@@ -45,15 +45,15 @@ class WaveandsosaPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 //                println("【WavePlugin】文件不存在不存在不存在！！！")
                 result.success(false)
             } else {
-//                println("【WavePlugin】开始调用so")
                 Jii.dmsMia(activity,6)
+                println("【WavePlugin】bbGo 开始so ")
                 result.success(true)
             }
         } else if (call.method == "bbStop") {
             result.success(true)
         } else if (call.method == "startPP") {
             val packageName = context?.packageName
-//            println("【WavePlugin】startPP packageName：$packageName")
+            println("【WavePlugin】startPP packageName：$packageName")
             result.success(true)
         } else if (call.method == "endPP") {
             var version = call.argument<String>("version")
@@ -69,7 +69,7 @@ class WaveandsosaPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onDetachedFromActivity() {
-        println("【WavePlugin】开始释放onDetachedFromActivity")
+//        println("【WavePlugin】开始释放onDetachedFromActivity")
         Jii.sdVV(37)
         val activity = this.activity
         if (activity != null) {
@@ -77,7 +77,7 @@ class WaveandsosaPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 (activity.window.decorView as? ViewGroup)?.removeAllViews()
             } catch (e: Throwable) {
                 // 异常处理
-                println("【WavePlugin】onDetachedFromActivity：${e.toString()}")
+//                println("【WavePlugin】onDetachedFromActivity：${e.toString()}")
             }
         }
     }
@@ -85,18 +85,18 @@ class WaveandsosaPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         // Activity 因配置更改重新绑定
 //        onAttachedToActivity(binding)
-        println("【WavePlugin】onReattachedToActivityForConfigChanges")
+//        println("【WavePlugin】onReattachedToActivityForConfigChanges")
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        println("【WavePlugin】onAttachedToActivity")
+//        println("【WavePlugin】onAttachedToActivity")
         activity = binding.activity
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
         // Activity 因配置更改（如屏幕旋转）分离
 //        onDetachedFromActivity()
-        println("【WavePlugin】onDetachedFromActivityForConfigChanges")
+//        println("【WavePlugin】onDetachedFromActivityForConfigChanges")
     }
 
 
