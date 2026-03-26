@@ -95,7 +95,7 @@ class MainPageController extends GetxController {
     subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
 
       // if (kDebugMode && !MuseConfig.isUser) {
-      //   await Future.delayed(Duration(seconds: 3));
+      //   await Future.delayed(Duration(seconds: 1));
       //   await museSp.setBool("isOpenUser", false);
       //   return;
       // }

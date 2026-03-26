@@ -526,16 +526,15 @@ class MyAppController extends SuperController {
         } else {
           TbaUtils.instance.postUserData({"new_user": "new"});
         }
-        var isOpenUser = museSp.getBool("isOpenUser");
-        if (isOpenUser) {
+        if (bus.isBMode) {
           EventUtils.instance.addEvent("enter_home", data: {"source": "b"});
           EventUtils.instance.addEvent("home_source");
+          AdUtils.instance.showAd(AdPosId.open, adSense: AdScene.open_hot);
         } else {
           EventUtils.instance.addEvent("enter_home", data: {"source": "a"});
           EventUtils.instance.addEvent("home_no");
         }
         TbaUtils.instance.checkUnFinishedEvent();
-        AdUtils.instance.showAd(AdPosId.open, adSense: AdScene.open_hot);
       } else if (state == AppState.background) {
         Get.find<Application>().isAppBack = true;
         TbaUtils.instance.checkUnFinishedEvent();

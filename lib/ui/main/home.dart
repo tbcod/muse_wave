@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:audio_metadata_reader/audio_metadata_reader.dart';
@@ -1336,35 +1337,48 @@ class HomePageController extends GetxController
       // }
 
       if (result == null) {
+        AppLog.e("result is null");
         return;
       }
 
       var file = result.files.single;
-
-      final metadata =   readMetadata(File(file.path!), getImage: true);
-      // final metadata = await MetadataRetriever.fromFile(File(file.path!));
-      String? trackName;
-      if(metadata.title != null && metadata.artist != null) {
-        trackName = "${metadata.title} - ${metadata.artist}";
-      }else{
-        trackName = metadata.title ?? file.name;
+      AudioMetadata? metadata;
+      String? trackName = file.name;
+      Uint8List? albumArt;
+      try{
+        metadata = readMetadata(File(file.path!), getImage: true);
+        if(metadata.title != null && metadata.artist != null) {
+          trackName = "${metadata.title} - ${metadata.artist}";
+        }else{
+          trackName = metadata.title ?? file.name;
+        }
+        albumArt = metadata.pictures.firstOrNull?.bytes;
+      }catch(e) {
+        AppLog.e("read metadata error:$e");
       }
 
-      AppLog.e("pictures:${metadata.pictures.length}");
-      AppLog.e("album:${metadata.album}");
-      AppLog.e("year:${metadata.year}");
-      AppLog.e("language:${metadata.language}");
-      AppLog.e("artist:${metadata.artist}");
-      AppLog.e("performers:${metadata.performers}");
-      AppLog.e("title:${metadata.title}");
-      AppLog.e("trackNumber:${metadata.trackNumber}");
-      AppLog.e("trackTotal:${metadata.trackTotal}");
-      AppLog.e("duration:${metadata.duration}");
-      AppLog.e("genres:${metadata.genres}");
-      AppLog.e("totalDisc:${metadata.totalDisc}");
-      AppLog.e("lyrics:${metadata.lyrics}");
-      AppLog.e("bitrate:${metadata.bitrate}");
-      AppLog.e("file:${metadata.file.path}");
+      if(albumArt == null) {
+        ByteData byteData = await rootBundle.load(Assets.imgIconPcover);
+        albumArt = byteData.buffer.asUint8List();
+      }
+
+       // final metadata = await MetadataRetriever.fromFile(File(file.path!));
+
+      // AppLog.e("pictures:${metadata.pictures.length}");
+      // AppLog.e("album:${metadata.album}");
+      // AppLog.e("year:${metadata.year}");
+      // AppLog.e("language:${metadata.language}");
+      // AppLog.e("artist:${metadata.artist}");
+      // AppLog.e("performers:${metadata.performers}");
+      // AppLog.e("title:${metadata.title}");
+      // AppLog.e("trackNumber:${metadata.trackNumber}");
+      // AppLog.e("trackTotal:${metadata.trackTotal}");
+      // AppLog.e("duration:${metadata.duration}");
+      // AppLog.e("genres:${metadata.genres}");
+      // AppLog.e("totalDisc:${metadata.totalDisc}");
+      // AppLog.e("lyrics:${metadata.lyrics}");
+      // AppLog.e("bitrate:${metadata.bitrate}");
+      // AppLog.e("file:${metadata.file.path}");
 
       // List<String>? trackArtistNames = metadata.trackArtistNames;
       // String? albumName = metadata.albumName;
@@ -1379,7 +1393,6 @@ class HomePageController extends GetxController
       // String? mimeType = metadata.mimeType;
       // int? trackDuration = metadata.trackDuration;
       // int? bitrate = metadata.bitrate;
-      Uint8List? albumArt = metadata.pictures.firstOrNull?.bytes;
 
       //添加歌曲
       var box = await Hive.openBox(DBKey.tracksData);
@@ -1409,8 +1422,8 @@ class HomePageController extends GetxController
       ToastUtil.showToast(msg: "Upload successfully".tr);
       //刷新数据
       bindData();
-    } catch (e) {
-      AppLog.e(e);
+    } catch (e,s) {
+      AppLog.e("pick mp3 error:$e, $s");
     }
   }
 }

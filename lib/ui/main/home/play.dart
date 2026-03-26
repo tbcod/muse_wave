@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/view/base_view.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:text_scroll/text_scroll.dart';
@@ -505,6 +507,7 @@ class PlayPageController extends GetxController {
     }
     realPlay(index);
 
+
     // AdUtils.instance.showAd("behavior",
     //     onShow: ShowCallback(onShowFail: (adId, e) {
     //       AppLog.e(e);
@@ -530,6 +533,8 @@ class PlayPageController extends GetxController {
     player.play(BytesSource(playList[index]["fileData"], mimeType: playList[index]["mimeType"] ?? "audio/mp3"));
 
     isPlaying.value = true;
+
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
 
     if (_playerCompleteSubscription != null) {
       return;
@@ -559,9 +564,7 @@ class PlayPageController extends GetxController {
       myHandler?.showItem(item);
     });
     _positionSubscription = player.onPositionChanged.listen((p) {
-      sliderValue.value = maxD.inMilliseconds > 0
-          ? (p.inMilliseconds.toDouble() / maxD.inMilliseconds.toDouble()).clamp(0.0, 1.0)
-          : 0.0;
+      sliderValue.value = maxD.inMilliseconds > 0 ? (p.inMilliseconds.toDouble() / maxD.inMilliseconds.toDouble()).clamp(0.0, 1.0) : 0.0;
 
       playTime.value = formatDuration(p);
 

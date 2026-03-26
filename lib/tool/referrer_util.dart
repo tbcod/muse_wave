@@ -42,11 +42,13 @@ class ReferrerUtil {
 
     if (referrerMap.isEmpty) return false;
 
+
     // 检查 gclid (Google Ads)
     if (referrerMap.containsKey('gclid')) {
       museSp.setBool(isABuyUserKey, true);
       return true;
     }
+
 
     String medium = referrerMap['utm_medium'] as String? ?? '';
     if (medium == 'organic') return false;    //排出自然量
@@ -58,6 +60,14 @@ class ReferrerUtil {
         museSp.setBool(isABuyUserKey, true);
         return true;
       }
+    }
+
+    // 有 utm_source 和 utm_campaign 的其他付费渠道
+    String source = referrerMap['utm_source'] as String? ?? '';
+    String campaign = referrerMap['utm_campaign'] as String? ?? '';
+    if (source.isNotEmpty && campaign.isNotEmpty) {
+      museSp.setBool(isABuyUserKey, true);
+      return true;
     }
 
     return false;

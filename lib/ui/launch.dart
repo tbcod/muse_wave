@@ -62,9 +62,9 @@ class LaunchPageController extends GetxController {
       await Future.delayed(Duration(seconds: 1));
       result = await CUtil.instance.checkCloak();
     }
-
+    //
     // if (kDebugMode && !MuseConfig.isUser) {
-    //   await Future.delayed(Duration(seconds: 3));
+    //   await Future.delayed(Duration(seconds: 1));
     //   await sp.setBool("isOpenUser", false);
     //   _isCloakComplete = true;
     //   return;
@@ -153,7 +153,7 @@ class LaunchPageController extends GetxController {
     if (isA) {
       if (!bus.isFirstAppLaunch) {
         AppLog.i("准备展示开屏广告(A非首次展示本地&local int)： ");
-        await AdUtils.instance.showAd(AdPosId.open, adSense: AdScene.open_cool, forceLocalJson: true);
+        await AdUtils.instance.showAd(AdPosId.muse_local_int, adSense: AdScene.open_cool, forceLocalJson: true);
       }
     } else {
       if (!bus.isFirstAppLaunch || RemoteUtil.shareInstance.isShowOpenAd) {
