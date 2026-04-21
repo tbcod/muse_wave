@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-import 'package:anythink_sdk/at_index.dart';
-import 'package:applovin_max/applovin_max.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -56,18 +53,18 @@ class UDebugPage extends StatelessWidget {
                       MobileAds.instance.openAdInspector((value) {});
                     },
                     child: const Text('Admob')),
-                const SizedBox(height: 12),
-                CupertinoButton(
-                    onPressed: () {
-                      AppLovinMAX.showMediationDebugger();
-                    },
-                    child: const Text('ApplovinMax')),
-                const SizedBox(height: 12),
-                CupertinoButton(
-                    onPressed: () {
-                      ATInitManger.showDebuggerUI(debugKey: "");
-                    },
-                    child: const Text('Topon')),
+                // const SizedBox(height: 12),
+                // CupertinoButton(
+                //     onPressed: () {
+                //       AppLovinMAX.showMediationDebugger();
+                //     },
+                //     child: const Text('ApplovinMax')),
+                // const SizedBox(height: 12),
+                // CupertinoButton(
+                //     onPressed: () {
+                //       ATInitManger.showDebuggerUI(debugKey: "");
+                //     },
+                //     child: const Text('Topon')),
               ],
             ),
             const SizedBox(height: 12),

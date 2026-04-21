@@ -1,5 +1,3 @@
-import 'package:anythink_sdk/at_init.dart';
-import 'package:applovin_max/applovin_max.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -18,8 +18,6 @@ import 'package:hive/hive.dart';
 import 'package:muse_wave/static/db_key.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ad/admob_util.dart';
-import 'package:muse_wave/tool/ad/max_util.dart';
-import 'package:muse_wave/tool/ad/topon_util.dart';
 import 'package:muse_wave/tool/adjust_util.dart';
 import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/history_util.dart';
@@ -313,8 +311,8 @@ class Application extends GetxService {
 
   initAd() {
     AdmobUtils.instance.init();
-    MaxUtils.instance.init();
-    TopOnUtils.instance.init();
+    // MaxUtils.instance.init();
+    // TopOnUtils.instance.init();
   }
 
   changeTypeSo(String str) async {

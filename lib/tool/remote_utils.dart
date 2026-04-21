@@ -6,7 +6,6 @@ import 'package:muse_wave/static/data_config.dart';
 import 'package:muse_wave/tool/log.dart';
 import 'package:muse_wave/tool/referrer_util.dart';
 import 'package:muse_wave/tool/tba/event_util.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'bus.dart';
 import 'native_utils.dart';
 

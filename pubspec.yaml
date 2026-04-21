@@ -3,7 +3,9 @@ description: "A new Flutter project."
 version: 1.0.9+10900
 
 environment:
-  sdk: ^3.7.0
+  sdk: '>=3.4.4 <4.0.0'
+
+#  sdk: ^3.7.0
 dependency_overrides:
   video_player_android: 2.7.1
 dependencies:
@@ -60,11 +62,9 @@ dependencies:
   advertising_id: ^2.6.0
   android_play_install_referrer: ^0.4.0
   google_mobile_ads: ^6.0.0
-  applovin_max: ^4.4.0
-  anythink_sdk:
-    path: plugin/anythink_sdk-1.0.5
-#  anythink_sdk: ^1.0.8
-#  secmtp_sdk: ^1.0.8
+#  applovin_max: ^4.4.0
+#  anythink_sdk:
+#    path: plugin/anythink_sdk-1.0.5
   waveandsosa:
     path: plugin/waveandsosa
 

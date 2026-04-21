@@ -445,10 +445,10 @@ Widget getAdCloseView(Widget adView, {String toponAdId = ""}) {
                         onTap: () {
                           isShow.value = false;
 
-                          if (toponAdId.isNotEmpty) {
-                            //topon 删除
-                            TopOnUtils.instance.allCom.remove(toponAdId);
-                          }
+                          // if (toponAdId.isNotEmpty) {
+                          //   //topon 删除
+                          //   TopOnUtils.instance.allCom.remove(toponAdId);
+                          // }
                         },
                         child: Container(
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w), color: Colors.black.withOpacity(0.5)),
