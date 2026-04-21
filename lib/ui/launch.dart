@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/api/base_api.dart';
 import 'package:muse_wave/main.dart';
 import 'package:muse_wave/muse_config.dart';
 import 'package:muse_wave/tool/bus.dart';
@@ -23,16 +24,7 @@ import '../uinew/u_main.dart';
 
 class LaunchPageController extends GetxController {
   var progress = 0.0.obs;
-  late DateTime startTime;
   static const int _maxAppLaunchTime = 7;
-
-  @override
-  void onInit() {
-    super.onInit();
-    // IdfaUtil.instance.showIdfaDialog();
-    startTime = DateTime.now();
-    bindData();
-  }
 
   bool get isB => bus.isBMode;
 
@@ -40,59 +32,25 @@ class LaunchPageController extends GetxController {
 
   bool _isCloakComplete = false;
 
-  bindData() async {
+  @override
+  void onInit() {
+    super.onInit();
+    // IdfaUtil.instance.showIdfaDialog();
     EventUtils.instance.addEvent("open_click");
     bus.setAppLaunchCount();
     ReferrerUtil.sh.init();
-
-    var sp = await SharedPreferences.getInstance();
-
-    var isOpenUser = sp.getBool("isOpenUser") ?? false;
-    if (isOpenUser) {
-      //已经是用户模式，不用再请求
-      await Get.find<Application>().initNetPush();
-      NativeUtils.instance.startSearchNotificationBar();
-      _isCloakComplete = true;
-      return;
-    }
-
-    var tempTime = DateTime.now();
-    var result = await CUtil.instance.checkCloak();
-    if (result.data == null) {
-      await Future.delayed(Duration(seconds: 1));
-      result = await CUtil.instance.checkCloak();
-    }
-    //
-    // if (kDebugMode && !MuseConfig.isUser) {
-    //   await Future.delayed(Duration(seconds: 1));
-    //   await sp.setBool("isOpenUser", false);
-    //   _isCloakComplete = true;
-    //   return;
-    // }
-
-
-    //命中黑名单：sardonic
-    //正常模式：excerpt
-    var okStr = GetPlatform.isIOS ? "excerpt" : "diesel";
-
-    if (result.data == okStr) {
-      await sp.setBool("isOpenUser", true);
-    }
-    AppLog.i("获取user结果:${result.data}， ${result.data == 'diesel' ? "user" : "cloak"}");
-    var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
-    EventUtils.instance.addEvent("cloak_get", data: {"time": doTime});
-    _isCloakComplete = true;
+    _requestCloak();
   }
+
 
   @override
   void onReady() async {
+    bus.appLaunchTime = DateTime.now();
     super.onReady();
     countdown();
-    await _userCheck();
     try {
-      int timeoutSeconds = max(1, _maxAppLaunchTime - DateTime.now().difference(startTime).inSeconds);
-      AppLog.i("开始加载广告，剩余时间: ${timeoutSeconds}s");
-      await loadAd().timeout(Duration(seconds: timeoutSeconds));
+      await loadAd().timeout(Duration(seconds: _maxAppLaunchTime));
+      await _userCheck();
       await showAd();
     } on TimeoutException catch (e) {
       AppLog.e("loadAd time out: ${e.duration?.inSeconds}s");
@@ -104,7 +62,7 @@ class LaunchPageController extends GetxController {
 
   Future _userCheck() async {
     if (isA && !_isCloakComplete) {
-      double diff = (DateTime.now().difference(startTime)).inMilliseconds / 1000;
+      double diff = (DateTime.now().difference(bus.appLaunchTime)).inMilliseconds / 1000;
       if (diff < _maxAppLaunchTime) {
         AppLog.i("等待user请求完成，已等待${diff}s");
         await Future.delayed(const Duration(milliseconds: 500));
@@ -114,34 +72,75 @@ class LaunchPageController extends GetxController {
     }
   }
 
-  Future loadAd() async {
-    bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
-    AppLog.i("启动页加载广告 isB：$isB，首次启动:${bus.isFirstAppLaunch}, first open:$isBShowOpenAd");
 
-    if (isA) {
-      if (bus.isFirstAppLaunch) {
-        AdUtils.instance.loadAd(AdPosId.muse_local_int, forceLocalJson: true, adSense: AdScene.open_cool).then((v) {
-          AdUtils.instance.loadAd(AdPosId.open, forceLocalJson: true, adSense: AdScene.open_cool);
-        });
-      } else {
-        await AdUtils.instance.loadAd(AdPosId.muse_local_int, adSense: AdScene.open_cool);
-        AdUtils.instance.loadAd(AdPosId.open, adSense: AdScene.open_cool);
-      }
-      return;
-    }
-
+  Future _requestCloak() async {
     if (isB) {
-      if (bus.isFirstAppLaunch) {
-        if (isBShowOpenAd) {
-          await AdUtils.instance.loadAd(AdPosId.open, forceLocalJson: true, adSense: AdScene.open_cool);
-        } else {
-          AdUtils.instance.loadAd(AdPosId.open, forceLocalJson: true, adSense: AdScene.open_cool);
-        }
-      } else {
-        await AdUtils.instance.loadAd(AdPosId.open, adSense: AdScene.open_cool);
-      }
+      //已经是用户模式，不用再请求
+      Get.find<Application>().initNetPush();
+      NativeUtils.instance.startSearchNotificationBar();
+      _isCloakComplete = true;
       return;
     }
+
+    var tempTime = DateTime.now();
+    BaseModel result = await CUtil.instance.checkCloak();
+    // if (result.data == null) {
+    //   await Future.delayed(Duration(seconds: 1));
+    //   result = await CUtil.instance.checkCloak();
+    // }
+    while (result.data == null && DateTime.now().difference(tempTime).inSeconds < _maxAppLaunchTime - 1) {
+      AppLog.e("cloak请求失败，重试中...");
+      await Future.delayed(Duration(seconds: 1));
+      result = await CUtil.instance.checkCloak();
+    }
+
+    //命中黑名单：sardonic
+    //正常模式：excerpt
+    var okStr = GetPlatform.isIOS ? "excerpt" : "diesel";
+
+    if (result.data == okStr) {
+      await museSp.setBool("isOpenUser", true);
+    }
+    AppLog.i("获取user结果:${result.data}， ${result.data == 'diesel' ? "b" : "a"}");
+    var doTime = DateTime.now().difference(tempTime).inMilliseconds / 1000;
+    EventUtils.instance.addEvent("cloak_get", data: {"time": doTime});
+    _isCloakComplete = true;
+  }
+
+  Future loadAd() async {
+    await AdUtils.instance.loadAd(
+      AdPosId.open,
+      adSense: bus.isFirstAppLaunch ? AdScene.open_first : AdScene.open_cool,
+      forceLocalJson: bus.isFirstAppLaunch,
+    );
+
+    // bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
+    // AppLog.i("启动页加载广告 isB：$isB，首次启动:${bus.isFirstAppLaunch}, first open:$isBShowOpenAd");
+    //
+    // if (isA) {
+    //   if (bus.isFirstAppLaunch) {
+    //     AdUtils.instance.loadAd(AdPosId.muse_local_int, forceLocalJson: true, adSense: AdScene.open_cool).then((v) {
+    //       AdUtils.instance.loadAd(AdPosId.open, forceLocalJson: true, adSense: AdScene.open_cool);
+    //     });
+    //   } else {
+    //     await AdUtils.instance.loadAd(AdPosId.muse_local_int, adSense: AdScene.open_cool);
+    //     AdUtils.instance.loadAd(AdPosId.open, adSense: AdScene.open_cool);
+    //   }
+    //   return;
+    // }
+    //
+    // if (isB) {
+    //   if (bus.isFirstAppLaunch) {
+    //     if (isBShowOpenAd) {
+    //       await AdUtils.instance.loadAd(AdPosId.open, forceLocalJson: true, adSense: AdScene.open_cool);
+    //     } else {
+    //       AdUtils.instance.loadAd(AdPosId.open, forceLocalJson: true, adSense: AdScene.open_cool);
+    //     }
+    //   } else {
+    //     await AdUtils.instance.loadAd(AdPosId.open, adSense: AdScene.open_cool);
+    //   }
+    //   return;
+    // }
   }
 
   Future showAd() async {
@@ -153,12 +152,20 @@ class LaunchPageController extends GetxController {
     if (isA) {
       if (!bus.isFirstAppLaunch) {
         AppLog.i("准备展示开屏广告(A非首次展示本地&local int)： ");
-        await AdUtils.instance.showAd(AdPosId.muse_local_int, adSense: AdScene.open_cool, forceLocalJson: true);
+        // await AdUtils.instance.showAd(
+        //   AdPosId.muse_local_int,
+        //   adSense: bus.isFirstAppLaunch ? AdScene.open_first : AdScene.open_cool,
+        //   forceLocalJson: true,
+        // );
       }
     } else {
       if (!bus.isFirstAppLaunch || RemoteUtil.shareInstance.isShowOpenAd) {
         AppLog.i("准备展示开屏广告(B展示open)");
-        await AdUtils.instance.showAd(AdPosId.open, adSense: AdScene.open_cool, forceLocalJson: bus.isFirstAppLaunch);
+        await AdUtils.instance.showAd(
+          AdPosId.open,
+          adSense: bus.isFirstAppLaunch ? AdScene.open_first : AdScene.open_cool,
+          forceLocalJson: bus.isFirstAppLaunch,
+        );
       }
     }
   }
@@ -191,6 +198,7 @@ class LaunchPageController extends GetxController {
     // if (!isToMain && !isClosed) {
     //
     // }
+    if (isToMain) return;
     isToMain = true;
     progress.value = 1;
     if (isB) {
@@ -198,6 +206,7 @@ class LaunchPageController extends GetxController {
     } else {
       Get.off(const MainPage(), routeName: "/MainPage");
     }
+    EventUtils.instance.addEvent("home_sh", data: {"en_time": bus.getTimeDiffNow(bus.appLaunchTime), "mode": isB ? "B" : "A"});
   }
 }
 

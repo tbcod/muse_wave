@@ -1,6 +1,7 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/uinew/main/u_home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,6 +41,8 @@ class LikeUtil {
       return;
     }
 
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
+
     allVideoMap[videoId] = infoData;
 
     HistoryUtil.instance.addHistorySong(infoData);
@@ -51,7 +54,7 @@ class LikeUtil {
     );
     hasNewLikeVideo.value = true;
 
-    ToastUtil.showToast(msg: "Followed this song".tr);
+    // ToastUtil.showToast(msg: "Followed this song".tr);
 
     saveLikeState();
   }
@@ -77,14 +80,17 @@ class LikeUtil {
   }
 
   unlikeVideo(String videoId) {
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
+
     allVideoMap.remove(videoId);
     saveData();
-    ToastUtil.showToast(msg: "You have canceled following this song".tr);
+    // ToastUtil.showToast(msg: "You have canceled following this song".tr);
     saveLikeState();
   }
 
   likeList(String browseId, Map infoData, String subtitle) async {
     //好评引导MyDialogUtils.instance.showRateDialog();
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
 
     EventUtils.instance.addEvent(
       "liked_click",
@@ -94,7 +100,7 @@ class LikeUtil {
     allPlaylistMap[browseId] = infoData;
     HistoryUtil.instance.addHistoryPlaylist(infoData);
     // saveData();
-    ToastUtil.showToast(msg: "Followed this playlist".tr);
+    // ToastUtil.showToast(msg: "Followed this playlist".tr);
 
     //保存到本地歌单
 
@@ -118,9 +124,11 @@ class LikeUtil {
   }
 
   unlikeList(String browseId) async {
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
+
     allPlaylistMap.remove(browseId);
     saveData();
-    ToastUtil.showToast(msg: "You have canceled following this playlist".tr);
+    // ToastUtil.showToast(msg: "You have canceled following this playlist".tr);
 
     HistoryUtil.instance.removeNetHistoryPlaylist(browseId);
 
@@ -136,6 +144,8 @@ class LikeUtil {
   }
 
   likeArtist(String browseId, Map infoData) {
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
+
     //好评引导
     MyDialogUtils.instance.showRateDialog();
 
@@ -147,15 +157,17 @@ class LikeUtil {
     saveData();
 
     hasNewLikeArtist.value = true;
-    ToastUtil.showToast(msg: "Followed this singer".tr);
+    // ToastUtil.showToast(msg: "Followed this singer".tr);
 
     saveLikeState();
   }
 
   unlikeArtist(String browseId) {
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
+
     allArtistMap.remove(browseId);
     saveData();
-    ToastUtil.showToast(msg: "You have canceled following this singer".tr);
+    // ToastUtil.showToast(msg: "You have canceled following this singer".tr);
     saveLikeState();
   }
 

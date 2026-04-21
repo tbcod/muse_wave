@@ -2,8 +2,6 @@ import 'package:adjust_sdk/adjust.dart';
 import 'package:adjust_sdk/adjust_ad_revenue.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
-import 'package:get/get.dart';
-import 'package:muse_wave/main.dart';
 import 'package:muse_wave/muse_config.dart';
 
 import 'log.dart' show AppLog;

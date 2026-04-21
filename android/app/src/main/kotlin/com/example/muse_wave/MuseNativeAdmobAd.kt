@@ -66,6 +66,28 @@ class MuseNativeAdmobAd(private val context: Context) : GoogleMobileAdsPlugin.Na
             container.addView(imageView)
         }
 
+        val centerLayout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            setPadding(0, dpToPx(16), 0, 0)
+        }
+
+        val icon = ImageView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(dpToPx(60), dpToPx(60)).apply {
+                setMargins(0, dpToPx(16), 0, dpToPx(16))
+            }
+            nativeAd.icon?.let {
+                setImageDrawable(it.drawable)
+            }
+        }
+        adView.iconView = icon
+        centerLayout.addView(icon)
+        container.addView(centerLayout)
+
         val headline = TextView(context).apply {
             text = nativeAd.headline
             gravity = Gravity.CENTER
@@ -81,6 +103,7 @@ class MuseNativeAdmobAd(private val context: Context) : GoogleMobileAdsPlugin.Na
         }
         adView.headlineView = headline
         container.addView(headline)
+
 
         val bodyV = TextView(context).apply {
             text = nativeAd.body

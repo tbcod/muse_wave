@@ -184,6 +184,8 @@ class NetImageView extends GetView {
         width: width,
         height: height,
         fit: fit,
+        memCacheHeight: ScreenUtil().screenWidth.toInt(),
+        memCacheWidth: ScreenUtil().screenWidth.toInt(),
         placeholder: (c, url) {
           return errorAsset == null
               ? Container(

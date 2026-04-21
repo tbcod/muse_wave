@@ -332,6 +332,7 @@ class ApiMain extends BaseApi {
         final reason = data?["playabilityStatus"]?["reason"];
         AppLog.e("postYoutube player title:${controller.nowData["title"]},videoId:$videoId, url:$url, body:$body, header:$header");
         AppLog.e("playabilityStatus:$playabilityStatus,$reason");
+        EventUtils.instance.addEvent("playback_playability", data: {"status": playabilityStatus, "reason": reason});
         return;
       } else {
         // AppLog.i("playabilityStatus:ok");
@@ -430,9 +431,7 @@ class ApiMain extends BaseApi {
       if (playlistId.startsWith("VL")) {
         playlistId = playlistId.replaceAll("VL", "");
       }
-      // String p = "&list=$playlistId&referrer=${Uri.encodeComponent('https://music.youtube.com/playlist?list=$playlistId')}";
-      // path = path + p;
-      String p = "referrer=${Uri.encodeComponent('https://music.youtube.com/watch?v=$vid&list=$playlistId')}";
+      String p = "&list=$playlistId&referrer=${Uri.encodeComponent('https://music.youtube.com/playlist?list=$playlistId')}";
       path = path + p;
       header["Referer"] = "https://music.youtube.com/watch?v=$vid&list=$playlistId";
       // header["Origin"] = "https://music.youtube.com/watch?v=$vid&list=$playlistId";
@@ -444,6 +443,8 @@ class ApiMain extends BaseApi {
     BaseModel result = await httpRequest(url, method: HttpMethod.get, contentType: "application/json", headers: header);
     if (result.code != HttpCode.success) {
       AppLog.e("postWatchTime:$url, result:${result.code}");
+    }else{
+      // AppLog.i("postWatchTime result:${result.code}");
     }
   }
 

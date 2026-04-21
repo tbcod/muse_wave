@@ -88,8 +88,6 @@ class MainPageController extends GetxController {
 
     UmpUtil.sh.showUMP();
 
-    //预加载广告
-    AdUtils.instance.loadAd(AdPosId.behavior, adSense: AdScene.play, forceLocalJson: bus.isFirstAppLaunch);
 
     //设置网络监听，成功后打开B面
     subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
@@ -113,6 +111,15 @@ class MainPageController extends GetxController {
         Get.off(const UserMain());
       }
     });
+  }
+
+  @override
+  void onReady() {
+    //预加载广告
+    AdUtils.instance.loadAd(AdPosId.behavior, adSense: AdScene.play, forceLocalJson: bus.isFirstAppLaunch);
+    AdUtils.instance.loadAd(AdPosId.muse_local_int, adSense: AdScene.open_hot,forceLocalJson: bus.isFirstAppLaunch);
+    AdUtils.instance.loadAd(AdPosId.muse_local_reward, adSense: AdScene.set);
+    super.onReady();
   }
 
   @override

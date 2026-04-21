@@ -25,6 +25,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
 
   final bool isFormSearch;
   final browseId = Get.arguments?["browseId"];
+
   UserArtistInfo({super.key, this.isFormSearch = false});
 
   @override
@@ -32,13 +33,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
     Get.lazyPut(() => UserArtistInfoController(), tag: tag);
 
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        image: DecorationImage(
-          image: AssetImage("assets/oimg/all_page_bg.png"),
-          fit: BoxFit.fill,
-        ),
-      ),
+      decoration: BoxDecoration(color: Colors.white, image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: PlayerBottomBarView(
@@ -47,7 +42,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
               (state) => NestedScrollView(
                 controller: controller.scrollC,
                 headerSliverBuilder: (c, innerBoxIsScrolled) {
-                  AppLog.e(innerBoxIsScrolled);
+                  // AppLog.e(innerBoxIsScrolled);
                   return [
                     SliverAppBar(
                       // systemOverlayStyle: SystemUiOverlayStyle(
@@ -56,12 +51,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                       // backgroundColor: Colors.red,
                       pinned: true,
                       centerTitle: true,
-                      title: Obx(
-                        () =>
-                            controller.isHeaderExpanded.value
-                                ? Container()
-                                : Text(controller.info["title"]),
-                      ),
+                      title: Obx(() => controller.isHeaderExpanded.value ? Container() : Text("${controller.info["title"] ?? ""}")),
                       expandedHeight: 200.w + Get.mediaQuery.padding.top,
                       leading: Obx(
                         () => IconButton(
@@ -72,36 +62,25 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                             "assets/oimg/icon_back.png",
                             width: 24.w,
                             height: 24.w,
-                            color:
-                                controller.isHeaderExpanded.value
-                                    ? Colors.white
-                                    : Colors.black,
+                            color: controller.isHeaderExpanded.value ? Colors.white : Colors.black,
                           ),
                         ),
                       ),
                       actions: [
                         Obx(() {
-                          var isLike = LikeUtil.instance.allArtistMap.containsKey(
-                            controller.browseId,
-                          );
+                          var isLike = LikeUtil.instance.allArtistMap.containsKey(controller.browseId);
 
                           return IconButton(
                             onPressed: () {
                               if (isLike) {
-                                LikeUtil.instance.unlikeArtist(
-                                  controller.browseId,
-                                );
+                                LikeUtil.instance.unlikeArtist(controller.browseId);
                               } else {
-                                LikeUtil.instance.likeArtist(
-                                  controller.browseId,
-                                  controller.info,
-                                );
+                                EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "collection"});
+                                LikeUtil.instance.likeArtist(controller.browseId, controller.info);
                               }
                             },
                             icon: Image.asset(
-                              isLike
-                                  ? "assets/oimg/icon_like_on.png"
-                                  : "assets/oimg/icon_like_off.png",
+                              isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off.png",
                               width: 24.w,
                               height: 24.w,
                               color:
@@ -121,12 +100,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                           width: double.infinity,
                           child: Stack(
                             children: [
-                              Positioned.fill(
-                                child: NetImageView(
-                                  imgUrl: controller.info["cover"] ?? "",
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                              Positioned.fill(child: NetImageView(imgUrl: controller.info["cover"] ?? "", fit: BoxFit.cover)),
                               //渐变
                               Positioned.fill(
                                 child: Container(
@@ -134,10 +108,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                     gradient: LinearGradient(
                                       begin: Alignment.bottomCenter,
                                       end: Alignment.topCenter,
-                                      colors: [
-                                        Color(0xff0D0D0D).withOpacity(0.69),
-                                        Color(0xff474747).withOpacity(0),
-                                      ],
+                                      colors: [Color(0xff0D0D0D).withOpacity(0.69), Color(0xff474747).withOpacity(0)],
                                     ),
                                   ),
                                 ),
@@ -151,11 +122,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                   controller.info["title"] ?? "",
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 24.w,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  style: TextStyle(fontSize: 24.w, color: Colors.white, fontWeight: FontWeight.w500),
                                 ),
                               ),
                             ],
@@ -189,49 +156,24 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                           AppLog.e(controller.moreList.length);
                                           return;
                                         }
-                                        EventUtils.instance.addEvent(
-                                          "det_artist_click",
-                                          data: {"detail_click": "play"},
-                                        );
+                                        EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "play_all"});
 
-                                        Get.find<UserPlayInfoController>()
-                                            .setDataAndPlayItem(
-                                              controller.moreList,
-                                              controller.moreList.first,
-                                              clickType:
-                                                  isFormSearch
-                                                      ? "s_detail_artist"
-                                                      : "h_detail_artist",
-                                            );
+                                        Get.find<UserPlayInfoController>().setDataAndPlayItem(
+                                          controller.moreList,
+                                          controller.moreList.first,
+                                          clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
+                                        );
                                         // Get.to(UserPlayInfo());
                                       },
                                       child: Container(
                                         height: 42.w,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            21.w,
-                                          ),
-                                          color: Color(0xff7453FF),
-                                        ),
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(21.w), color: Color(0xff7453FF)),
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Image.asset(
-                                              "assets/oimg/icon_play.png",
-                                              width: 24.w,
-                                              height: 24.w,
-                                              color: Colors.white,
-                                            ),
+                                            Image.asset("assets/oimg/icon_play.png", width: 24.w, height: 24.w, color: Colors.white),
                                             SizedBox(width: 8.w),
-                                            Text(
-                                              "Play",
-                                              style: TextStyle(
-                                                fontSize: 16.w,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.white,
-                                              ),
-                                            ),
+                                            Text("Play", style: TextStyle(fontSize: 16.w, fontWeight: FontWeight.w500, color: Colors.white)),
                                           ],
                                         ),
                                       ),
@@ -245,57 +187,30 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                           AppLog.e(controller.moreList.length);
                                           return;
                                         }
-                                        EventUtils.instance.addEvent(
-                                          "det_artist_click",
-                                          data: {"detail_click": "shuffle"},
+                                        EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "shuffle"});
+
+                                        List playList = List.of(controller.moreList)..shuffle();
+
+                                        Get.find<UserPlayInfoController>().setDataAndPlayItem(
+                                          playList,
+                                          playList.first,
+                                          clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
                                         );
-
-                                        List playList = List.of(
-                                          controller.moreList,
-                                        )..shuffle();
-
-                                        Get.find<UserPlayInfoController>()
-                                            .setDataAndPlayItem(
-                                              playList,
-                                              playList.first,
-                                              clickType:
-                                                  isFormSearch
-                                                      ? "s_detail_artist"
-                                                      : "h_detail_artist",
-                                            );
                                         // Get.to(UserPlayInfo());
                                       },
                                       child: Container(
                                         height: 42.w,
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            21.w,
-                                          ),
-                                          border: Border.all(
-                                            color: Color(0xff7453FF),
-                                            width: 2.w,
-                                          ),
+                                          borderRadius: BorderRadius.circular(21.w),
+                                          border: Border.all(color: Color(0xff7453FF), width: 2.w),
                                           color: Colors.white,
                                         ),
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Image.asset(
-                                              "assets/oimg/icon_shuffle1.png",
-                                              width: 24.w,
-                                              height: 24.w,
-                                              color: Color(0xff7453FF),
-                                            ),
+                                            Image.asset("assets/oimg/icon_shuffle1.png", width: 24.w, height: 24.w, color: Color(0xff7453FF)),
                                             SizedBox(width: 8.w),
-                                            Text(
-                                              "Shuffle",
-                                              style: TextStyle(
-                                                fontSize: 16.w,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xff7453FF),
-                                              ),
-                                            ),
+                                            Text("Shuffle", style: TextStyle(fontSize: 16.w, fontWeight: FontWeight.w500, color: Color(0xff7453FF))),
                                           ],
                                         ),
                                       ),
@@ -312,10 +227,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                 body: Container(
                   color: Color(0xfffafafa),
                   child: ListView.separated(
-                    padding: EdgeInsets.only(
-                      top: 10.w,
-                      bottom: Get.mediaQuery.padding.bottom + 100.w,
-                    ),
+                    padding: EdgeInsets.only(top: 10.w, bottom: Get.mediaQuery.padding.bottom + 100.w),
                     itemBuilder: (_, i) {
                       return getBigItem(i);
                     },
@@ -344,14 +256,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           child: Row(
             children: [
-              Text(
-                bigItem["title"] ?? "",
-                style: TextStyle(
-                  fontSize: 20.w,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
-                ),
-              ),
+              Text(bigItem["title"] ?? "", style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
               Spacer(),
               (bigItem["moreBrowseId"] ?? "") == ""
                   ? Container()
@@ -361,36 +266,17 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
 
                       String browseId = bigItem["moreBrowseId"] ?? "";
                       String params = bigItem["moreParams"] ?? "";
-                      AppLog.e(
-                        "type==$type\nbrowseId==$browseId\nparams==$params",
-                      );
+                      AppLog.e("type==$type\nbrowseId==$browseId\nparams==$params");
                       var title = bigItem["title"] ?? "";
                       if (type == "music") {
-                        Get.to(
-                          UserMoreSong(
-                            barTitle: title,
-                            isFormSearch: isFormSearch,
-                          ),
-                          arguments: {"browseId": browseId, "params": params},
-                        );
+                        Get.to(UserMoreSong(barTitle: title, isFormSearch: isFormSearch), arguments: {"browseId": browseId, "params": params});
                       } else if (type == "MUSIC_PAGE_TYPE_ALBUM") {
-                        Get.to(
-                          UserMoreAlbum(barTitle: title),
-                          arguments: {"browseId": browseId, "params": params},
-                        );
-                      } else if (type == "MUSIC_VIDEO_TYPE_OMV" ||
-                          type == "MUSIC_VIDEO_TYPE_UGC") {
-                        Get.to(
-                          UserMoreVideo(
-                            barTitle: title,
-                            isFormSearch: isFormSearch,
-                          ),
-                          arguments: {"browseId": browseId, "params": params},
-                        );
+                        Get.to(UserMoreAlbum(barTitle: title), arguments: {"browseId": browseId, "params": params});
+                      } else if (type == "MUSIC_VIDEO_TYPE_OMV" || type == "MUSIC_VIDEO_TYPE_UGC") {
+                        Get.to(UserMoreVideo(barTitle: title, isFormSearch: isFormSearch), arguments: {"browseId": browseId, "params": params});
                       } else if (type == "MUSIC_PAGE_TYPE_PLAYLIST") {
                         Get.to(UserMoreAlbum(barTitle: title), arguments: {"browseId": browseId, "params": params});
                       }
-
 
                       // BaseModel result = await ApiMain.instance.getMoreData({
                       //   "browseId": browseId,
@@ -399,19 +285,9 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                     },
                     child: Row(
                       children: [
-                        Text(
-                          "More".tr,
-                          style: TextStyle(
-                            fontSize: 12.w,
-                            color: Color(0xffa6a6a6),
-                          ),
-                        ),
+                        Text("More".tr, style: TextStyle(fontSize: 12.w, color: Color(0xffa6a6a6))),
                         SizedBox(width: 4.w),
-                        Image.asset(
-                          "assets/oimg/icon_more_right.png",
-                          width: 12.w,
-                          height: 12.w,
-                        ),
+                        Image.asset("assets/oimg/icon_more_right.png", width: 12.w, height: 12.w),
                       ],
                     ),
                   ),
@@ -421,8 +297,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
         SizedBox(height: 10.w),
         Builder(
           builder: (c) {
-            if (type == "MUSIC_VIDEO_TYPE_OMV" ||
-                type == "MUSIC_VIDEO_TYPE_UGC") {
+            if (type == "MUSIC_VIDEO_TYPE_OMV" || type == "MUSIC_VIDEO_TYPE_UGC") {
               //大的视频音乐
               return Container(
                 height: 185.w,
@@ -432,19 +307,14 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                   itemBuilder: (_, i) {
                     var childItem = data[i];
                     return Obx(() {
-                      var isCheck =
-                          childItem["videoId"] ==
-                          Get.find<UserPlayInfoController>().nowData["videoId"];
+                      var isCheck = childItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                       return InkWell(
                         onTap: () {
                           AppLog.e(childItem);
                           Get.find<UserPlayInfoController>().setDataAndPlayItem(
                             [childItem],
                             childItem,
-                            clickType:
-                                isFormSearch
-                                    ? "s_detail_artist"
-                                    : "h_detail_artist",
+                            clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
                             loadNextData: true,
                           );
                           // Get.to(UserPlayInfo());
@@ -458,34 +328,17 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                 width: 248.w,
                                 height: 140.w,
                                 clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6.w),
-                                ),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                 child: Stack(
                                   children: [
-                                    Positioned.fill(
-                                      child: NetImageView(
-                                        imgUrl: childItem["cover"] ?? "",
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
+                                    Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover)),
                                     isCheck
                                         ? Positioned(
                                           left: 6.w,
                                           top: 6.w,
-                                          child: Image.asset(
-                                            "assets/oimg/icon_s_v_play.png",
-                                            width: 20.w,
-                                            height: 14.w,
-                                          ),
+                                          child: Image.asset("assets/oimg/icon_s_v_play.png", width: 20.w, height: 14.w),
                                         )
-                                        : Center(
-                                          child: Image.asset(
-                                            "assets/oimg/icon_c_play.png",
-                                            width: 51.w,
-                                            height: 51.w,
-                                          ),
-                                        ),
+                                        : Center(child: Image.asset("assets/oimg/icon_c_play.png", width: 51.w, height: 51.w)),
                                   ],
                                 ),
                               ),
@@ -494,14 +347,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                 childItem["title"],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color:
-                                      isCheck
-                                          ? Color(0xffA491F7)
-                                          : Colors.black,
-                                  fontSize: 14.w,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: TextStyle(color: isCheck ? Color(0xffA491F7) : Colors.black, fontSize: 14.w, fontWeight: FontWeight.w500),
                               ),
                               // Text(
                               //   childItem["subtitle"],
@@ -592,51 +438,36 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                       var item = data[i];
                       return InkWell(
                         onTap: () {
+                          EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "play"});
+
                           Get.find<UserPlayInfoController>().setDataAndPlayItem(
                             [item],
                             item,
-                            clickType:
-                                isFormSearch
-                                    ? "s_detail_artist"
-                                    : "h_detail_artist",
+                            clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
                             loadNextData: true,
                           );
                           // Get.to(UserPlayInfo());
                         },
                         child: Obx(() {
-                          var isCheck =
-                              item["videoId"] ==
-                              Get.find<UserPlayInfoController>()
-                                  .nowData["videoId"];
+                          var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                           return Container(
                             // color: Colors.red,
                             height: 70.w,
                             padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            decoration: BoxDecoration(
-                              color:
-                                  isCheck
-                                      ? Color(0xfff7f7f7)
-                                      : Colors.transparent,
-                            ),
+                            decoration: BoxDecoration(color: isCheck ? Color(0xfff7f7f7) : Colors.transparent),
                             child: Row(
                               children: [
                                 Container(
                                   width: 54.w,
                                   height: 54.w,
                                   clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6.w),
-                                  ),
-                                  child: NetImageView(
-                                    imgUrl: item["cover"],
-                                    fit: BoxFit.cover,
-                                  ),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                                  child: NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
                                 ),
                                 SizedBox(width: 16.w),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
@@ -648,30 +479,20 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                           height: 1,
                                           fontSize: 14.w,
                                           fontWeight: FontWeight.w500,
-                                          color:
-                                              isCheck
-                                                  ? Color(0xff8569FF)
-                                                  : Colors.black,
+                                          color: isCheck ? Color(0xff8569FF) : Colors.black,
                                         ),
                                       ),
                                       SizedBox(height: 12.w),
                                       Row(
                                         children: [
                                           Obx(() {
-                                            var isLike = LikeUtil
-                                                .instance
-                                                .allVideoMap
-                                                .containsKey(item["videoId"]);
+                                            var isLike = LikeUtil.instance.allVideoMap.containsKey(item["videoId"]);
                                             if (isLike) {
                                               return Container(
                                                 width: 16.w,
                                                 height: 16.w,
-                                                margin: EdgeInsets.only(
-                                                  right: 4.w,
-                                                ),
-                                                child: Image.asset(
-                                                  "assets/oimg/icon_like_on.png",
-                                                ),
+                                                margin: EdgeInsets.only(right: 4.w),
+                                                child: Image.asset("assets/oimg/icon_like_on.png"),
                                               );
                                             }
 
@@ -691,14 +512,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                               item["subtitle"] ?? "",
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                height: 1,
-                                                fontSize: 12.w,
-                                                color:
-                                                    isCheck
-                                                        ? Color(0xff8569FF)
-                                                        : Colors.black,
-                                              ),
+                                              style: TextStyle(height: 1, fontSize: 12.w, color: isCheck ? Color(0xff8569FF) : Colors.black),
                                             ),
                                           ),
                                         ],
@@ -707,11 +521,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                   ),
                                 ),
                                 SizedBox(width: 12.w),
-                                getDownloadAndMoreBtn(
-                                  item,
-                                  "artist",
-                                  isSearch: isFormSearch,
-                                ),
+                                getDownloadAndMoreBtn(item, "artist", isSearch: isFormSearch),
 
                                 // Obx(() {
                                 //   //获取下载状态
@@ -818,10 +628,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                     return GestureDetector(
                       onTap: () {
                         AppLog.e(childItem);
-                        EventUtils.instance.addEvent(
-                          "det_playlist_show",
-                          data: {"from": "artist_playlist"},
-                        );
+                        EventUtils.instance.addEvent("det_playlist_show", data: {"from": "artist_playlist"});
                         Get.to(UserPlayListInfo(), arguments: childItem);
                       },
                       child: Container(
@@ -833,27 +640,11 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                               width: 140.w,
                               height: 140.w,
                               clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6.w),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Positioned.fill(
-                                    child: NetImageView(
-                                      imgUrl: childItem["cover"] ?? "",
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                              child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))]),
                             ),
                             SizedBox(height: 4.w),
-                            Text(
-                              childItem["title"],
-                              style: TextStyle(fontSize: 14.w),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            Text(childItem["title"], style: TextStyle(fontSize: 14.w), maxLines: 2, overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ),
@@ -877,10 +668,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                     return GestureDetector(
                       onTap: () {
                         AppLog.e(childItem);
-                        EventUtils.instance.addEvent(
-                          "det_playlist_show",
-                          data: {"from": "artist_album"},
-                        );
+                        EventUtils.instance.addEvent("det_playlist_show", data: {"from": "artist_album"});
                         Get.to(UserPlayListInfo(), arguments: childItem);
                       },
                       child: Container(
@@ -892,27 +680,11 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                               width: 140.w,
                               height: 140.w,
                               clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6.w),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Positioned.fill(
-                                    child: NetImageView(
-                                      imgUrl: childItem["cover"] ?? "",
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                              child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))]),
                             ),
                             SizedBox(height: 4.w),
-                            Text(
-                              childItem["title"],
-                              style: TextStyle(fontSize: 14.w),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            Text(childItem["title"], style: TextStyle(fontSize: 14.w), maxLines: 2, overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ),
@@ -936,23 +708,13 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                     return GestureDetector(
                       onTap: () {
                         AppLog.e(childItem);
-                        EventUtils.instance.addEvent(
-                          "det_artist_show",
-                          data: {"form": "artist_fans_like"},
-                        );
-                        Get.to(()=>
-                          UserArtistInfo(),
-                          arguments: childItem,
-                          preventDuplicates: false,
-                        );
+                        EventUtils.instance.addEvent("det_artist_show", data: {"from": "home_artist"});
+                        Get.to(() => UserArtistInfo(), arguments: childItem, preventDuplicates: false);
                       },
                       child: Container(
                         width: 100.w,
                         height: 160.w,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(50.w),
-                        ),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(50.w)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -961,19 +723,8 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                               width: 68.w,
                               height: 68.w,
                               clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(34.w),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Positioned.fill(
-                                    child: NetImageView(
-                                      imgUrl: childItem["cover"] ?? "",
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(34.w)),
+                              child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))]),
                             ),
                             SizedBox(height: 12.w),
                             Container(
@@ -1008,11 +759,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
 
                   return Column(
                     children: [
-                      Container(
-                        width: 100.w,
-                        height: 100.w,
-                        child: NetImageView(imgUrl: childItem["cover"] ?? ""),
-                      ),
+                      Container(width: 100.w, height: 100.w, child: NetImageView(imgUrl: childItem["cover"] ?? "")),
                       // Text(childItem["title"]),
                       Text(childItem["subtitle"]),
                     ],
@@ -1050,8 +797,7 @@ class UserArtistInfoController extends GetxController with StateMixin {
     bindData();
 
     scrollC.addListener(() {
-      isHeaderExpanded.value =
-          scrollC.offset < 200.w - Get.mediaQuery.padding.top - kToolbarHeight;
+      isHeaderExpanded.value = scrollC.offset < 200.w - Get.mediaQuery.padding.top - kToolbarHeight;
       // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       //     statusBarIconBrightness:
       //         isHeaderExpanded.value ? Brightness.light : Brightness.dark));
@@ -1061,95 +807,77 @@ class UserArtistInfoController extends GetxController with StateMixin {
   bindData() async {
     var result = await ApiMain.instance.getData(browseId);
     if (result.code == HttpCode.success) {
-      //标题
-      var title =
-          result
-              .data["header"]["musicImmersiveHeaderRenderer"]["title"]["runs"]
-              .first["text"];
-      var cover =
-          result
-              .data["header"]["musicImmersiveHeaderRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
-      var description =
-          result
-              .data["header"]["musicImmersiveHeaderRenderer"]["description"]?["runs"]
-              .first["text"] ??
-          "";
+      try {
+        //标题
+        var title = result.data["header"]["musicImmersiveHeaderRenderer"]["title"]["runs"].first["text"];
+        var cover = result.data["header"]["musicImmersiveHeaderRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
+        var description = result.data["header"]["musicImmersiveHeaderRenderer"]["description"]?["runs"].first["text"] ?? "";
 
-      var fansNumStr =
-          result
-              .data["header"]["musicImmersiveHeaderRenderer"]["subscriptionButton"]["subscribeButtonRenderer"]["subscriberCountText"]["runs"]
-              .first["text"];
+        var fansNumStr =
+            result
+                .data["header"]["musicImmersiveHeaderRenderer"]["subscriptionButton"]["subscribeButtonRenderer"]["subscriberCountText"]["runs"]
+                .first["text"];
 
-      info = {
-        "cover": cover,
-        "title": title,
-        "description": description,
-        "subtitle": fansNumStr,
-        "browseId": browseId,
-      };
+        info = {"cover": cover, "title": title, "description": description, "subtitle": fansNumStr, "browseId": browseId};
 
-      //所有数据列表
-      List oldList =
-          result
-              .data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
+        //所有数据列表
+        List oldList =
+            result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
 
-      var newList = [];
-      for (Map item in oldList) {
-        if (item.containsKey("musicShelfRenderer")) {
-          //歌曲列表
-          var bigTitle = item["musicShelfRenderer"]["title"]["runs"][0]["text"];
-          //点击更多信息
-          var moreBrowseId =
-              item["musicShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ??
-              "";
-          var moreParams =
-              item["musicShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["params"] ??
-              "";
-          //歌曲列表
-          List musicOldList = item["musicShelfRenderer"]["contents"];
+        var newList = [];
+        for (Map item in oldList) {
+          if (item.containsKey("musicShelfRenderer")) {
+            //歌曲列表
+            var bigTitle = item["musicShelfRenderer"]["title"]["runs"][0]["text"];
 
-          var newMusicData = FormatMyData.instance.getMusicList(musicOldList);
+            AppLog.i("bigTitle==$bigTitle");
 
-          newList.add({
-            "title": bigTitle,
-            "list": newMusicData,
-            "moreBrowseId": moreBrowseId,
-            "moreParams": moreParams,
-            "type": "music",
-          });
-        } else if (item.containsKey("musicDescriptionShelfRenderer")) {
-          //关于歌手
-        } else if (item.containsKey("musicCarouselShelfRenderer")) {
-          //其他列表
-          var bigTitle =
-              item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"];
+            //点击更多信息
+            var moreBrowseId = item["musicShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ?? "";
 
-          var moreBrowseId =
-              item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ??
-              "";
-          var moreParams =
-              item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]?["params"] ??
-              "";
+            AppLog.i("moreBrowseId==$moreBrowseId");
+            var moreParams = item["musicShelfRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["params"] ?? "";
+            //歌曲列表
+            List musicOldList = item["musicShelfRenderer"]["contents"];
 
-          List otherOldList = item["musicCarouselShelfRenderer"]["contents"];
-          var newOtherData = FormatMyData.instance.getOtherList(otherOldList);
-          newList.add({
-            "title": bigTitle,
-            "list": newOtherData,
-            "moreBrowseId": moreBrowseId,
-            "moreParams": moreParams,
-            "type": newOtherData.first["type"],
-          });
+            var newMusicData = FormatMyData.instance.getMusicList(musicOldList);
+
+            newList.add({"title": bigTitle, "list": newMusicData, "moreBrowseId": moreBrowseId, "moreParams": moreParams, "type": "music"});
+          } else if (item.containsKey("musicDescriptionShelfRenderer")) {
+            //关于歌手
+          } else if (item.containsKey("musicCarouselShelfRenderer")) {
+            //其他列表
+            var bigTitle = item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"];
+
+            var moreBrowseId =
+                item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ??
+                "";
+            var moreParams =
+                item["musicCarouselShelfRenderer"]["header"]["musicCarouselShelfBasicHeaderRenderer"]["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["browseEndpoint"]?["params"] ??
+                "";
+
+            List otherOldList = item["musicCarouselShelfRenderer"]["contents"];
+            var newOtherData = FormatMyData.instance.getOtherList(otherOldList);
+            newList.add({
+              "title": bigTitle,
+              "list": newOtherData,
+              "moreBrowseId": moreBrowseId,
+              "moreParams": moreParams,
+              "type": newOtherData.first["type"],
+            });
+          }
         }
-      }
 
-      list = newList;
+        list = newList;
 
-      if (newList.isNotEmpty && newList[0]["title"] != "Songs") {
-        hasSong.value = false;
-      } else {
-        hasSong.value = true;
-        bindMoreSongList();
+        if (newList.isNotEmpty && newList[0]["type"] != "music") {
+          hasSong.value = false;
+        } else {
+          hasSong.value = true;
+          bindMoreSongList();
+        }
+      } catch (e, s) {
+        AppLog.e("解析歌手详情数据出错了，可能是因为接口变了，赶紧修复吧！\n\n$e\n\n$s");
       }
 
       // AppLog.e(list);
@@ -1160,15 +888,13 @@ class UserArtistInfoController extends GetxController with StateMixin {
   }
 
   var hasSong = false.obs;
+
   bindMoreSongList() async {
-    AppLog.e("请求更多歌曲");
+    AppLog.i("请求更多歌曲");
     //先设为5首歌
     moreList = list[0]["list"];
 
-    BaseModel result = await ApiMain.instance.getData(
-      list[0]["moreBrowseId"],
-      params: list[0]["moreParams"],
-    );
+    BaseModel result = await ApiMain.instance.getData(list[0]["moreBrowseId"], params: list[0]["moreParams"]);
     if (result.code != HttpCode.success) {
       return;
     }

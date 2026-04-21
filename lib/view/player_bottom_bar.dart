@@ -108,7 +108,7 @@ class PlayerBottomBarView extends StatelessWidget {
 
                                       if (controller.isPlaying.value) {
                                         await controller.player?.pause();
-                                        AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.pause);
+                                        AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
                                       } else {
                                         await controller.player?.play();
                                         //暂停其他页面的播放
@@ -148,12 +148,6 @@ class PlayerBottomBarView extends StatelessWidget {
                                     if (!controller.canNext.value) {
                                       return;
                                     }
-
-                                    // EventUtils.instance.addEvent("play_click",
-                                    //     data: {
-                                    //       "song_id": playList[nowIndex + 1],
-                                    //       "station": "tab"
-                                    //     });
                                     controller.playNext(isBar: true);
                                     // playItemWithIndex(nowIndex + 1);
                                   },

@@ -6,6 +6,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:muse_wave/muse_config.dart';
+import 'package:muse_wave/static/app_color.dart';
+import 'package:muse_wave/tool/bus.dart';
+import 'package:muse_wave/tool/dialog_util.dart';
+import 'package:muse_wave/tool/referrer_util.dart';
+import 'package:muse_wave/tool/remote_utils.dart';
+import 'package:muse_wave/tool/toast.dart';
 import 'package:muse_wave/view/debug_page.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,8 +47,12 @@ class UserSetting extends GetView<UserSettingController> {
         decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(centerTitle: false, title: Text("Setting".tr), titleSpacing: 12.w, actions: [
-            GestureDetector(
+          appBar: AppBar(
+            centerTitle: false,
+            title: Text("Setting".tr),
+            titleSpacing: 12.w,
+            actions: [
+              GestureDetector(
                 onDoubleTap: () {
                   controller._clickCount++;
                   if (controller._clickCount > 5) {
@@ -50,22 +60,21 @@ class UserSetting extends GetView<UserSettingController> {
                     Get.to(() => UDebugPage());
                   }
                 },
-                child: Container(
-                  color: MuseConfig.isUser ? Colors.transparent : Colors.white30,
-                  width: 100,
-                  height: 44,
-                )),
-          ],),
+                child: Container(color: MuseConfig.isUser ? Colors.transparent : Colors.white30, width: 100, height: 44),
+              ),
+            ],
+          ),
           body: Container(
             child: Obx(
               () => ListView.separated(
                 itemBuilder: (_, i) {
-                  return getItem(i);
+                  if (i == 0) return _videoRewardItem();
+                  return getItem(i - 1);
                 },
                 separatorBuilder: (_, i) {
                   return SizedBox(height: 1);
                 },
-                itemCount: controller.listTitle.length,
+                itemCount: controller.listTitle.length + 1,
               ),
             ),
           ),
@@ -136,7 +145,15 @@ class UserSetting extends GetView<UserSettingController> {
                       Spacer(),
                       TextButton(
                         onPressed: () async {
-                          var listLocale = [Get.deviceLocale, Locale("zh", "CN"), Locale("en", "US"), Locale("fr", "FR"), Locale("es", "ES"), Locale("pt", "PT"), Locale("de", "DE")];
+                          var listLocale = [
+                            Get.deviceLocale,
+                            Locale("zh", "CN"),
+                            Locale("en", "US"),
+                            Locale("fr", "FR"),
+                            Locale("es", "ES"),
+                            Locale("pt", "PT"),
+                            Locale("de", "DE"),
+                          ];
 
                           AppLog.e(nowIndex);
 
@@ -252,6 +269,57 @@ class UserSetting extends GetView<UserSettingController> {
       },
     );
   }
+
+  Widget _videoRewardItem() {
+    if (ReferrerUtil.sh.isBuyReferrer) return Container();
+    return GestureDetector(
+      onTap: () {
+        controller.onClickReward();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        height: 56.w,
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: Row(
+          children: [
+            Expanded(
+              child: Wrap(
+                direction: Axis.vertical,
+                spacing: 0,
+                children: [
+                  Text("Rewarded Ad", style: const TextStyle(height: 1, color: Color(0xff141414), fontSize: 14, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 2),
+                  Obx(() {
+                    return Text(
+                      "Remaining：${controller.curRemindHour.value}h",
+                      style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75)),
+                    );
+                  }),
+                ],
+              ),
+            ),
+            const SizedBox(width: 2),
+            Align(
+              alignment: Alignment.centerRight,
+              child: UnconstrainedBox(
+                child: GestureDetector(
+                  onTap: () {
+                    controller.onClickReward();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: AppColor.mainColor),
+                    child: Text("Rewarded AD", style: TextStyle(fontSize: 12, color: Color(0xff333333), fontWeight: FontWeight.w500)),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class UserSettingController extends GetxController {
@@ -270,6 +338,12 @@ class UserSettingController extends GetxController {
   var langStr = "".obs;
   int _clickCount = 0;
 
+  var curRemindHour = 12.obs;
+
+  DateTime? lastVideoAdTime;
+
+  int rewardCd = 0;
+
   @override
   void onInit() async {
     super.onInit();
@@ -281,5 +355,50 @@ class UserSettingController extends GetxController {
     cacheNum.value = await CacheUtils.instance.loadCacheSize();
 
     langStr.value = MyTranslations.locale.toString();
+
+    curRemindHour.value = museSp.getInt('keyRemindListenTimeHours', def: 12);
+
+    rewardCd = RemoteUtil.shareInstance.rewardVideoCd;
+  }
+
+  @override
+  onReady() {
+    super.onReady();
+    AdUtils.instance.loadAd(AdPosId.muse_local_reward, adSense: AdScene.set);
+  }
+
+  changeRemindHour(int hour) {
+    curRemindHour.value = hour;
+    museSp.setInt('keyRemindListenTimeHours', hour);
+  }
+
+  onClickReward() {
+    Get.dialog(
+      BaseDialog(
+        title: "Rewarded Ad".tr,
+        content: "Watch the video to increase listening time by 1h".tr,
+        rBtnText: "Confirm".tr,
+        lBtnText: "Cancel".tr,
+        rBtnOnTap: () async {
+          Get.back();
+          if (lastVideoAdTime != null) {
+            var diff = DateTime.now().difference(lastVideoAdTime!).inSeconds;
+            if (diff < rewardCd) {
+              ToastUtil.showToast(msg: "Please try again after $rewardCd seconds");
+              return;
+            }
+          }
+          bool isSuccess = await AdUtils.instance.showAd(AdPosId.muse_local_reward, adSense: AdScene.set);
+          if (isSuccess) {
+            lastVideoAdTime = DateTime.now();
+            changeRemindHour(curRemindHour.value + 1);
+            ToastUtil.showToast(msg: "Added 1h listening time. \nRemaining listening time：${curRemindHour.value}h");
+          } else {
+            lastVideoAdTime = null;
+            ToastUtil.showToast(msg: "Ads loading failed, try again later");
+          }
+        },
+      ),
+    );
   }
 }

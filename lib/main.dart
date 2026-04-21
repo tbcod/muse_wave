@@ -64,10 +64,9 @@ class Application extends GetxService {
 
   bool isInitMessage = false;
 
-
   Future<Application> init() async {
-
-    PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 1024 * 5; //设置缓存为5GB，避免图片太多经常重新加载
+    PaintingBinding.instance.imageCache.maximumSize = 300; //设置缓存的图片数量，避免图片太多经常重新加载
+    PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 1024 * 1; //设置缓存为1GB，避免图片太多经常重新加载
     //竖屏
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     //沉浸状态栏
@@ -97,10 +96,15 @@ class Application extends GetxService {
       MyTranslations.locale = Locale(lastLangCode, lastLangCountryCode);
     }
 
-
     // //设置下拉刷新
     EasyRefresh.defaultHeaderBuilder = () {
-      return const ClassicHeader(iconTheme: IconThemeData(color: Color(0xff8569FF)), showMessage: false, showText: false, infiniteHitOver: true, processedDuration: Duration.zero);
+      return const ClassicHeader(
+        iconTheme: IconThemeData(color: Color(0xff8569FF)),
+        showMessage: false,
+        showText: false,
+        infiniteHitOver: true,
+        processedDuration: Duration.zero,
+      );
     };
 
     EasyRefresh.defaultFooterBuilder = () {
@@ -123,8 +127,6 @@ class Application extends GetxService {
 
     return this;
   }
-
-
 
   Future initNetPush() async {
     // if (!MuseConfig.isUser) {
@@ -174,11 +176,18 @@ class Application extends GetxService {
 
   Future initLocPush() async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    final InitializationSettings initializationSettings = InitializationSettings(iOS: DarwinInitializationSettings(), android: AndroidInitializationSettings("ic_launcher"));
+    final InitializationSettings initializationSettings = InitializationSettings(
+      iOS: DarwinInitializationSettings(),
+      android: AndroidInitializationSettings("ic_launcher"),
+    );
 
     var d = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
 
-    final bool enabled = await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.areNotificationsEnabled() ?? false;
+    final bool enabled =
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+            ?.areNotificationsEnabled() ??
+        false;
     if (enabled) {
       AppLog.i("通知权限开启");
     } else {
@@ -252,7 +261,6 @@ class Application extends GetxService {
     AdjustUtil.instance.initSdk(userAppUuid);
 
     initAd();
-
   }
 
   initFireBaseOther() async {
@@ -268,6 +276,7 @@ class Application extends GetxService {
           errorStr.contains('Failed host lookup') ||
           errorStr.contains('OS Error: nodename nor servname') ||
           errorStr.contains('HandshakeException') ||
+          errorStr.contains('Connection closed before') ||
           errorStr.contains('Invalid statusCode: 404')) {
         return true;
       }
@@ -344,7 +353,6 @@ class Application extends GetxService {
     AppLog.i("initLocTypeSo:$typeSo");
   }
 
-
   // AppsflyerSdk? appsflyerSdk;
   //
   // initAppsflyer() async {
@@ -368,7 +376,6 @@ class Application extends GetxService {
     Hive.init(path.path);
   }
 }
-
 
 class MyApp extends GetView {
   const MyApp({super.key});
@@ -427,7 +434,11 @@ class MyApp extends GetView {
           ),
           title: MuseConfig.appName,
           home: LaunchPage(),
-          localizationsDelegates: const [GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           locale: MyTranslations.locale,
           fallbackLocale: MyTranslations.fallbackLocale,
           translations: MyTranslations(),
@@ -533,12 +544,17 @@ class MyAppController extends SuperController {
         } else {
           EventUtils.instance.addEvent("enter_home", data: {"source": "a"});
           EventUtils.instance.addEvent("home_no");
+          AdUtils.instance.showAd(AdPosId.muse_local_int, adSense: AdScene.open_hot, forceLocalJson: true);
         }
         TbaUtils.instance.checkUnFinishedEvent();
       } else if (state == AppState.background) {
+        AppLog.i("后台");
         Get.find<Application>().isAppBack = true;
         TbaUtils.instance.checkUnFinishedEvent();
-        AppLog.i("后台");
+        bool isPlaying = Get.find<UserPlayInfoController>().isPlaying.value;
+        if (isPlaying) {
+          EventUtils.instance.addEvent("background_play");
+        }
       }
     });
   }
@@ -558,7 +574,6 @@ class MyAppController extends SuperController {
   @override
   void onHidden() {}
 }
-
 
 getWhiteBarStyle() {
   return SystemUiOverlayStyle(

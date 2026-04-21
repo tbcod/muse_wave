@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../tool/download/download_util.dart';
@@ -242,6 +243,12 @@ class UserDownloadSongController extends GetxController {
   void onInit() {
     super.onInit();
     bindData();
+  }
+
+  @override
+  onReady() {
+    super.onReady();
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.detail);
   }
 
   bindData() {

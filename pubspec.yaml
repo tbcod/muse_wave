@@ -1,6 +1,6 @@
 name: muse_wave
 description: "A new Flutter project."
-version: 1.0.8+10800
+version: 1.0.9+10900
 
 environment:
   sdk: ^3.7.0

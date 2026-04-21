@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../tool/like/like_util.dart';
@@ -74,7 +75,7 @@ class UserLikeArtist extends GetView<UserLikeArtistController> {
         AppLog.e(item);
         EventUtils.instance.addEvent(
           "det_artist_show",
-          data: {"form": "library"},
+          data: {"from": "library"},
         );
         Get.to(()=>UserArtistInfo(), arguments: item);
       },
@@ -167,6 +168,12 @@ class UserLikeArtistController extends GetxController {
   void onInit() {
     super.onInit();
     bindData();
+  }
+
+  @override
+  onReady() {
+    super.onReady();
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.detail);
   }
 
   bindData() {

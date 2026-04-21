@@ -13,17 +13,18 @@ import '../../main.dart';
 import '../log.dart';
 
 class CUtil extends BaseApi {
-  CUtil._internal()
-    : super(GetPlatform.isIOS ? "" : "https://gaulle.muse-wave.com");
+  CUtil._internal() : super(GetPlatform.isIOS ? "" : "https://gaulle.muse-wave.com");
   static final CUtil _instance = CUtil._internal();
+
   static CUtil get instance {
     return _instance;
   }
 
   Future<BaseModel> checkCloak() async {
-
-    // if(kDebugMode)  return BaseModel(code: -1);
-
+    // if (kDebugMode) {
+    //   await Future.delayed(Duration(seconds: 4));
+    //   return BaseModel(code: -1);
+    // }
 
     var packageInfo = await PackageInfo.fromPlatform();
     var userAppUuid = Get.find<Application>().userAppUuid;
@@ -37,7 +38,7 @@ class CUtil extends BaseApi {
       String advertisingId = "";
       try {
         advertisingId = (await AdvertisingId.id(true)) ?? "";
-        AppLog.i("获取gaid成功:$advertisingId");
+        AppLog.i("cloak 获取gaid成功:$advertisingId");
       } catch (e) {
         AppLog.e("获取gaid出错:$e");
       }
@@ -53,7 +54,7 @@ class CUtil extends BaseApi {
           //device_model
           "conceal": androidInfo.model,
           //bundle_id
-          "nib": MuseConfig.isUser? packageInfo.packageName : "com.musewave.player.music",
+          "nib": MuseConfig.isUser ? packageInfo.packageName : "com.musewave.player.music",
           //os_version
           "helmet": androidInfo.version.sdkInt,
           //gaid

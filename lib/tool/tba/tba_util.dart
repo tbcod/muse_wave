@@ -3,6 +3,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/static/db_key.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/adjust_util.dart';
 import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/native_utils.dart';
@@ -135,7 +136,7 @@ class TbaUtils {
       AdjustUtil.instance.addPurchaseEvent(name: "ad_impression_and", amount: amount);
 
       NativeUtils.instance.logEventFB(name: "ad_impression_revenue", valueToSum: amount);
-      NativeUtils.instance.logEventFB(name: "AdImpression",parameters:  {"fb_currency": "USD", "fb_ad_type": ad_source}, valueToSum: amount);
+      NativeUtils.instance.logEventFB(name: "AdImpression", parameters: {"fb_currency": "USD", "fb_ad_type": ad_source}, valueToSum: amount);
       NativeUtils.instance.logPurchaseFB(amount: amount);
 
       // FacebookAppEvents().logEvent(name: "ad_impression_revenue", valueToSum: amount);
@@ -147,8 +148,13 @@ class TbaUtils {
 
     _postAdRevenue001(amount);
 
-    AppLog.i("广告价值 ad_impression:$ad_pre_ecpm, adSource:$ad_source, adFormat:$ad_format, adSense:$adSense, adPosId:$adPosName,  adNetwork:$ad_network, $ad_unit_id");
+    AppLog.i(
+      "广告价值 ad_impression:$ad_pre_ecpm, adSource:$ad_source, adFormat:$ad_format, adSense:$adSense, adPosId:$adPosName,  adNetwork:$ad_network, $ad_unit_id",
+    );
 
+    // if (adSense == AdScene.open_cool.name && bus.isFirstAppLaunch) {
+    //   adSense = AdScene.open_first.name;
+    // }
     return TbaAnd.instance.postData(
       TbaType.ad,
       eventData: {

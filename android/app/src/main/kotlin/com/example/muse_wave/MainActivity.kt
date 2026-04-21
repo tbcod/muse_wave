@@ -18,6 +18,8 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.Build
 import java.util.Currency
+import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.Lifecycle
 
 class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
     private lateinit var methodChannel: MethodChannel
@@ -58,11 +60,15 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
             result.success(true)
         } else if (call.method.equals("startSearchNotificationBarService")) {
             Log.i("MuseAndroid", "startSearchNotificationBarService")
-            val intent = Intent(this, MuseForegroundService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent)
-            } else {
-                startService(intent)
+            try {
+                val intent = Intent(this, MuseForegroundService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(intent)
+                } else {
+                    startService(intent)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
             result.success(null)
         }else if (call.method.equals("facebookLogPurchase")) {
@@ -74,6 +80,10 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
         }
     }
 
+    fun isAppForeground(): Boolean {
+        return ProcessLifecycleOwner.get()
+            .lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+    }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

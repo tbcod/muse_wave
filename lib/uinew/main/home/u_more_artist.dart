@@ -69,7 +69,7 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
     return InkWell(
       onTap: () {
         AppLog.e(item);
-        EventUtils.instance.addEvent("det_artist_show", data: {"form": "more"});
+        EventUtils.instance.addEvent("det_artist_show", data: {"from": "more"});
         Get.to(()=>UserArtistInfo(), arguments: item);
       },
       child: Container(

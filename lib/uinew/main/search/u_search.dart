@@ -684,7 +684,7 @@ class UserSearch extends GetView<UserSearchController> {
             GestureDetector(
               onTap: () {
                 if (isArtist) {
-                  EventUtils.instance.addEvent("det_artist_show", data: {"form": "search"});
+                  EventUtils.instance.addEvent("det_artist_show", data: {"from": "search"});
                   EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
                   Get.to(() => UserArtistInfo(), arguments: item);
                 } else if (isPlaylist) {
@@ -1389,7 +1389,7 @@ class UserSearch extends GetView<UserSearchController> {
   getArtistItem(Map item) {
     return InkWell(
       onTap: () {
-        EventUtils.instance.addEvent("det_artist_show", data: {"form": "search"});
+        EventUtils.instance.addEvent("det_artist_show", data: {"from": "search"});
         EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
         Get.to(() => UserArtistInfo(), arguments: item);
       },
@@ -2777,7 +2777,7 @@ class UserSearch extends GetView<UserSearchController> {
 //       onTap: () {
 //         EventUtils.instance.addEvent(
 //           "det_artist_show",
-//           data: {"form": "search"},
+//           data: {"from": "search"},
 //         );
 //         EventUtils.instance.addEvent(
 //           "search_result_click",

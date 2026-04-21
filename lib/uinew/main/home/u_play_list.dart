@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_play.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
@@ -639,6 +640,12 @@ class UserPlayListInfoController extends GetxController with StateMixin {
       return;
     }
     bindData();
+  }
+
+  @override
+  onReady() {
+    super.onReady();
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.detail);
   }
 
   bindData() async {

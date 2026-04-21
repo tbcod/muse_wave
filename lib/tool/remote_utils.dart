@@ -23,6 +23,8 @@ const String mmPageNativeAdClickbait = "mmPageNativeAdClickbait";
 const String mmHomeWebParams = "mmHomeWebParams";
 const String mmReferParams = "mmReferParams";
 
+const String mmSetRewardVideoCd = "mmSetRewardVideoCd";
+
 class RemoteUtil {
   static RemoteUtil shareInstance = RemoteUtil._();
 
@@ -46,6 +48,8 @@ class RemoteUtil {
   String _homeWebParams = "";
 
   String _referParams = ""; //包含字段认定为买量用户，未包含该字段则认定为非买量用户；
+
+  int _rewardVideoCd = 0;
 
   bool isInitSuc = false;
 
@@ -80,6 +84,8 @@ class RemoteUtil {
     _homeWebParams = museSp.getString(mmHomeWebParams) ?? "";
 
     _referParams = museSp.getString(mmReferParams) ?? "";
+
+    _rewardVideoCd = museSp.getInt(mmSetRewardVideoCd, def: 30);
   }
 
   Future<void> initFirebaseRemoteSdk() async {
@@ -176,6 +182,15 @@ class RemoteUtil {
     if (homeWebParams.isNotEmpty) {
       museSp.setString(mmHomeWebParams, homeWebParams);
       _homeWebParams = homeWebParams;
+    }
+
+    int rewardVideoCd = FirebaseRemoteConfig.instance.getInt("muse_local_reward_cd");
+    if (rewardVideoCd > 0) {
+      museSp.setInt(mmSetRewardVideoCd, rewardVideoCd);
+      _rewardVideoCd = rewardVideoCd;
+    }else if(rewardVideoCd < 0){
+      museSp.setInt(mmSetRewardVideoCd, 0);
+      _rewardVideoCd = 0;
     }
   }
 
@@ -294,4 +309,9 @@ class RemoteUtil {
     }
     return MuseConfig.adJsonAnd;
   }
+
+  int get rewardVideoCd {
+    return _rewardVideoCd;
+  }
+
 }

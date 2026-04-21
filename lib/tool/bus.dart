@@ -8,7 +8,7 @@ class Bus {
 
   Bus._();
 
-  DateTime? startTime;
+  late DateTime appLaunchTime;
 
   bool get isBMode {
     bool isOpenUser = museSp.getBool("isOpenUser");
@@ -16,7 +16,7 @@ class Bus {
     return isOpenUser;
   }
 
-  bool isLaunchLoadingAdShowing = false;
+  // bool isLaunchLoadingAdShowing = false;
 
   bool get isFirstAppLaunch {
     return getAppLaunchCount <= 1;
@@ -40,8 +40,11 @@ class Bus {
     museSp.setBool('KeyIsFirstShowAd', false);
   }
 
-
-
+  double getTimeDiffNow(DateTime start, {int fixed = 2}) {
+    double seconds = DateTime.now().difference(start).inMilliseconds / 1000;
+    double res = double.parse(seconds.toStringAsFixed(fixed));
+    return res;
+  }
 }
 
 MuseSP get museSp => MuseSP.instance;
@@ -61,11 +64,10 @@ class MuseSP {
     await _museSp.setInt(key, value);
   }
 
-  int getInt(String key) {
+  int getInt(String key, {int def = 0}) {
     int? value = _museSp.getInt(key);
-    return value ?? 0;
+    return value ?? def;
   }
-
 
   Future setDouble(String key, double value) async {
     await _museSp.setDouble(key, value);
@@ -76,13 +78,11 @@ class MuseSP {
     return value ?? 0;
   }
 
-
-
   Future setBool(String key, bool value) async {
     await _museSp.setBool(key, value);
   }
 
-  bool getBool(String key,{bool def = false}) {
+  bool getBool(String key, {bool def = false}) {
     return _museSp.getBool(key) ?? def;
   }
 

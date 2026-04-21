@@ -219,7 +219,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                           ),
                           onTap: () {
                             EventUtils.instance.addEvent("play_page_click", data: {"click": "single"});
-
+                            AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
                             controller.singleLoop.toggle();
                           },
                         ),
@@ -236,7 +236,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                 return;
                               }
                               EventUtils.instance.addEvent("play_page_click", data: {"click": "switch"});
-
+                              // AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
                               // controller
                               //     .playItemWithIndex(controller.nowIndex - 1);
 
@@ -273,12 +273,11 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
 
                                           return;
                                         }
+                                        AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
 
                                         if (controller.isPlaying.value) {
-                                          AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.pause);
                                           controller.player?.pause();
                                         } else {
-                                          AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
 
                                           controller.player?.play();
 
@@ -330,6 +329,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                               if (!controller.canNext.value) {
                                 return;
                               }
+                              // AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
                               EventUtils.instance.addEvent("play_page_click", data: {"click": "switch"});
 
                               EventUtils.instance.addEvent(
@@ -362,7 +362,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
 
                             //已经重新设置播放列表
                             // ToastUtil.showToast(msg: "The playlist has been reset");
-
+                            AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
                             EventUtils.instance.addEvent("play_page_click", data: {"click": "shuffle"});
                           },
                         ),

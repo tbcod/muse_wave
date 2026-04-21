@@ -367,7 +367,7 @@ class MoreSheetUtil {
 
                     await Future.delayed(Duration(milliseconds: 200));
 
-                    EventUtils.instance.addEvent("det_artist_show", data: {"form": "song_more_go_to_artist"});
+                    EventUtils.instance.addEvent("det_artist_show", data: {"from": "more"});
 
                     if (isPlayPage) {
                       // if (!isPlayPage) {

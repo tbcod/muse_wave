@@ -624,7 +624,7 @@ class UserHome extends GetView<UserHomeController> {
 
                         AppLog.e(childItem);
 
-                        EventUtils.instance.addEvent("det_artist_show", data: {"form": "home_artist"});
+                        EventUtils.instance.addEvent("det_artist_show", data: {"from": "home_artist"});
 
                         if (Get.find<Application>().typeSo == "yt") {
                           //跳转youtube频道
@@ -1020,6 +1020,8 @@ class UserHomeController extends GetxController with StateMixin {
     // AppLog.i("开始请求Music");
     EventUtils.instance.addEvent("home_refresh_and", data: {"source": source});
 
+    DateTime start = DateTime.now();
+
     BaseModel result = await ApiMain.instance.getData("FEmusic_home");
 
     if (result.code != HttpCode.success) {
@@ -1033,6 +1035,13 @@ class UserHomeController extends GetxController with StateMixin {
     }
 
     EventUtils.instance.addEvent("refresh_result_and", data: {"source": source, "value": "suc"});
+
+    if (source == "open_cool") {
+      EventUtils.instance.addEvent(
+        'home_source_expose',
+        data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "en_time": bus.getTimeDiffNow(start)},
+      );
+    }
 
     //下一页数据
     //{
@@ -1128,8 +1137,14 @@ class UserHomeController extends GetxController with StateMixin {
             String browseId = childItem["musicTwoRowItemRenderer"]?["title"]?["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ?? "";
 
             //封面
-            var childItemCover =
-                childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][1]["url"];
+            List list = childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
+            var childItemCover = "";
+            if (list.length > 1) {
+              childItemCover = list[1]["url"];
+            } else if (list.isNotEmpty) {
+              childItemCover = list[0]["url"];
+            }
+            // AppLog.i("封面列表长度：${list.length},封面链接：$childItemCover");
 
             if (type.isNotEmpty && browseId.isNotEmpty) {
               realChildList.add({
@@ -1151,8 +1166,8 @@ class UserHomeController extends GetxController with StateMixin {
           realList.add({"title": bigTitle, "list": realChildList, "moreId": moreId, "type": type});
         }
       }
-    } catch (e) {
-      AppLog.e(e);
+    } catch (e, s) {
+      AppLog.e("解析FEmusic_home出错了:${e.toString()},$s");
     }
 
     // netList.value = realList;

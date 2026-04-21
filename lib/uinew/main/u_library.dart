@@ -55,7 +55,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                           LikeUtil.instance.removeNewState(1);
 
                           EventUtils.instance.addEvent("library_liked");
-                          Get.to(UserLikeSong());
+                          Get.to(() => UserLikeSong());
                         },
                         child: Stack(
                           children: [
