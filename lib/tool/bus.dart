@@ -9,6 +9,9 @@ class Bus {
 
   late DateTime appLaunchTime;
 
+
+  bool isAppLaunchFinish = false;
+
   bool get isBMode {
     bool isOpenUser = museSp.getBool("isOpenUser");
     // AppLog.i("isBMode:$isOpenUser");

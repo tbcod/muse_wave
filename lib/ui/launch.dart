@@ -60,6 +60,12 @@ class LaunchPageController extends GetxController {
     toMainPage();
   }
 
+  @override
+  onClose() {
+    AppLog.i("LaunchPageController onClose");
+    super.onClose();
+  }
+
   Future _userCheck() async {
     if (isA && !_isCloakComplete) {
       double diff = (DateTime.now().difference(bus.appLaunchTime)).inMilliseconds / 1000;
@@ -110,6 +116,7 @@ class LaunchPageController extends GetxController {
   Future loadAd() async {
     await AdUtils.instance.loadAd(
       AdPosId.open,
+      adFirstType: AdFirstType.launch_first,
       adSense: bus.isFirstAppLaunch ? AdScene.open_first : AdScene.open_cool,
       forceLocalJson: bus.isFirstAppLaunch,
     );
@@ -150,14 +157,7 @@ class LaunchPageController extends GetxController {
     }
 
     if (isA) {
-      if (!bus.isFirstAppLaunch) {
-        AppLog.i("准备展示开屏广告(A非首次展示本地&local int)： ");
-        // await AdUtils.instance.showAd(
-        //   AdPosId.muse_local_int,
-        //   adSense: bus.isFirstAppLaunch ? AdScene.open_first : AdScene.open_cool,
-        //   forceLocalJson: true,
-        // );
-      }
+      //A面不展示冷启动广告
     } else {
       if (!bus.isFirstAppLaunch || RemoteUtil.shareInstance.isShowOpenAd) {
         AppLog.i("准备展示开屏广告(B展示open)");

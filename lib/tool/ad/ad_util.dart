@@ -21,6 +21,8 @@ enum AdScene { open_cool, open_hot, open_first, play, search, download, detail, 
 
 enum AdPosId { open, behavior, level_h, normalbanner, pagebanner, muse_local_int, muse_local_reward } //homenative, nvpage_full
 
+enum AdFirstType { launch_first, launch_other, int_main_first, int_main_other, banner_other }
+
 class AdUtils {
   AdUtils._internal();
 
@@ -37,6 +39,11 @@ class AdUtils {
   var fullNativeAdClicked = false.obs;
   var pageNativeAdClicked = false.obs;
 
+  static int adTimeoutSeconds = 12;
+
+  bool isFirstBehaviorAd = true;
+  bool isFirstOpenAd = true;
+
   //是否超过广告间隔
   Future<bool> canShow() async {
     if (lastShowTime == null) {
@@ -48,7 +55,7 @@ class AdUtils {
     Duration temp = nowTime.difference(lastShowTime!);
     num wait = num.tryParse(adJson["sameinterval"].toString()) ?? 60;
     // AppLog.e("广告间隔\n${lastShowTime}\n${nowTime}\n${temp.inSeconds}---${wait}");
-    if(kDebugMode){
+    if (kDebugMode) {
       wait = 15;
     }
 
@@ -72,10 +79,13 @@ class AdUtils {
   var loadedAdMap = {};
 
   //load //required String positionKey,
-  loadAd(AdPosId adPosId, {required AdScene adSense, bool forceLocalJson = false, LoadCallback? onLoad}) async {
+  loadAd(AdPosId adPosId, {required AdScene adSense, bool forceLocalJson = false, AdFirstType? adFirstType, LoadCallback? onLoad}) async {
     String key = adPosId.name;
 
-    if (!Get.isRegistered<LaunchPageController>()) {
+    adFirstType ??= adPosId == AdPosId.open ? AdFirstType.launch_other : AdFirstType.int_main_other;
+
+    // if (!Get.isRegistered<LaunchPageController>()) {
+    if (bus.isAppLaunchFinish) {
       //除启动广告优先加载高价
       if (adPosId != AdPosId.level_h && adPosId != AdPosId.muse_local_reward) {
         //同步加载高价
@@ -83,7 +93,7 @@ class AdUtils {
       }
     }
 
-    AppLog.i("开始加载广告位:$key, 场景：${adSense.name}，本地：$forceLocalJson");
+    AppLog.i("开始加载广告位:$key, 场景：${adSense.name}，本地：$forceLocalJson, ${adFirstType.name}");
     Map adJson = this.adJson;
     if (forceLocalJson) {
       adJson = MuseConfig.adJsonAnd;
@@ -132,7 +142,6 @@ class AdUtils {
         if (timeMs < DateTime.now().subtract(Duration(minutes: time)).millisecondsSinceEpoch) {
           //已过期,删除广告重新加载
           //销毁广告后删除
-
           // admob广告先销毁再删除
           if (ad_id.startsWith("ca-app-pub")) {
             final adView = loadedAdMap[ad_id]["admob_ad"];
@@ -156,7 +165,7 @@ class AdUtils {
 
       EventUtils.instance.addEvent(
         "ad_request",
-        data: {"ad_format": type, "ad_source_client": source, "ad_pos_id": adPosId.name, "ad_sense": adSense.name, "ad_code_id": ad_id},
+        data: {"ad_pos_id": adPosId.name, "ad_first": adFirstType.name, "ad_format": type, "ad_source_client": source, "ad_code_id": ad_id},
       );
 
       DateTime startTime = DateTime.now();
@@ -165,7 +174,7 @@ class AdUtils {
       Completer<bool> isCompleter = Completer();
 
       Timer? loadTimer;
-      loadTimer = Timer(Duration(seconds: 12), () {
+      loadTimer = Timer(Duration(seconds: adTimeoutSeconds), () {
         if (!isCompleter.isCompleted) {
           reason = "time out";
           AppLog.e("广告加载超时：$key， $source, $type, $ad_id");
@@ -529,7 +538,7 @@ class AdUtils {
           "ad_return",
           data: {
             "ad_pos_id": adPosId.name,
-            "ad_sense": adSense.name,
+            "ad_first": adFirstType.name,
             "ad_format": type,
             "ad_source_client": source,
             "ad_code_id": ad_id,
@@ -542,7 +551,7 @@ class AdUtils {
           "ad_return_fail",
           data: {
             "ad_pos_id": adPosId.name,
-            "ad_sense": adSense.name,
+            "ad_first": adFirstType.name,
             "ad_format": type,
             "ad_source_client": source,
             "ad_code_id": ad_id,
@@ -550,6 +559,9 @@ class AdUtils {
             "reason": reason,
           },
         );
+        if (reason.contains("JavascriptEngine")) {
+          await Future.delayed(Duration(seconds: 3));
+        }
         continue;
       }
     }
@@ -587,7 +599,7 @@ class AdUtils {
       //   "ad_show_fail",
       //   data: {"ad_pos_id": adPosId.name, "ad_sense": adSense.name, "reason": "ad is showing"},
       // );
-      if(adPosId == AdPosId.behavior){
+      if (adPosId == AdPosId.behavior) {
         adIsShowing = false;
       }
       return false;
@@ -653,10 +665,7 @@ class AdUtils {
     final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
 
     // AppLog.e("广告网络：$connectivityResult");
-    if (!connectivityResult.contains(ConnectivityResult.wifi) &&
-        !connectivityResult.contains(ConnectivityResult.mobile) &&
-        !connectivityResult.contains(ConnectivityResult.ethernet) &&
-        !connectivityResult.contains(ConnectivityResult.vpn)) {
+    if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile) && !connectivityResult.contains(ConnectivityResult.ethernet) && !connectivityResult.contains(ConnectivityResult.vpn)) {
       //没有网络
       AppLog.e("没有网络，不显示广告");
       if (onShow != null) {
@@ -676,7 +685,16 @@ class AdUtils {
     //循环判断广告是否加载
     AppLog.i("开始显示广告位:$key，场景：${adSense.name}， 共${configList.length}层， 本地json：$isLocalJson");
 
-    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key, "ad_sense": adSense.name});
+    AdFirstType adFirstType = AdFirstType.int_main_other;
+    if (adPosId == AdPosId.open) {
+      adFirstType = !bus.isAppLaunchFinish ? AdFirstType.launch_first : AdFirstType.launch_other;
+      isFirstOpenAd = false;
+    } else if (adPosId == AdPosId.behavior) {
+      adFirstType = isFirstBehaviorAd ? AdFirstType.int_main_first : AdFirstType.int_main_other;
+      isFirstBehaviorAd = false;
+    }
+
+    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key, "ad_sense": adSense.name, "ad_first": adFirstType.name});
     var isShowAd = false;
 
     Completer<bool> isCompleter = Completer();
@@ -1479,193 +1497,193 @@ class AdUtils {
     return isSuc;
   }
 
-  //   //load
-  //   Future loadPageNativeAd(String key, {required AdScene adSense, LoadCallback? onLoad}) async {
-  //     AppLog.i("开始加载广告:$key");
-  //     if (!adJson.containsKey(key)) {
-  //       AppLog.e("没有对应广告$key");
-  //       return;
-  //     }
-  //     List configList = adJson[key] ?? [];
-  //     if (configList.isEmpty) {
-  //       return;
-  //     }
-  //     //按照优先级降序排序
-  //     configList.sort((a, b) {
-  //       int al = a["adweight"];
-  //       int bl = b["adweight"];
-  //       //降序
-  //       return bl.compareTo(al);
-  //     });
-  //
-  //     bool isLoadSuc = false;
-  //     //循环加载广告
-  //     for (var item in configList) {
-  //       String type = item["adtype"];
-  //       String source = item["adsource"];
-  //       String ad_id = item["placementid"];
-  //       int ad_weight = item["adweight"];
-  //
-  //       if (loadedAdMap.containsKey(ad_id)) {
-  //         int timeMs = loadedAdMap[ad_id]["timeMs"] ?? 0;
-  //         //缓存过期时间
-  //         if (timeMs < DateTime.now().subtract(Duration(minutes: 55)).millisecondsSinceEpoch) {
-  //           if (ad_id.startsWith("ca-app-pub")) {
-  //             final adView = loadedAdMap[ad_id]["admob_ad"];
-  //             if (adView is NativeAd) {
-  //               adView.dispose();
-  //             } else if (adView is AdWithoutView) {
-  //               adView.dispose();
-  //             }
-  //           }
-  //           loadedAdMap.remove(ad_id);
-  //         } else {
-  //           AppLog.i("广告缓存存在：$key， $source, $type, $ad_id");
-  //           isLoadSuc = true;
-  //           break;
-  //         }
-  //       }
-  //       AppLog.i("广告开始加载：$key， $source, $type, $ad_id");
-  //       String reason = "";
-  //       Completer<bool> isCompleter = Completer();
-  //
-  //       Timer? loadTimer;
-  //       loadTimer = Timer(Duration(seconds: 12), () {
-  //         if (!isCompleter.isCompleted) {
-  //           reason = "time out";
-  //           AppLog.e("广告加载超时：$key， $source, $type, $ad_id");
-  //           isCompleter.complete(false);
-  //         }
-  //       });
-  //
-  //       if (source == "admob") {
-  //         if (type == "native") {
-  //           NativeAd nativeAd = NativeAd(
-  //             adUnitId: ad_id,
-  //             factoryId: "admob_page_native",
-  //             request: const AdRequest(),
-  //             listener: admob.NativeAdListener(
-  //               onAdLoaded: (ad) async {
-  //                 AppLog.i("广告加载成功：$key， $source, $type, $ad_id, adweight:${item['adweight']}");
-  //                 AdUtils.instance.loadedAdMap[ad_id] = {"data": item, "admob_ad": ad, "ad_sense": adSense.name, "timeMs": DateTime.now().millisecondsSinceEpoch, "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2};
-  //                 if (!isCompleter.isCompleted) isCompleter.complete(true);
-  //               },
-  //               onAdFailedToLoad: (ad, e) {
-  //                 AppLog.e("广告加载失败：$key， $source, $type, $ad_id, adweight:$ad_weight，${e.toString()}");
-  //                 ad.dispose();
-  //                 if (onLoad != null) {
-  //                   onLoad(ad_id, false, e);
-  //                 }
-  //                 reason = "${e.code},${e.message}";
-  //                 if (!isCompleter.isCompleted) isCompleter.complete(false);
-  //               },
-  //               onAdClicked: (ad) {
-  //                 pageNativeAdClicked.refresh();
-  //                 AppLog.i("原生广告点击:${ad.adUnitId}");
-  //               },
-  //               onAdImpression: (ad) {
-  //                 loadedAdMap.remove(ad.adUnitId);
-  //                 AppLog.i("原生广告onAdImpression:${ad.adUnitId}");
-  //               },
-  //               onAdClosed: (ad) {},
-  //               onAdWillDismissScreen: (ad) {},
-  //               onAdOpened: (ad) {},
-  //               onPaidEvent: (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
-  //                 TbaUtils.instance.postAd(
-  //                   ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "admob",
-  //                   ad_format: "native",
-  //                   ad_source: "admob",
-  //                   ad_unit_id: ad.adUnitId,
-  //                   adSense: AdUtils.instance.loadedAdMap[ad.adUnitId]?["ad_sense"] ?? AdScene.play.name,
-  //                   ad_pre_ecpm: valueMicros.toString(),
-  //                   currency: currencyCode,
-  //                   adPosName: key,
-  //                 );
-  //               },
-  //             ),
-  //             nativeTemplateStyle: null,
-  //           );
-  //           await nativeAd.load();
-  //         } else {
-  //           reason = "unSupport type loader:$type";
-  //           if (!isCompleter.isCompleted) isCompleter.complete(false);
-  //         }
-  //       } else {
-  //         reason = "unSupport source:$source";
-  //         if (!isCompleter.isCompleted) isCompleter.complete(false);
-  //       }
-  //       loadTimer.cancel();
-  //       loadTimer = null;
-  //       isLoadSuc = await isCompleter.future;
-  //       if (isLoadSuc) {
-  //         EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_type": type});
-  //         AppLog.i("广告瀑布流请求完成：$key ,adweight: $ad_weight, $source, $type, $ad_id");
-  //         break;
-  //       } else {
-  //         AppLog.e("广告瀑布流请求失败：$key, $source, $type, adweight:$ad_weight, $ad_id, reason:$reason");
-  //         EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_weight": ad_weight, "ad_type": type, "reason": reason});
-  //         continue;
-  //       }
-  //     }
-  //     return isLoadSuc;
-  //   }
-  //
-  //   NativeAd? getPageNativeAd(String key, {required AdScene adSense, ShowCallback? onShow}) {
-  //     if (!adJson.containsKey(key)) {
-  //       AppLog.e("没有对应广告：$key");
-  //       if (onShow != null) {
-  //         onShow.onShowFail!("", AdError(-1, "", "show key error"));
-  //       }
-  //       return null;
-  //     }
-  //
-  //     //显示广告逻辑
-  //     List configList = adJson[key] ?? [];
-  //     if (configList.isEmpty) {
-  //       return null;
-  //     }
-  //
-  //     //按照优先级降序排序
-  //     configList.sort((a, b) {
-  //       int al = a["adweight"];
-  //       int bl = b["adweight"];
-  //       //降序
-  //       return bl.compareTo(al);
-  //     });
-  //
-  //     //循环判断广告是否加载
-  //     AppLog.i("开始显示广告:$key");
-  //
-  //     EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key});
-  //
-  //     for (var item in configList) {
-  //       String type = item["adtype"];
-  //       String source = item["adsource"];
-  //       String ad_id = item["placementid"];
-  //
-  //       if (!loadedAdMap.containsKey(ad_id)) {
-  //         //没有加载跳过
-  //         continue;
-  //       }
-  //
-  //       var loadedItem = loadedAdMap[ad_id] ?? {};
-  //
-  //       if (source == "admob") {
-  //         if (type == 'native') {
-  //           NativeAd? ad = loadedItem["admob_ad"];
-  //           if (ad != null) {
-  //             return ad;
-  //           }
-  //         }
-  //       }
-  //     }
-  //
-  //     if (onShow != null) {
-  //       onShow.onShowFail!("", AdError(-1, "", "no ad show"));
-  //     }
-  //     loadPageNativeAd(key, adSense: adSense); //positionKey: adScene.name
-  //     return null;
-  //   }
+//   //load
+//   Future loadPageNativeAd(String key, {required AdScene adSense, LoadCallback? onLoad}) async {
+//     AppLog.i("开始加载广告:$key");
+//     if (!adJson.containsKey(key)) {
+//       AppLog.e("没有对应广告$key");
+//       return;
+//     }
+//     List configList = adJson[key] ?? [];
+//     if (configList.isEmpty) {
+//       return;
+//     }
+//     //按照优先级降序排序
+//     configList.sort((a, b) {
+//       int al = a["adweight"];
+//       int bl = b["adweight"];
+//       //降序
+//       return bl.compareTo(al);
+//     });
+//
+//     bool isLoadSuc = false;
+//     //循环加载广告
+//     for (var item in configList) {
+//       String type = item["adtype"];
+//       String source = item["adsource"];
+//       String ad_id = item["placementid"];
+//       int ad_weight = item["adweight"];
+//
+//       if (loadedAdMap.containsKey(ad_id)) {
+//         int timeMs = loadedAdMap[ad_id]["timeMs"] ?? 0;
+//         //缓存过期时间
+//         if (timeMs < DateTime.now().subtract(Duration(minutes: 55)).millisecondsSinceEpoch) {
+//           if (ad_id.startsWith("ca-app-pub")) {
+//             final adView = loadedAdMap[ad_id]["admob_ad"];
+//             if (adView is NativeAd) {
+//               adView.dispose();
+//             } else if (adView is AdWithoutView) {
+//               adView.dispose();
+//             }
+//           }
+//           loadedAdMap.remove(ad_id);
+//         } else {
+//           AppLog.i("广告缓存存在：$key， $source, $type, $ad_id");
+//           isLoadSuc = true;
+//           break;
+//         }
+//       }
+//       AppLog.i("广告开始加载：$key， $source, $type, $ad_id");
+//       String reason = "";
+//       Completer<bool> isCompleter = Completer();
+//
+//       Timer? loadTimer;
+//       loadTimer = Timer(Duration(seconds: 12), () {
+//         if (!isCompleter.isCompleted) {
+//           reason = "time out";
+//           AppLog.e("广告加载超时：$key， $source, $type, $ad_id");
+//           isCompleter.complete(false);
+//         }
+//       });
+//
+//       if (source == "admob") {
+//         if (type == "native") {
+//           NativeAd nativeAd = NativeAd(
+//             adUnitId: ad_id,
+//             factoryId: "admob_page_native",
+//             request: const AdRequest(),
+//             listener: admob.NativeAdListener(
+//               onAdLoaded: (ad) async {
+//                 AppLog.i("广告加载成功：$key， $source, $type, $ad_id, adweight:${item['adweight']}");
+//                 AdUtils.instance.loadedAdMap[ad_id] = {"data": item, "admob_ad": ad, "ad_sense": adSense.name, "timeMs": DateTime.now().millisecondsSinceEpoch, "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2};
+//                 if (!isCompleter.isCompleted) isCompleter.complete(true);
+//               },
+//               onAdFailedToLoad: (ad, e) {
+//                 AppLog.e("广告加载失败：$key， $source, $type, $ad_id, adweight:$ad_weight，${e.toString()}");
+//                 ad.dispose();
+//                 if (onLoad != null) {
+//                   onLoad(ad_id, false, e);
+//                 }
+//                 reason = "${e.code},${e.message}";
+//                 if (!isCompleter.isCompleted) isCompleter.complete(false);
+//               },
+//               onAdClicked: (ad) {
+//                 pageNativeAdClicked.refresh();
+//                 AppLog.i("原生广告点击:${ad.adUnitId}");
+//               },
+//               onAdImpression: (ad) {
+//                 loadedAdMap.remove(ad.adUnitId);
+//                 AppLog.i("原生广告onAdImpression:${ad.adUnitId}");
+//               },
+//               onAdClosed: (ad) {},
+//               onAdWillDismissScreen: (ad) {},
+//               onAdOpened: (ad) {},
+//               onPaidEvent: (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
+//                 TbaUtils.instance.postAd(
+//                   ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "admob",
+//                   ad_format: "native",
+//                   ad_source: "admob",
+//                   ad_unit_id: ad.adUnitId,
+//                   adSense: AdUtils.instance.loadedAdMap[ad.adUnitId]?["ad_sense"] ?? AdScene.play.name,
+//                   ad_pre_ecpm: valueMicros.toString(),
+//                   currency: currencyCode,
+//                   adPosName: key,
+//                 );
+//               },
+//             ),
+//             nativeTemplateStyle: null,
+//           );
+//           await nativeAd.load();
+//         } else {
+//           reason = "unSupport type loader:$type";
+//           if (!isCompleter.isCompleted) isCompleter.complete(false);
+//         }
+//       } else {
+//         reason = "unSupport source:$source";
+//         if (!isCompleter.isCompleted) isCompleter.complete(false);
+//       }
+//       loadTimer.cancel();
+//       loadTimer = null;
+//       isLoadSuc = await isCompleter.future;
+//       if (isLoadSuc) {
+//         EventUtils.instance.addEvent("ad_load_succ", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_type": type});
+//         AppLog.i("广告瀑布流请求完成：$key ,adweight: $ad_weight, $source, $type, $ad_id");
+//         break;
+//       } else {
+//         AppLog.e("广告瀑布流请求失败：$key, $source, $type, adweight:$ad_weight, $ad_id, reason:$reason");
+//         EventUtils.instance.addEvent("ad_load_fail", data: {"ad_pos_id": key, "ad_id": ad_id, "ad_source_client": source, "ad_weight": ad_weight, "ad_type": type, "reason": reason});
+//         continue;
+//       }
+//     }
+//     return isLoadSuc;
+//   }
+//
+//   NativeAd? getPageNativeAd(String key, {required AdScene adSense, ShowCallback? onShow}) {
+//     if (!adJson.containsKey(key)) {
+//       AppLog.e("没有对应广告：$key");
+//       if (onShow != null) {
+//         onShow.onShowFail!("", AdError(-1, "", "show key error"));
+//       }
+//       return null;
+//     }
+//
+//     //显示广告逻辑
+//     List configList = adJson[key] ?? [];
+//     if (configList.isEmpty) {
+//       return null;
+//     }
+//
+//     //按照优先级降序排序
+//     configList.sort((a, b) {
+//       int al = a["adweight"];
+//       int bl = b["adweight"];
+//       //降序
+//       return bl.compareTo(al);
+//     });
+//
+//     //循环判断广告是否加载
+//     AppLog.i("开始显示广告:$key");
+//
+//     EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key});
+//
+//     for (var item in configList) {
+//       String type = item["adtype"];
+//       String source = item["adsource"];
+//       String ad_id = item["placementid"];
+//
+//       if (!loadedAdMap.containsKey(ad_id)) {
+//         //没有加载跳过
+//         continue;
+//       }
+//
+//       var loadedItem = loadedAdMap[ad_id] ?? {};
+//
+//       if (source == "admob") {
+//         if (type == 'native') {
+//           NativeAd? ad = loadedItem["admob_ad"];
+//           if (ad != null) {
+//             return ad;
+//           }
+//         }
+//       }
+//     }
+//
+//     if (onShow != null) {
+//       onShow.onShowFail!("", AdError(-1, "", "no ad show"));
+//     }
+//     loadPageNativeAd(key, adSense: adSense); //positionKey: adScene.name
+//     return null;
+//   }
 }
 
 class BannerNativeAdView extends GetView<BannerNativeAdViewController> {

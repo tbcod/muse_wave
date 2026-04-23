@@ -154,7 +154,7 @@ class UserMainController extends GetxController {
     initData();
 
     //预加载广告
-    AdUtils.instance.loadAd(AdPosId.behavior,adSense: AdScene.play, forceLocalJson: bus.isFirstAppLaunch);
+    AdUtils.instance.loadAd(AdPosId.behavior, adFirstType: AdFirstType.int_main_first, adSense: AdScene.play, forceLocalJson: bus.isFirstAppLaunch);
 
 
     StreamSubscription<List<ConnectivityResult>> subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {

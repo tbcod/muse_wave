@@ -43,7 +43,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // VideoPlayerMediaKit.ensureInitialized(android: true);
   NativeUtils.instance.init();
-  AppLog.i("App开始启动");
+  AppLog.i("App开始加载");
   await Get.putAsync(() => Application().init());
   runApp(const MyApp());
 }
@@ -121,7 +121,7 @@ class Application extends GetxService {
 
     await initSdk();
 
-    await initLocTypeSo();
+    initLocTypeSo();
 
     return this;
   }
@@ -301,7 +301,7 @@ class Application extends GetxService {
         AppLog.e("异常PlatformDispatcher type:${error.runtimeType}, $error, $stack");
       } else {
         AppLog.e("异常上报：PlatformDispatcher onError:$error,$stack");
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);
+        FirebaseCrashlytics.instance.recordError(error, stack);
       }
       return true;
     };
@@ -346,7 +346,7 @@ class Application extends GetxService {
     AppLog.i("changeTypeSo:$typeSo");
   }
 
-  Future initLocTypeSo() async {
+  initLocTypeSo()   {
     typeSo = museSp.getString("lastTypeSo") ?? "no";
     AppLog.i("initLocTypeSo:$typeSo");
   }
@@ -549,9 +549,11 @@ class MyAppController extends SuperController {
         AppLog.i("后台");
         Get.find<Application>().isAppBack = true;
         TbaUtils.instance.checkUnFinishedEvent();
-        bool isPlaying = Get.find<UserPlayInfoController>().isPlaying.value;
-        if (isPlaying) {
-          EventUtils.instance.addEvent("background_play");
+        if(Get.isRegistered<UserPlayInfoController>()){
+          bool isPlaying = Get.find<UserPlayInfoController>().isPlaying.value;
+          if (isPlaying) {
+            EventUtils.instance.addEvent("background_play");
+          }
         }
       }
     });

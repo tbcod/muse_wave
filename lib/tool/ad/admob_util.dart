@@ -26,7 +26,7 @@ class AdmobUtils {
 
     await MobileAds.instance.setAppMuted(true);
 
-    EventUtils.instance.addEvent("ad_initsuc", data: {"ad_source_client": "admob", "ad_init_time": DateTime.now().difference(start).inMilliseconds});
+    EventUtils.instance.addEvent("ad_initsuc", data: {"ad_source_client": "admob", "ad_init_time":  DateTime.now().difference(start).inMilliseconds});
 
     AppLog.i("admob sdk 初始化 success");
 
@@ -55,7 +55,7 @@ class AdmobUtils {
     Completer<Ad?> completer = Completer();
     EventUtils.instance.addEvent(
       "ad_request",
-      data: {"ad_format": "banner", "ad_source_client": "admob", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId},
+      data: {"ad_format": "banner", "ad_source_client": "admob", "ad_pos_id": key, "ad_first": AdFirstType.banner_other.name, "ad_code_id": adId},
     );
     DateTime now = DateTime.now();
     view = Container(
@@ -71,9 +71,9 @@ class AdmobUtils {
               completer.complete(ad);
               EventUtils.instance.addEvent(
                 "ad_return",
-                data: {"ad_format": "banner", "ad_source_client": "admob", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId},
+                data: {"ad_format": "banner", "ad_source_client": "admob", "ad_pos_id": key,  "ad_code_id": adId,"ad_first": AdFirstType.banner_other.name},
               );
-              EventUtils.instance.addEvent("ad_chance", data: {"ad_sense": adSense.name, "ad_pos_id": key});
+              EventUtils.instance.addEvent("ad_chance", data: {"ad_sense": adSense.name, "ad_pos_id": key, "ad_first": AdFirstType.banner_other.name});
             },
             onAdFailedToLoad: (ad, e) {
               AppLog.e("原生广告banner加载失败,${e.message}");
@@ -85,7 +85,7 @@ class AdmobUtils {
                   "ad_format": "banner",
                   "ad_source_client": "admob",
                   "ad_pos_id": key,
-                  "ad_sense": adSense.name,
+                  "ad_first": AdFirstType.banner_other.name,
                   "ad_code_id": adId,
                   "reason": e.message,
                   "ad_request_time": DateTime.now().difference(now).inMilliseconds,
@@ -135,7 +135,7 @@ class AdmobUtils {
     DateTime now = DateTime.now();
     EventUtils.instance.addEvent(
       "ad_request",
-      data: {"ad_format": "native", "ad_source_client": "admob", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId},
+      data: {"ad_format": "native", "ad_source_client": "admob", "ad_pos_id": key, "ad_first": AdFirstType.banner_other.name, "ad_code_id": adId},
     );
 
     view = Container(
@@ -154,7 +154,7 @@ class AdmobUtils {
               completer.complete(ad);
               EventUtils.instance.addEvent(
                 "ad_return",
-                data: {"ad_format": "banner", "ad_source_client": "admob", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId},
+                data: {"ad_format": "banner", "ad_source_client": "admob", "ad_pos_id": key, "ad_first": AdFirstType.banner_other.name, "ad_code_id": adId},
               );
             },
             onAdFailedToLoad: (ad, e) {
@@ -167,7 +167,7 @@ class AdmobUtils {
                   "ad_format": "native",
                   "ad_source_client": "admob",
                   "ad_pos_id": key,
-                  "ad_sense": adSense.name,
+                  "ad_first": AdFirstType.banner_other.name,
                   "ad_code_id": adId,
                   "reason": e.message,
                   "ad_request_time": DateTime.now().difference(now).inMilliseconds,
