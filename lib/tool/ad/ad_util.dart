@@ -162,10 +162,10 @@ class AdUtils {
       }
 
       AppLog.i("广告单元开始加载：$key， $source, $type, ${adSense.name}, $ad_id");
-
+//"ad_first": adFirstType.name,
       EventUtils.instance.addEvent(
         "ad_request",
-        data: {"ad_pos_id": adPosId.name, "ad_first": adFirstType.name, "ad_format": type, "ad_source_client": source, "ad_code_id": ad_id},
+        data: {"ad_pos_id": adPosId.name,  "ad_sense": adPosId == AdPosId.open ? adSense.name : "", "ad_format": type, "ad_source_client": source, "ad_code_id": ad_id},
       );
 
       DateTime startTime = DateTime.now();
@@ -538,7 +538,7 @@ class AdUtils {
           "ad_return",
           data: {
             "ad_pos_id": adPosId.name,
-            "ad_first": adFirstType.name,
+            "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
             "ad_format": type,
             "ad_source_client": source,
             "ad_code_id": ad_id,
@@ -551,8 +551,8 @@ class AdUtils {
           "ad_return_fail",
           data: {
             "ad_pos_id": adPosId.name,
-            "ad_first": adFirstType.name,
             "ad_format": type,
+            "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
             "ad_source_client": source,
             "ad_code_id": ad_id,
             "ad_request_time": DateTime.now().difference(startTime).inMilliseconds,
@@ -685,16 +685,16 @@ class AdUtils {
     //循环判断广告是否加载
     AppLog.i("开始显示广告位:$key，场景：${adSense.name}， 共${configList.length}层， 本地json：$isLocalJson");
 
-    AdFirstType adFirstType = AdFirstType.int_main_other;
-    if (adPosId == AdPosId.open) {
-      adFirstType = !bus.isAppLaunchFinish ? AdFirstType.launch_first : AdFirstType.launch_other;
-      isFirstOpenAd = false;
-    } else if (adPosId == AdPosId.behavior) {
-      adFirstType = isFirstBehaviorAd ? AdFirstType.int_main_first : AdFirstType.int_main_other;
-      isFirstBehaviorAd = false;
-    }
+    // AdFirstType adFirstType = AdFirstType.int_main_other;
+    // if (adPosId == AdPosId.open) {
+    //   adFirstType = !bus.isAppLaunchFinish ? AdFirstType.launch_first : AdFirstType.launch_other;
+    //   isFirstOpenAd = false;
+    // } else if (adPosId == AdPosId.behavior) {
+    //   adFirstType = isFirstBehaviorAd ? AdFirstType.int_main_first : AdFirstType.int_main_other;
+    //   isFirstBehaviorAd = false;
+    // }
 
-    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key, "ad_sense": adSense.name, "ad_first": adFirstType.name});
+    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key, "ad_sense": adSense.name});
     var isShowAd = false;
 
     Completer<bool> isCompleter = Completer();
