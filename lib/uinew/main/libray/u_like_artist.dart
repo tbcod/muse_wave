@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/generated/assets.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
 
@@ -70,9 +71,10 @@ class UserLikeArtist extends GetView<UserLikeArtistController> {
   }
 
   getArtistItem(Map item) {
+    AppLog.i("cover:${item["cover"]}");
     return InkWell(
       onTap: () {
-        AppLog.e(item);
+        // AppLog.e(item);
         EventUtils.instance.addEvent(
           "det_artist_show",
           data: {"from": "library"},
@@ -91,7 +93,7 @@ class UserLikeArtist extends GetView<UserLikeArtistController> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6.w),
               ),
-              child: NetAvatarView(imgUrl: item["cover"], size: 52.w),
+              child: NetAvatarView(imgUrl: item["cover"], size: 52.w ,errorAsset: Assets.imgLogoF),
             ),
             SizedBox(width: 16.w),
             Expanded(

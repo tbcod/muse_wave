@@ -14,12 +14,16 @@ class FormatMyData {
 
     // AppLog.e(oldList.first);
     for (var item in oldList) {
-      try{
+      try {
         var videoId = item["musicResponsiveListItemRenderer"]?["playlistItemData"]?["videoId"];
         if (videoId == null) continue;
-        var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-        var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+        var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+            ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+            ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                ["thumbnails"]
+            .last["url"];
 
         list.add({
           "title": title,
@@ -27,7 +31,7 @@ class FormatMyData {
           "cover": cover,
           "videoId": videoId,
         });
-      }catch(e){
+      } catch (e) {
         AppLog.e(e.toString());
       }
 
@@ -66,38 +70,49 @@ class FormatMyData {
       List subtitleList = item["musicTwoRowItemRenderer"]["subtitle"]["runs"];
       var subtitle = subtitleList.map((e) => e["text"]).toList().join("");
 
-      var cover =
-          item["musicTwoRowItemRenderer"]["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]?["thumbnails"]
+      var cover = item["musicTwoRowItemRenderer"]["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]
+                  ?["thumbnails"]
               .last["url"] ??
           "";
 
       try {
-        var browseId =
-            item["musicTwoRowItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
-        var type =
-            item["musicTwoRowItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseEndpointContextSupportedConfigs"]["browseEndpointContextMusicConfig"]["pageType"];
-        list.add({
-          "title": title,
-          "subtitle": subtitle,
-          "cover": cover,
-          "browseId": browseId,
-          "type": type,
-        });
-      } catch (e) {
-        print(e);
+        var navigationEndpoint = item["musicTwoRowItemRenderer"]?["navigationEndpoint"];
+        if (navigationEndpoint?["browseEndpoint"] != null) {
+          var browseId = navigationEndpoint["browseEndpoint"]["browseId"];
+          var type = navigationEndpoint["browseEndpoint"]["browseEndpointContextSupportedConfigs"]
+              ["browseEndpointContextMusicConfig"]["pageType"];
+          list.add({
+            "title": title,
+            "subtitle": subtitle,
+            "cover": cover,
+            "browseId": browseId,
+            "type": type,
+          });
+        }else if (navigationEndpoint?["watchEndpoint"] != null) {
+          var videoId = navigationEndpoint["watchEndpoint"]["videoId"];
+          var type = navigationEndpoint["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+          list.add({
+            "title": title,
+            "subtitle": subtitle,
+            "cover": cover,
+            "videoId": videoId,
+            "type": type,
+          });
+        }
+      } catch (e,s) {
+        AppLog.e("解析 musicTwoRowItemRenderer 失败：${e.toString()}\n$s");
         //视频结构不一样
-        var type =
-            item["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
-        var videoId =
-            item["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["videoId"];
-
-        list.add({
-          "title": title,
-          "subtitle": subtitle,
-          "cover": cover,
-          "videoId": videoId,
-          "type": type,
-        });
+        // var type = item["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]
+        //     ["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+        // var videoId = item["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["videoId"];
+        //
+        // list.add({
+        //   "title": title,
+        //   "subtitle": subtitle,
+        //   "cover": cover,
+        //   "videoId": videoId,
+        //   "type": type,
+        // });
       }
     }
 
@@ -108,22 +123,20 @@ class FormatMyData {
     var list = [];
 
     for (var item in oldList) {
-      if (item["musicResponsiveListItemRenderer"]["navigationEndpoint"] !=
-          null) {
+      if (item["musicResponsiveListItemRenderer"]["navigationEndpoint"] != null) {
         //不是歌曲和视频
-        var browseId =
-            item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
-        var type =
-            item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseEndpointContextSupportedConfigs"]["browseEndpointContextMusicConfig"]["pageType"];
+        var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+        var type = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]
+            ["browseEndpointContextSupportedConfigs"]["browseEndpointContextMusicConfig"]["pageType"];
 
-        var title =
-            item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-        List subtitleList =
-            item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+        var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+            ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        List subtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+            ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
         var subtitle = subtitleList.map((e) => e["text"]).toList().join("");
-        var cover =
-            item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-                .last["url"];
+        var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                ["thumbnails"]
+            .last["url"];
 
         list.add({
           "title": title,
@@ -134,22 +147,22 @@ class FormatMyData {
         });
         continue;
       }
-      var title =
-          item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-      var subtitle =
-          item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-      var cover =
-          item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]
-              .last["url"];
-      var videoId =
-          item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
-      var type =
-          item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]["musicVideoType"] ??
+      var title = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]
+          ["text"]["runs"][0]["text"];
+      var subtitle = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+          ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+      var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+              ["thumbnails"]
+          .last["url"];
+      var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
+      var type = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]
+                  ["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]
+              ?["watchEndpointMusicConfig"]["musicVideoType"] ??
           "";
 
-      var timeStr =
-          item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
-              .last["text"];
+      var timeStr = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"]
+          .last["text"];
 
       list.add({
         "title": title,
@@ -279,9 +292,7 @@ class FormatMyData {
 
     for (Map item in oldList) {
       //大标题
-      var bigTitle =
-          item["richSectionRenderer"]?["content"]["richShelfRenderer"]["title"]["runs"][0]["text"] ??
-          "";
+      var bigTitle = item["richSectionRenderer"]?["content"]["richShelfRenderer"]["title"]["runs"][0]["text"] ?? "";
 
       // moreId = item["musicCarouselShelfRenderer"]?["header"]
       //                     ?["musicCarouselShelfBasicHeaderRenderer"]
@@ -290,9 +301,7 @@ class FormatMyData {
       //         ?["playlistId"] ??
       //     "";
 
-      List childList =
-          item["richSectionRenderer"]?["content"]["richShelfRenderer"]["contents"] ??
-          [];
+      List childList = item["richSectionRenderer"]?["content"]["richShelfRenderer"]["contents"] ?? [];
 
       List realChildList = [];
 
@@ -310,21 +319,16 @@ class FormatMyData {
           //LOCKUP_CONTENT_TYPE_ALBUM
           type = "Video";
 
-          var childItemTitle =
-              childItem["gridVideoRenderer"]["title"]["simpleText"] ?? "";
+          var childItemTitle = childItem["gridVideoRenderer"]["title"]["simpleText"] ?? "";
 
           // var childItemSubTitle = childItem["lockupViewModel"]["metadata"]
           //                 ["lockupMetadataViewModel"]["metadata"]
           //             ["contentMetadataViewModel"]["metadataRows"][0]
           //         ["metadataParts"]["text"]["content"] ??
           //     "";
-          var childItemSubTitle =
-              childItem["gridVideoRenderer"]["title"]["accessibilityData"]?["label"] ??
-              "";
+          var childItemSubTitle = childItem["gridVideoRenderer"]["title"]["accessibilityData"]?["label"] ?? "";
 
-          var childItemCover =
-              childItem["gridVideoRenderer"]["thumbnail"]["thumbnails"][0]["url"] ??
-              "";
+          var childItemCover = childItem["gridVideoRenderer"]["thumbnail"]["thumbnails"][0]["url"] ?? "";
 
           var videoId = childItem["gridVideoRenderer"]?["videoId"] ?? "";
 
@@ -351,8 +355,7 @@ class FormatMyData {
         type = childItem["lockupViewModel"]["contentType"];
 
         var childItemTitle =
-            childItem["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]["title"]["content"] ??
-            "";
+            childItem["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]["title"]["content"] ?? "";
         // var childItemSubTitle = childItem["lockupViewModel"]["metadata"]
         //                 ["lockupMetadataViewModel"]["metadata"]
         //             ["contentMetadataViewModel"]["metadataRows"][0]
@@ -360,8 +363,8 @@ class FormatMyData {
         //     "";
         var childItemSubTitle = "";
 
-        var childItemCover =
-            childItem["lockupViewModel"]["contentImage"]["collectionThumbnailViewModel"]["primaryThumbnail"]["thumbnailViewModel"]["image"]["sources"][0]["url"];
+        var childItemCover = childItem["lockupViewModel"]["contentImage"]["collectionThumbnailViewModel"]
+            ["primaryThumbnail"]["thumbnailViewModel"]["image"]["sources"][0]["url"];
 
         var playlistId = childItem["lockupViewModel"]?["contentId"] ?? "";
 

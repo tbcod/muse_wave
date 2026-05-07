@@ -53,20 +53,6 @@ class RemoteUtil {
   bool isInitSuc = false;
 
   init() async {
-    // isp = await SharedPreferences.getInstance();
-
-    // final jsonString = museSp.getString(mmAdJsonKey) ?? "";
-    // if (jsonString.isNotEmpty) {
-    //   try {
-    //     Map oldMap = jsonDecode(jsonString);
-    //     _adJson = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
-    //   } catch (e) {
-    //     EventUtils.instance.addEvent("fb_ad_json_fail", data: {"reason": e.toString(), "code_type": 3});
-    //     _adJson = MuseConfig.adJsonAnd;
-    //   }
-    // } else {
-    //   _adJson = MuseConfig.adJsonAnd;
-    // }
 
     _adJsonAnd = museSp.getString(mmAdJsonKey) ?? "";
 
@@ -117,8 +103,11 @@ class RemoteUtil {
       EventUtils.instance.addEvent("firebase_get", data: {"time": doTime});
 
       updateData();
+
+      AppLog.e("FirebaseRemote init 成功");
+
     } catch (e) {
-      AppLog.e("Remote Config init error: $e");
+      AppLog.e("FirebaseRemote init error: $e");
       EventUtils.instance.addEvent("firebase_remote_fail", data: {"reason": e.toString(), "code_type": 1});
     }
   }
@@ -173,7 +162,7 @@ class RemoteUtil {
     museSp.setString(museSongRecommonedKey, listenNowSongs);
     _listenNowRecom = listenNowSongs;
 
-    String openAdStr = FirebaseRemoteConfig.instance.getString("musicmuse_open_ad");
+    String openAdStr = FirebaseRemoteConfig.instance.getString("wave_first_open_show");
     museSp.setString(mmOpenAd, openAdStr);
     _openAdStr = openAdStr;
 
@@ -233,11 +222,13 @@ class RemoteUtil {
     return DataConfig.listenMusic;
   }
 
+  //https://stayfoolish.feishu.cn/wiki/BGtgwkElriFX5Jk2w3IcMS7JnYc
+  //  1. 本地默认值为close，本地默认不展示
   bool get isShowOpenAd {
-    if (_openAdStr == "close") {
-      return false;
+    if (_openAdStr == "open") {
+      return true;
     }
-    return true;
+    return false;
   }
 
   Map<String, dynamic> get homeWebParams {

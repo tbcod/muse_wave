@@ -24,7 +24,7 @@ class AdjustUtil {
       // String distinctId = Get.find<Application>().userAppUuid;
       Adjust.addGlobalCallbackParameter('customer_user_id', distinctId);
       Adjust.initSdk(config);
-      AppLog.i("initAdjust distinctId:$distinctId");
+      // AppLog.i("initAdjust distinctId:$distinctId");
     } catch (e) {
       AppLog.e("initAdjust init fail:$e");
     }

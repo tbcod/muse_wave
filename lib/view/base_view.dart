@@ -174,9 +174,18 @@ class NetImageView extends GetView {
 
   const NetImageView({Key? key, required this.imgUrl, this.width, this.height, this.fit = BoxFit.cover, this.errorAsset, this.bgColor, this.radius}) : super(key: key);
 
+  int? _cacheSize(double? value) {
+    if (value == null || value <= 0) {
+      return null;
+    }
+    return value.toInt();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!imgUrl.startsWith("http")) return Container();
+    final cacheWidth = _cacheSize(width);
+    final cacheHeight = _cacheSize(height);
     return ClipRRect(
       borderRadius: radius == null ? BorderRadius.zero : BorderRadius.circular(radius!),
       child: CachedNetworkImage(
@@ -184,36 +193,19 @@ class NetImageView extends GetView {
         width: width,
         height: height,
         fit: fit,
-        memCacheHeight: ScreenUtil().screenWidth.toInt(),
-        memCacheWidth: ScreenUtil().screenWidth.toInt(),
+        memCacheWidth: cacheWidth,
+        memCacheHeight: cacheHeight,
         placeholder: (c, url) {
           return errorAsset == null
               ? Container(
                 color: bgColor ?? Colors.black.withOpacity(0.08),
-                // child: const Center(
-                //   child: Icon(Icons.error),
-                // ),
               )
               : Image.asset(errorAsset!, fit: BoxFit.cover);
-
-          // return Container(
-          //   color: bgColor ?? Colors.black.withOpacity(0.08),
-          //   // child: const Center(
-          //   //   child: CircularProgressIndicator(),
-          //   // ),
-          // );
         },
         errorWidget: (c, url, error) {
-          // return Container(
-          //   color: bgColor ?? Colors.black.withOpacity(0.08),
-          // );
-
           return errorAsset == null
               ? Container(
                 color: bgColor ?? Colors.black.withOpacity(0.08),
-                // child: const Center(
-                //   child: Icon(Icons.error),
-                // ),
               )
               : Image.asset(errorAsset!, fit: BoxFit.cover);
         },

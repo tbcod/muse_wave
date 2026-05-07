@@ -9,6 +9,8 @@ import 'package:get/get.dart';
 import 'package:muse_wave/api/base_api.dart';
 import 'package:muse_wave/main.dart';
 import 'package:muse_wave/muse_config.dart';
+import 'package:muse_wave/tool/ad/admob_util.dart';
+import 'package:muse_wave/tool/adjust_util.dart';
 import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/native_utils.dart';
 import 'package:muse_wave/tool/referrer_util.dart';
@@ -35,8 +37,6 @@ class LaunchPageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // IdfaUtil.instance.showIdfaDialog();
-    EventUtils.instance.addEvent("open_click");
     bus.setAppLaunchCount();
     ReferrerUtil.sh.init();
     _requestCloak();
@@ -45,8 +45,8 @@ class LaunchPageController extends GetxController {
 
   @override
   void onReady() async {
+    AppLog.i("App开始加载");
     bus.appLaunchTime = DateTime.now();
-    super.onReady();
     countdown();
     try {
       await loadAd().timeout(Duration(seconds: _maxAppLaunchTime));
@@ -57,7 +57,10 @@ class LaunchPageController extends GetxController {
     } catch (e) {
       AppLog.e("加载广告失败: $e");
     }
+
     toMainPage();
+
+    super.onReady();
   }
 
   @override
@@ -159,7 +162,9 @@ class LaunchPageController extends GetxController {
     if (isA) {
       //A面不展示冷启动广告
     } else {
-      if (!bus.isFirstAppLaunch || RemoteUtil.shareInstance.isShowOpenAd) {
+      if (bus.isFirstAppLaunch && !RemoteUtil.shareInstance.isShowOpenAd) {
+        AppLog.i("首次启动不开启开屏广告，启动次数：${bus.getAppLaunchCount}, isShowOpenAd：${RemoteUtil.shareInstance.isShowOpenAd}");
+      }else{
         AppLog.i("准备展示开屏广告(B展示open)");
         await AdUtils.instance.showAd(
           AdPosId.open,
@@ -172,22 +177,13 @@ class LaunchPageController extends GetxController {
 
   Future countdown() async {
     //倒计时7秒加载进度条
-
     int seconds = _maxAppLaunchTime;
-
-    // seconds = seconds * 1000;
-    for (int i = 0; i < seconds * 100; i++) {
-      await Future.delayed(Duration(milliseconds: 10));
-      progress.value += 1 / seconds / 100;
+    int count = seconds * 20;
+    for (int i = 0; i < count; i++) {
+      await Future.delayed(Duration(milliseconds: seconds * 1000 ~/ count));
+      progress.value += 1 / count;
     }
-
-    // if (!isAdShow) {
-    //   //没有显示广告时才跳转
-    //   toMainPage();
-    // }
-
     progress.value = 1;
-
     return true;
   }
 
@@ -195,9 +191,6 @@ class LaunchPageController extends GetxController {
   var isToMain = false;
 
   toMainPage() async {
-    // if (!isToMain && !isClosed) {
-    //
-    // }
     if (isToMain) return;
     isToMain = true;
     progress.value = 1;
@@ -207,6 +200,7 @@ class LaunchPageController extends GetxController {
       Get.off(const MainPage(), routeName: "/MainPage");
     }
     EventUtils.instance.addEvent("home_sh", data: {"en_time": bus.getTimeDiffNow(bus.appLaunchTime), "mode": isB ? "B" : "A"});
+    EventUtils.instance.addEvent("open_click");
   }
 }
 

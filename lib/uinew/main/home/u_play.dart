@@ -1631,7 +1631,7 @@ class UserPlayInfoController extends GetxController {
       player = null;
 
       EventUtils.instance.addEvent("play_time", data: {"song_time": 6});
-      AppLog.e("播放下一个");
+      // AppLog.e("播放下一个");
       if (singleLoop.value) {
         //单曲循环
         playItemWithIndex(nowIndex, isAutoNext: true);

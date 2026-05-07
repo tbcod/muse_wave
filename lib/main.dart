@@ -43,7 +43,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // VideoPlayerMediaKit.ensureInitialized(android: true);
   NativeUtils.instance.init();
-  AppLog.i("App开始加载");
+  AppLog.i("App启动");
   await Get.putAsync(() => Application().init());
   runApp(const MyApp());
 }
@@ -64,7 +64,7 @@ class Application extends GetxService {
 
   Future<Application> init() async {
     PaintingBinding.instance.imageCache.maximumSize = 300; //设置缓存的图片数量，避免图片太多经常重新加载
-    PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 1024 * 1; //设置缓存为1GB，避免图片太多经常重新加载
+    PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 500; //设置缓存为500M，避免图片太多经常重新加载
     //竖屏
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     //沉浸状态栏
@@ -252,13 +252,17 @@ class Application extends GetxService {
 
   Future<void> initSdk() async {
     RemoteUtil.shareInstance.init();
+
     await Firebase.initializeApp();
 
-    initFireBaseOther();
+    RemoteUtil.shareInstance.initFirebaseRemoteSdk();
 
     AdjustUtil.instance.initSdk(userAppUuid);
 
-    initAd();
+    AdmobUtils.instance.init();
+
+    initFireBaseOther();
+
   }
 
   initFireBaseOther() async {
@@ -289,7 +293,7 @@ class Application extends GetxService {
 
     FlutterError.onError = (errorDetails) {
       if (isIgnoreError(errorDetails.exception)) {
-        AppLog.e("异常：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
+        AppLog.e("flutter异常：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
       } else {
         AppLog.e("异常上报：FlutterError errorDetails:${errorDetails.exception}, \nlibrary:${errorDetails.library}, \n${errorDetails.stack}");
         FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
@@ -305,14 +309,6 @@ class Application extends GetxService {
       }
       return true;
     };
-
-    RemoteUtil.shareInstance.initFirebaseRemoteSdk();
-  }
-
-  initAd() {
-    AdmobUtils.instance.init();
-    // MaxUtils.instance.init();
-    // TopOnUtils.instance.init();
   }
 
   changeTypeSo(String str) async {
@@ -348,7 +344,7 @@ class Application extends GetxService {
 
   initLocTypeSo()   {
     typeSo = museSp.getString("lastTypeSo") ?? "no";
-    AppLog.i("initLocTypeSo:$typeSo");
+    // AppLog.i("initLocTypeSo:$typeSo");
   }
 
   // AppsflyerSdk? appsflyerSdk;
@@ -481,7 +477,7 @@ class MyAppController extends SuperController {
       await museSp.setInt("installTimeMs", DateTime.now().millisecondsSinceEpoch);
       //安装上报
       TbaUtils.instance.postInstall().then((value) {
-        AppLog.i("install事件:${value.toJson()}");
+        AppLog.i("install事件上报成功");
         museSp.setBool("isPostInstall", true);
         TbaUtils.instance.postUserData({"new_user": "new"});
       });

@@ -37,7 +37,7 @@ class CUtil extends BaseApi {
 
       String advertisingId = "";
       try {
-        advertisingId = (await AdvertisingId.id(true)) ?? "";
+        advertisingId = (await AdvertisingId.id()) ?? "";
         AppLog.i("cloak 获取gaid成功:$advertisingId");
       } catch (e) {
         AppLog.e("获取gaid出错:$e");

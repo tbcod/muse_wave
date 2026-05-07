@@ -59,31 +59,29 @@ class UserLibrary extends GetView<UserLibraryController> {
                         },
                         child: Stack(
                           children: [
-                            Container(
-                              child: Column(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
-                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w), color: Color(0xffF5F3FF).withOpacity(0.5)),
-                                    width: 108.w,
-                                    height: 130.w,
-                                    child:
-                                        controller.likeCover.isNotEmpty
-                                            ? Container(
-                                              clipBehavior: Clip.hardEdge,
-                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
-                                              child: NetImageView(imgUrl: controller.likeCover.value, fit: BoxFit.cover),
-                                            )
-                                            : Container(
-                                              clipBehavior: Clip.hardEdge,
-                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
-                                              child: Image.asset(Assets.oimgIconLibLike, fit: BoxFit.cover),
-                                            ),
-                                  ),
-                                  SizedBox(height: 6.w),
-                                  Text("Liked songs".tr, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
-                                ],
-                              ),
+                            Column(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w), color: Color(0xffF5F3FF).withOpacity(0.9)),
+                                  width: 108.w,
+                                  height: 130.w,
+                                  child:
+                                      controller.likeCover.isNotEmpty
+                                          ? Container(
+                                            clipBehavior: Clip.hardEdge,
+                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
+                                            child: NetImageView(imgUrl: controller.likeCover.value, fit: BoxFit.cover),
+                                          )
+                                          : Container(
+                                            clipBehavior: Clip.hardEdge,
+                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
+                                            child: Image.asset(Assets.oimgIconLibLike, fit: BoxFit.cover),
+                                          ),
+                                ),
+                                SizedBox(height: 6.w),
+                                Text("Liked songs".tr, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
+                              ],
                             ),
                             Positioned(
                               right: 8.w,
@@ -122,7 +120,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                                         padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(10.w),
-                                          color: Color(0xffB4F6FF).withOpacity(0.09),
+                                          color: Color(0xffB4F6FF).withOpacity(0.24),
                                         ),
                                         child:
                                             controller.downloadCover.isNotEmpty
@@ -177,7 +175,7 @@ class UserLibrary extends GetView<UserLibraryController> {
                                       padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10.w),
-                                        color: Color(0xffFFEAEC).withOpacity(0.15),
+                                        color: Color(0xffFFEAEC).withOpacity(0.45),
                                       ),
                                       width: 108.w,
                                       height: 130.w,

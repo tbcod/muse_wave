@@ -56,7 +56,7 @@ class AdUtils {
     num wait = num.tryParse(adJson["sameinterval"].toString()) ?? 60;
     // AppLog.e("广告间隔\n${lastShowTime}\n${nowTime}\n${temp.inSeconds}---${wait}");
     if (kDebugMode) {
-      wait = 15;
+      wait = 215;
     }
 
     if (temp.inSeconds > wait || temp.inSeconds < 0) {
