@@ -812,6 +812,10 @@ class UserPlayInfoController extends GetxController {
       // AppLog.e('Devices removed: ${event.devicesRemoved}');
       if (event.devicesRemoved.isNotEmpty) {
         //设备移除暂停
+        if(Get.isRegistered<UserPlayInfoController>()){
+          final controller = Get.find<UserPlayInfoController>();
+          controller.isPlaying.value = false;
+        }
         player?.pause();
       }
     });
@@ -2490,3 +2494,4 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     );
   }
 }
+
