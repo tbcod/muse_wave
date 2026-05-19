@@ -22,7 +22,10 @@ class TbaUtils {
     return _instance;
   }
 
-  double _accumulateAdRevenue = 0; //累计的广告价值
+  double _accumulateAdRevenue001 = 0; //累计的广告价值
+  double _accumulateAdRevenue002 = 0; //累计的广告价值
+  double _accumulateAdRevenue003 = 0; //累计的广告价值
+  double _accumulateAdRevenue005 = 0; //累计的广告价值
 
   Future checkUnFinishedEvent() async {
     await TbaAnd.instance.postTbaErrorData();
@@ -136,7 +139,8 @@ class TbaUtils {
       AdjustUtil.instance.addPurchaseEvent(name: "ad_impression_and", amount: amount);
 
       NativeUtils.instance.logEventFB(name: "ad_impression_revenue", valueToSum: amount);
-      NativeUtils.instance.logEventFB(name: "AdImpression", parameters: {"fb_currency": "USD", "fb_ad_type": ad_source}, valueToSum: amount);
+      NativeUtils.instance.logEventFB(
+          name: "AdImpression", parameters: {"fb_currency": "USD", "fb_ad_type": ad_source}, valueToSum: amount);
       NativeUtils.instance.logPurchaseFB(amount: amount);
 
       // FacebookAppEvents().logEvent(name: "ad_impression_revenue", valueToSum: amount);
@@ -147,6 +151,9 @@ class TbaUtils {
     }
 
     _postAdRevenue001(amount);
+    _postAdRevenue002(amount);
+    _postAdRevenue003(amount);
+    _postAdRevenue005(amount);
 
     AppLog.i(
       "广告价值 ad_impression:$ad_pre_ecpm, adSource:$ad_source, adFormat:$ad_format, adSense:$adSense, adPosId:$adPosName,  adNetwork:$ad_network, $ad_unit_id",
@@ -181,23 +188,66 @@ class TbaUtils {
     return TbaAnd.instance.postData(TbaType.userInfo, eventData: data);
   }
 
-  void _postAdRevenue001(double revenue) {
-    if (_accumulateAdRevenue == 0) {
-      _accumulateAdRevenue = museSp.getDouble(DBKey.keyAdImpression001);
-    }
-    _accumulateAdRevenue = _accumulateAdRevenue + revenue;
+  void _postAdRevenue001(double revenue) => _postAdRevenue(
+      revenue: revenue,
+      threshold: 0.01,
+      eventName: "ads_revenue_001",
+      dbKey: DBKey.keyAdImpression001,
+      current: _accumulateAdRevenue001,
+      setCurrent: (value) => _accumulateAdRevenue001 = value);
 
-    if (_accumulateAdRevenue > 0.001) {
+  void _postAdRevenue002(double revenue) => _postAdRevenue(
+      revenue: revenue,
+      threshold: 0.02,
+      eventName: "ads_revenue_002",
+      dbKey: DBKey.keyAdImpression002,
+      current: _accumulateAdRevenue002,
+      setCurrent: (value) => _accumulateAdRevenue002 = value);
+
+  void _postAdRevenue003(double revenue) => _postAdRevenue(
+      revenue: revenue,
+      threshold: 0.03,
+      eventName: "ads_revenue_003",
+      dbKey: DBKey.keyAdImpression003,
+      current: _accumulateAdRevenue003,
+      setCurrent: (value) => _accumulateAdRevenue003 = value);
+
+  void _postAdRevenue005(double revenue) => _postAdRevenue(
+      revenue: revenue,
+      threshold: 0.05,
+      eventName: "ads_revenue_005",
+      dbKey: DBKey.keyAdImpression005,
+      current: _accumulateAdRevenue005,
+      setCurrent: (value) => _accumulateAdRevenue005 = value);
+
+  void _postAdRevenue({
+    required double revenue,
+    required double threshold,
+    required String eventName,
+    required String dbKey,
+    required double current,
+    required void Function(double value) setCurrent,
+  }) {
+    double accumulate = current;
+    if (accumulate == 0) {
+      accumulate = museSp.getDouble(dbKey);
+    }
+    accumulate = accumulate + revenue;
+
+    if (accumulate >= threshold) {
       try {
-        EventUtils.instance.addEvent("ads_revenue_001", data: {"value": _accumulateAdRevenue, "currency": "USD"});
-        AdjustUtil.instance.addPurchaseEvent(amount: _accumulateAdRevenue, name: "ads_revenue_001");
-        NativeUtils.instance.logEventFB(name: "ads_revenue_001", valueToSum: _accumulateAdRevenue, parameters: {"currency": "USD"});
-        // FacebookAppEvents().logEvent(name: "ads_revenue_001", valueToSum: _accumulateAdRevenue);
+        if (eventName == "ads_revenue_001") {
+          EventUtils.instance.addEvent(eventName, data: {"value": accumulate, "currency": "USD"}, hasPrefix: true);
+        }
+        EventUtils.instance.addEvent(eventName, data: {"value": accumulate, "currency": "USD"}, hasPrefix: false);
+        AdjustUtil.instance.addPurchaseEvent(amount: accumulate, name: eventName);
+        NativeUtils.instance.logEventFB(name: eventName, valueToSum: accumulate, parameters: {"currency": "USD"});
       } catch (_) {}
-      _accumulateAdRevenue = 0;
-      museSp.setDouble(DBKey.keyAdImpression001, 0);
+      setCurrent(0);
+      museSp.setDouble(dbKey, 0);
     } else {
-      museSp.setDouble(DBKey.keyAdImpression001, _accumulateAdRevenue);
+      setCurrent(accumulate);
+      museSp.setDouble(dbKey, accumulate);
     }
   }
 }

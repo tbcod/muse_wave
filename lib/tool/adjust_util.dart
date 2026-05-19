@@ -57,15 +57,28 @@ class AdjustUtil {
   String _getTokenName(String name) {
     String token = "";
     name = name.toLowerCase();
+    //正式环境
     if (MuseConfig.isUser) {
       if (name == 'ads_revenue_001') {
         token = "4joj3w";
+      }else if (name == 'ads_revenue_002') {
+        token = "mjgysf";
+      } else if (name == 'ads_revenue_003') {
+        token = "vhna6g";
+      } else if (name == 'ads_revenue_005') {
+        token = "f0fl95";
       } else if (name == 'ad_impression_and') {
         token = "h5fbr3";
       }
     } else {
       if (name == 'ads_revenue_001') {
         token = "53lzf8";
+      }else if (name == 'ads_revenue_002') {
+        token = "pfxdtf";
+      } else if (name == 'ads_revenue_003') {
+        token = "kvjzca";
+      } else if (name == 'ads_revenue_005') {
+        token = "si3nmf";
       } else if (name == 'ad_impression_and') {
         token = "g3qup0";
       }

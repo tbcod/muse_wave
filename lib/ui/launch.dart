@@ -237,7 +237,7 @@ class LaunchPage extends GetView<LaunchPageController> {
             Text("Resource loading…".tr, style: TextStyle(color: Colors.black, fontSize: 14.w)),
 
             SizedBox(height: 16.w),
-            Container(
+            SizedBox(
               width: 200.w,
               height: 4.w,
               child: Obx(
@@ -246,7 +246,7 @@ class LaunchPage extends GetView<LaunchPageController> {
                   // minHeight: 4.w,
                   borderRadius: BorderRadius.circular(2.w),
                   color: Colors.black,
-                  backgroundColor: Colors.black.withOpacity(0.2),
+                  backgroundColor: Colors.black.withValues(alpha: 0.2),
                 ),
               ),
             ),

@@ -23,4 +23,8 @@ abstract class DBKey {
   static const myLastPlayDataAndIndex = "myLastPlayDataAndIndex";
 
   static const keyAdImpression001 = "keyAdImpression001";
+  static const keyAdImpression002 = "keyAdImpression002";
+  static const keyAdImpression003 = "keyAdImpression003";
+  static const keyAdImpression005 = "keyAdImpression005";
+
 }

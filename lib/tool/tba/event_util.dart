@@ -12,11 +12,14 @@ class EventUtils {
   }
 
   //添加事件
-  Future addEvent(String id, {Map<String, Object>? data}) async {
+  Future addEvent(String id, {Map<String, Object>? data, bool hasPrefix = true}) async {
     //TODO 测试时候不处理事件
     // return;
 
-    id = "mw_$id";
+    if (hasPrefix) {
+      id = "mw_$id";
+    }
+
     //事件上报接口
     postEventApi(id, data: data);
 
