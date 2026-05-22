@@ -58,6 +58,10 @@ class LaunchPageController extends GetxController {
       AppLog.e("加载广告失败: $e");
     }
 
+    //预加载广告
+    AdUtils.instance.loadAd(AdPosId.behavior,
+        adFirstType: AdFirstType.int_main_first, adSense: AdSense.play_page, forceLocalJson: bus.isFirstAppLaunch);
+
     toMainPage();
 
     super.onReady();

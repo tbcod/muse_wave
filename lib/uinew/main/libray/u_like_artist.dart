@@ -142,7 +142,7 @@ class UserLikeArtist extends GetView<UserLikeArtistController> {
               return InkWell(
                 onTap: () {
                   if (isLike) {
-                    LikeUtil.instance.unlikeArtist(browseId);
+                    LikeUtil.instance.unlikeArtist(browseId, adSense: AdSense.artist_detail_page);
                   } else {
                     LikeUtil.instance.likeArtist(browseId, item, adSense: AdSense.artist_detail_page);
                   }

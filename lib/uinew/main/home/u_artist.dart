@@ -80,7 +80,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                           return IconButton(
                             onPressed: () {
                               if (isLike) {
-                                LikeUtil.instance.unlikeArtist(controller.browseId);
+                                LikeUtil.instance.unlikeArtist(controller.browseId, adSense: AdSense.artist_detail_page);
                               } else {
                                 EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "collection"});
                                 LikeUtil.instance.likeArtist(controller.browseId, controller.info,

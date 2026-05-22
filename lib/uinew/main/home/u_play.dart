@@ -84,7 +84,9 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                     leading: IconButton(
                       onPressed: () {
                         Get.back();
-                        controller.showFloatingWidget();
+                        AdUtils.instance
+                            .showAd(AdPosId.behavior, adSense: AdSense.play_page, adFunction: AdFunction.return_);
+                        // controller.showFloatingWidget();
                       },
                       icon: Image.asset("assets/oimg/icon_play_close.png", width: 24.w, height: 24.w),
                     ),
@@ -542,7 +544,7 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                               EventUtils.instance.addEvent("play_page_click", data: {"click": "collection"});
 
                               if (isLike) {
-                                LikeUtil.instance.unlikeVideo(videoId);
+                                LikeUtil.instance.unlikeVideo(videoId, adSense: AdSense.play_page);
                               } else {
                                 LikeUtil.instance.likeVideo(videoId, controller.nowData, adSense: AdSense.play_page);
                               }

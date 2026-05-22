@@ -79,8 +79,9 @@ class LikeUtil {
     saveLikeState();
   }
 
-  unlikeVideo(String videoId) {
+  unlikeVideo(String videoId, {required AdSense adSense}) {
     // AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.collection);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.liked);
 
     allVideoMap.remove(videoId);
     saveData();
@@ -123,7 +124,8 @@ class LikeUtil {
     }
   }
 
-  unlikeList(String browseId) async {
+  unlikeList(String browseId, {required AdSense adSense}) async {
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.liked);
 
     allPlaylistMap.remove(browseId);
     saveData();
@@ -161,7 +163,8 @@ class LikeUtil {
     saveLikeState();
   }
 
-  unlikeArtist(String browseId) {
+  unlikeArtist(String browseId, {required AdSense adSense}) {
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.liked);
 
     allArtistMap.remove(browseId);
     saveData();

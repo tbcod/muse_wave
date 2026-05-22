@@ -880,7 +880,7 @@ class UserSearch extends GetView<UserSearchController> {
                         final browseId = item["browseId"];
                         var isLike = LikeUtil.instance.allPlaylistMap.containsKey(browseId);
                         if (isLike) {
-                          LikeUtil.instance.unlikeList(browseId);
+                          LikeUtil.instance.unlikeList(browseId, adSense: AdSense.search_page);
                         } else {
                           LikeUtil.instance.likeList(browseId, item, "", adSense: AdSense.search_page);
                         }
@@ -889,7 +889,7 @@ class UserSearch extends GetView<UserSearchController> {
                         final browseId = item["browseId"];
                         var isLike = LikeUtil.instance.allArtistMap.containsKey(browseId);
                         if (isLike) {
-                          LikeUtil.instance.unlikeArtist(browseId);
+                          LikeUtil.instance.unlikeArtist(browseId, adSense: AdSense.search_page);
                         } else {
                           LikeUtil.instance.likeArtist(browseId, item, adSense: AdSense.search_page);
                         }

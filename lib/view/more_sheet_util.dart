@@ -214,7 +214,10 @@ class MoreSheetUtil {
                             ? AdSense.artist_detail_page
                             : AdSense.playlist_page);
                   } else {
-                    LikeUtil.instance.unlikeVideo(item["videoId"]);
+                    LikeUtil.instance.unlikeVideo(item["videoId"],
+                        adSense: clickType == "artist_more_song" || clickType == "artist"
+                            ? AdSense.artist_detail_page
+                            : AdSense.playlist_page);
                   }
 
                   if (clickType == "net_playlist" || clickType == "loc_playlist") {

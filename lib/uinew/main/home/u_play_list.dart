@@ -71,7 +71,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                       return IconButton(
                         onPressed: () {
                           if (isLike) {
-                            LikeUtil.instance.unlikeList(controller.browseId);
+                            LikeUtil.instance.unlikeList(controller.browseId, adSense: AdSense.playlist_page);
                           } else {
                             LikeUtil.instance.likeList(
                               controller.browseId,

@@ -78,7 +78,8 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                           onPressed: () {
                             if (isLike) {
                               LikeUtil.instance.unlikeArtist(
-                                controller.browseId,
+                                controller.browseId, adSense: AdSense.playlist_page
+
                               );
                             } else {
                               LikeUtil.instance.likeArtist(
