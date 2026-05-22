@@ -259,8 +259,6 @@ class Application extends GetxService {
 
     AdjustUtil.instance.initSdk(userAppUuid);
 
-    AdmobUtils.instance.init();
-
     initFireBaseOther();
 
   }

@@ -27,6 +27,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
   Timer? _timer;
   bool _isDarkMode = false;
   StreamSubscription? _streamSubscription;
+  double closeBtnSize = 22;
 
   late NativeAd nativeAd;
 
@@ -36,6 +37,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
   void initState() {
     nativeAd = widget.ad;
     maxSec = RemoteUtil.shareInstance.adNativeCountDown;
+    closeBtnSize = 1.0 * RemoteUtil.shareInstance.adNativeBtnSize;
     _isDarkMode = true;
     if (maxSec == 0) {
       _curSec.value = -1;
@@ -85,7 +87,11 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
         backgroundColor: Colors.black,
         body: Container(
           padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
-          decoration: const BoxDecoration(gradient: LinearGradient(end: Alignment.bottomCenter, begin: Alignment.topCenter, colors: [Color(0xffb79efe), Color(0xff5e60dc)])),
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                  end: Alignment.bottomCenter,
+                  begin: Alignment.topCenter,
+                  colors: [Color(0xffb79efe), Color(0xff5e60dc)])),
           width: double.infinity,
           height: double.infinity,
           child: Stack(
@@ -97,7 +103,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                 child: StatefulBuilder(
                   builder: (context, a) {
                     return Listener(
-                      onPointerDown: (e){
+                      onPointerDown: (e) {
                         AppLog.i("广告被点击了");
                         _closeType.value = CloseType.normal;
                       },
@@ -138,7 +144,8 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                             backgroundColor: _isDarkMode ? Colors.white24 : Colors.black12,
                             valueColor: AlwaysStoppedAnimation(_isDarkMode ? Colors.white : Colors.black45),
                           ),
-                          Text("${max(_curSec.value, 0)}s", style: const TextStyle(fontSize: 10, color: Color(0xffbfbfbf))),
+                          Text("${max(_curSec.value, 0)}s",
+                              style: const TextStyle(fontSize: 10, color: Color(0xffbfbfbf))),
                         ],
                       ),
                     ),
@@ -149,31 +156,50 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                 return Positioned(
                   left: 24,
                   top: 28,
-                  child:
-                      _closeType.value == CloseType.disable
-                          ? IgnorePointer(
-                            ignoring: true,
-                            child: Container(
-                              decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(11)),
-                              child: const Padding(padding: EdgeInsets.all(2.0), child: Icon(Icons.close_rounded, size: 20, color: Colors.black38)),
-                            ),
-                          )
-                          : GestureDetector(
-                            onTap: () {
-                              AppLog.i("关闭点击广告");
-                              // AppLog.i("关闭点击广告2 ${Get.currentRoute}, ${Get.previousRoute}, isBottomSheet:${Get.routing.isBottomSheet}, removed:${Get.routing.removed}");
-                              Get.back();
-                              // AppLog.i("关闭点击广告3 ${Get.currentRoute}, ${Get.previousRoute}, isBottomSheet:${Get.routing.isBottomSheet}, removed:${Get.routing.removed}");
-                              if (Get.previousRoute == "LaunchLoad") {
-                                Get.back();
-                              }
-                            },
-                            behavior: HitTestBehavior.opaque,
-                            child: Container(
-                              decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(11)),
-                              child: const Padding(padding: EdgeInsets.all(2.0), child: Icon(Icons.close_rounded, size: 20, color: Colors.black54)),
-                            ),
+                  child: _closeType.value == CloseType.disable
+                      ? IgnorePointer(
+                          ignoring: true,
+                          child: Container(
+                            decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(11)),
+                            child: const Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: Icon(Icons.close_rounded, size: 20, color: Colors.black38)),
                           ),
+                        )
+                      : Stack(
+                          alignment: Alignment(0, 0),
+                          children: [
+                            IgnorePointer(
+                              ignoring: true,
+                              child: Container(
+                                decoration:
+                                    BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(12)),
+                                child: Icon(Icons.close_rounded, size: 24, color: Colors.black54),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                AppLog.i("关闭点击广告");
+                                // AppLog.i("关闭点击广告2 ${Get.currentRoute}, ${Get.previousRoute}, isBottomSheet:${Get.routing.isBottomSheet}, removed:${Get.routing.removed}");
+                                Get.back();
+                                // AppLog.i("关闭点击广告3 ${Get.currentRoute}, ${Get.previousRoute}, isBottomSheet:${Get.routing.isBottomSheet}, removed:${Get.routing.removed}");
+                                if (Get.previousRoute == "LaunchLoad") {
+                                  Get.back();
+                                }
+                              },
+                              behavior: HitTestBehavior.opaque,
+                              child: Container(
+                                width: closeBtnSize,
+                                height: closeBtnSize,
+                                color: Colors.transparent,
+                              ),
+                            ),
+                            // child: Container(
+                            //   decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(11)),
+                            //   child: const Padding(padding: EdgeInsets.all(2.0), child: Icon(Icons.close_rounded, size: 20, color: Colors.black54)),
+                            // ),
+                          ],
+                        ),
                 );
               }),
             ],

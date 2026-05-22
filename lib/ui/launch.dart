@@ -48,6 +48,7 @@ class LaunchPageController extends GetxController {
     bus.appLaunchTime = DateTime.now();
     countdown();
     try {
+      AdmobUtils.instance.init();
       await loadAd().timeout(Duration(seconds: _maxAppLaunchTime));
       await _userCheck();
       await showAd();

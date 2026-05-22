@@ -24,6 +24,8 @@ const String mmReferParams = "mmReferParams";
 
 const String mmSetRewardVideoCd = "mmSetRewardVideoCd";
 
+const String mmAdNativeBtnSize = "mmAdNativeBtnSize";
+
 class RemoteUtil {
   static RemoteUtil shareInstance = RemoteUtil._();
 
@@ -38,6 +40,8 @@ class RemoteUtil {
 
   String _pageNativeClickbait = "";
 
+
+
   // late SharedPreferences isp;
 
   String _listenNowRecom = "";
@@ -49,6 +53,8 @@ class RemoteUtil {
   String _referParams = ""; //包含字段认定为买量用户，未包含该字段则认定为非买量用户；
 
   int _rewardVideoCd = 0;
+
+  int _adNativeBtnSize = 0;//关闭按钮尺寸
 
   bool isInitSuc = false;
 
@@ -71,6 +77,8 @@ class RemoteUtil {
     _referParams = museSp.getString(mmReferParams) ?? "";
 
     _rewardVideoCd = museSp.getInt(mmSetRewardVideoCd, def: 30);
+
+    _adNativeBtnSize = museSp.getInt(mmAdNativeBtnSize, def: 22);
   }
 
   Future<void> initFirebaseRemoteSdk() async {
@@ -104,7 +112,7 @@ class RemoteUtil {
 
       updateData();
 
-      AppLog.e("FirebaseRemote init 成功");
+      AppLog.i("FirebaseRemote init 成功");
 
     } catch (e) {
       AppLog.e("FirebaseRemote init error: $e");
@@ -180,6 +188,13 @@ class RemoteUtil {
       museSp.setInt(mmSetRewardVideoCd, 0);
       _rewardVideoCd = 0;
     }
+
+    int adNativeBtnSize = FirebaseRemoteConfig.instance.getInt("muse_nato_size");
+    if(adNativeBtnSize > 0) {
+      museSp.setInt(mmAdNativeBtnSize, adNativeBtnSize);
+      _adNativeBtnSize = adNativeBtnSize;
+    }
+
   }
 
   // Map<String, dynamic> get adJson {
@@ -278,7 +293,7 @@ class RemoteUtil {
 
     if (_adJsonRef.isNotEmpty && ReferrerUtil.sh.isBuyReferrer && bus.isBMode) {
       try {
-        Map oldMap = jsonDecode(_adJsonAnd);
+        Map oldMap = jsonDecode(_adJsonRef);
         Map<String, dynamic> newMap = oldMap.map((key, value) => MapEntry(key.toLowerCase(), value));
         return newMap;
       } catch (e) {
@@ -302,6 +317,10 @@ class RemoteUtil {
 
   int get rewardVideoCd {
     return _rewardVideoCd;
+  }
+
+  int get adNativeBtnSize {
+    return _adNativeBtnSize;
   }
 
 }
