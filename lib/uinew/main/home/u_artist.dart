@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/generated/assets.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_more_album.dart';
 import 'package:muse_wave/uinew/main/home/u_more_song.dart';
@@ -26,8 +27,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
 
   final bool isFormSearch;
   final String browseId = (Get.arguments?["browseId"] ?? "").toString();
-  final String pageTag =
-      "artist_detail_${DateTime.now().microsecondsSinceEpoch}_${identityHashCode(Object())}";
+  final String pageTag = "artist_detail_${DateTime.now().microsecondsSinceEpoch}_${identityHashCode(Object())}";
 
   UserArtistInfo({super.key, this.isFormSearch = false});
 
@@ -83,7 +83,8 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                 LikeUtil.instance.unlikeArtist(controller.browseId);
                               } else {
                                 EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "collection"});
-                                LikeUtil.instance.likeArtist(controller.browseId, controller.info);
+                                LikeUtil.instance.likeArtist(controller.browseId, controller.info,
+                                    adSense: AdSense.artist_detail_page);
                               }
                             },
                             icon: Image.asset(
@@ -665,7 +666,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                       onTap: () {
                         AppLog.e(childItem);
                         EventUtils.instance.addEvent("det_playlist_show", data: {"from": "artist_playlist"});
-                        Get.to(UserPlayListInfo(), arguments: childItem);
+                        Get.to(UserPlayListInfo(adSense: AdSense.artist_detail_page), arguments: childItem);
                       },
                       child: Container(
                         width: 140.w,
@@ -709,7 +710,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                       onTap: () {
                         AppLog.e(childItem);
                         EventUtils.instance.addEvent("det_playlist_show", data: {"from": "artist_album"});
-                        Get.to(UserPlayListInfo(), arguments: childItem);
+                        Get.to(UserPlayListInfo(adSense: AdSense.artist_detail_page), arguments: childItem);
                       },
                       child: Container(
                         width: 140.w,
@@ -770,7 +771,10 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(34.w)),
                               child: Stack(children: [
                                 Positioned.fill(
-                                    child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover, errorAsset: Assets.imgLogoF))
+                                    child: NetImageView(
+                                        imgUrl: childItem["cover"] ?? "",
+                                        fit: BoxFit.cover,
+                                        errorAsset: Assets.imgLogoF))
                               ]),
                             ),
                             SizedBox(height: 12.w),

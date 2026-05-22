@@ -2,11 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:muse_wave/muse_config.dart';
 import 'package:muse_wave/static/app_color.dart';
 import 'package:muse_wave/tool/bus.dart';
-import 'package:muse_wave/tool/dialog_util.dart';
 import 'package:muse_wave/tool/referrer_util.dart';
 import 'package:muse_wave/tool/remote_utils.dart';
 import 'package:muse_wave/tool/toast.dart';
@@ -14,10 +12,7 @@ import 'package:muse_wave/view/debug_page.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-
 import '../../lang/my_tr.dart';
-import '../../main.dart';
-import '../../static/env.dart';
 import '../../tool/ad/ad_util.dart';
 import '../../tool/cache_util.dart';
 import '../../tool/log.dart';
@@ -42,7 +37,8 @@ class UserSetting extends GetView<UserSettingController> {
         }
       },
       child: Container(
-        decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
+        decoration:
+            BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
@@ -58,7 +54,8 @@ class UserSetting extends GetView<UserSettingController> {
                     Get.to(() => UDebugPage());
                   }
                 },
-                child: Container(color: MuseConfig.isUser ? Colors.transparent : Colors.white30, width: 100, height: 44),
+                child:
+                    Container(color: MuseConfig.isUser ? Colors.transparent : Colors.white30, width: 100, height: 44),
               ),
             ],
           ),
@@ -109,7 +106,8 @@ class UserSetting extends GetView<UserSettingController> {
             Text(controller.listTitle[i], style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
             Spacer(),
             isRightText
-                ? Obx(() => Text(rightText.value, style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5))))
+                ? Obx(
+                    () => Text(rightText.value, style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5))))
                 : Image.asset("assets/img/icon_right.png", width: 24.w, height: 24.w),
           ],
         ),
@@ -178,7 +176,15 @@ class UserSetting extends GetView<UserSettingController> {
                       onSelectedItemChanged: (index) {
                         nowIndex = index;
                       },
-                      children: [Text("system"), Text("zh_CN"), Text("en_US"), Text("fr_FR"), Text("es_ES"), Text("pt_PT"), Text("de_DE")],
+                      children: [
+                        Text("system"),
+                        Text("zh_CN"),
+                        Text("en_US"),
+                        Text("fr_FR"),
+                        Text("es_ES"),
+                        Text("pt_PT"),
+                        Text("de_DE")
+                      ],
                     ),
                   ),
                 ],
@@ -285,7 +291,9 @@ class UserSetting extends GetView<UserSettingController> {
                 direction: Axis.vertical,
                 spacing: 0,
                 children: [
-                  Text("Rewarded Ad", style: const TextStyle(height: 1, color: Color(0xff141414), fontSize: 14, fontWeight: FontWeight.w500)),
+                  Text("Rewarded Ad",
+                      style: const TextStyle(
+                          height: 1, color: Color(0xff141414), fontSize: 14, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 2),
                   Obx(() {
                     return Text(
@@ -308,7 +316,8 @@ class UserSetting extends GetView<UserSettingController> {
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: AppColor.mainColor),
-                    child: Text("Rewarded AD", style: TextStyle(fontSize: 12, color: Color(0xff333333), fontWeight: FontWeight.w500)),
+                    child: Text("Rewarded AD",
+                        style: TextStyle(fontSize: 12, color: Color(0xff333333), fontWeight: FontWeight.w500)),
                   ),
                 ),
               ),
@@ -321,15 +330,14 @@ class UserSetting extends GetView<UserSettingController> {
 }
 
 class UserSettingController extends GetxController {
-  var listTitle =
-      [
-        "Privacy Policy".tr,
-        "Terms of Service".tr,
-        "Feedback".tr,
-        "Cache clean".tr,
-        "Version".tr,
-        // "Language".tr
-      ].obs;
+  var listTitle = [
+    "Privacy Policy".tr,
+    "Terms of Service".tr,
+    "Feedback".tr,
+    "Cache clean".tr,
+    "Version".tr,
+    // "Language".tr
+  ].obs;
 
   var versionName = "".obs;
   var cacheNum = "".obs;
@@ -362,7 +370,7 @@ class UserSettingController extends GetxController {
   @override
   onReady() {
     super.onReady();
-    AdUtils.instance.loadAd(AdPosId.muse_local_reward, adSense: AdScene.set);
+    AdUtils.instance.loadAd(AdPosId.muse_local_reward, adSense: AdSense.set);
   }
 
   changeRemindHour(int hour) {
@@ -386,7 +394,11 @@ class UserSettingController extends GetxController {
               return;
             }
           }
-          bool isSuccess = await AdUtils.instance.showAd(AdPosId.muse_local_reward, adSense: AdScene.set);
+          bool isSuccess = await AdUtils.instance.showAd(
+            AdPosId.muse_local_reward,
+            adSense: AdSense.set,
+            adFunction: AdFunction.unknown,
+          );
           if (isSuccess) {
             lastVideoAdTime = DateTime.now();
             changeRemindHour(curRemindHour.value + 1);

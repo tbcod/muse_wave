@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_channel_more.dart';
 import 'package:muse_wave/uinew/main/home/u_play.dart';
@@ -83,6 +84,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                               LikeUtil.instance.likeArtist(
                                 controller.browseId,
                                 controller.info,
+                                adSense: AdSense.playlist_page
                               );
                             }
                           },
@@ -548,7 +550,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                           "det_playlist_show",
                           data: {"from": "artist_playlist"},
                         );
-                        Get.to(UserPlayListInfo(), arguments: childItem);
+                        Get.to(UserPlayListInfo(adSense: AdSense.playlist_page), arguments: childItem);
                       },
                       child: Container(
                         width: 140.w,

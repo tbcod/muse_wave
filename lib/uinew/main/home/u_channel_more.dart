@@ -2,6 +2,7 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_play.dart';
 import 'package:muse_wave/uinew/main/home/u_play_list.dart';
@@ -145,7 +146,7 @@ class UserChannelMore extends GetView<UserChannelMoreController> {
             "det_playlist_show",
             data: {"from": "artist_playlist"},
           );
-          Get.to(UserPlayListInfo(), arguments: childItem);
+          Get.to(UserPlayListInfo(adSense: AdSense.playlist_page), arguments: childItem);
         },
         child: Container(
           width: double.infinity,

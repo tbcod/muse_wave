@@ -27,7 +27,7 @@ class LikeUtil {
 
   var hasNewLikeVideo = false.obs;
   var hasNewLikeArtist = false.obs;
-  likeVideo(String videoId, Map infoData) {
+  likeVideo(String videoId, Map infoData, {required AdSense adSense}) {
     //好评引导
     MyDialogUtils.instance.showRateDialog();
 
@@ -41,7 +41,7 @@ class LikeUtil {
       return;
     }
 
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.liked);
 
     allVideoMap[videoId] = infoData;
 
@@ -80,7 +80,7 @@ class LikeUtil {
   }
 
   unlikeVideo(String videoId) {
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
+    // AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.collection);
 
     allVideoMap.remove(videoId);
     saveData();
@@ -88,9 +88,9 @@ class LikeUtil {
     saveLikeState();
   }
 
-  likeList(String browseId, Map infoData, String subtitle) async {
+  likeList(String browseId, Map infoData, String subtitle, {required AdSense adSense}) async {
     //好评引导MyDialogUtils.instance.showRateDialog();
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.liked);
 
     EventUtils.instance.addEvent(
       "liked_click",
@@ -124,7 +124,6 @@ class LikeUtil {
   }
 
   unlikeList(String browseId) async {
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
 
     allPlaylistMap.remove(browseId);
     saveData();
@@ -143,8 +142,8 @@ class LikeUtil {
     saveLikeState();
   }
 
-  likeArtist(String browseId, Map infoData) {
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
+  likeArtist(String browseId, Map infoData, {required AdSense adSense}) {
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.liked);
 
     //好评引导
     MyDialogUtils.instance.showRateDialog();
@@ -163,7 +162,6 @@ class LikeUtil {
   }
 
   unlikeArtist(String browseId) {
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.collection);
 
     allArtistMap.remove(browseId);
     saveData();

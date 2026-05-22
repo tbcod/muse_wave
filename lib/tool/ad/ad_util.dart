@@ -16,10 +16,33 @@ import '../tba/tba_util.dart';
 import 'admob_util.dart';
 import 'view/full_admob_native.dart';
 
-// enum AdScene { play, download, search, openCool, openHot, playlist, artist, collection, back } //artist,
-enum AdScene { open_cool, open_hot, open_first, play, search, download, detail, collection, back, home, library, set }
+// enum AdSense { open_cool, open_hot, open_first, play, search, download, detail, collection, back, home, library, set }
 
-enum AdPosId { open, behavior, level_h, normalbanner, pagebanner, muse_local_int, muse_local_reward } //homenative, nvpage_full
+enum AdSense {
+  cold,
+  hot,
+  first,
+  home,
+  play_page,
+  search_page,
+  library,
+  minibar,
+  artist_detail_page,
+  playlist_page,
+  set
+}
+
+enum AdFunction { play, download, liked, return_, search, detail, unknown }
+
+enum AdPosId {
+  open,
+  behavior,
+  level_h,
+  normalbanner,
+  pagebanner,
+  muse_local_int,
+  muse_local_reward
+} //homenative, nvpage_full
 
 enum AdFirstType { launch_first, launch_other, int_main_first, int_main_other, banner_other }
 
@@ -56,7 +79,7 @@ class AdUtils {
     num wait = num.tryParse(adJson["sameinterval"].toString()) ?? 60;
     // AppLog.e("广告间隔\n${lastShowTime}\n${nowTime}\n${temp.inSeconds}---${wait}");
     if (kDebugMode) {
-      wait = 215;
+      wait = 15;
     }
 
     if (temp.inSeconds > wait || temp.inSeconds < 0) {
@@ -78,8 +101,10 @@ class AdUtils {
   //已加载的广告，key为广告id，显示后移除对应广告
   var loadedAdMap = {};
 
-  //load //required String positionKey,
-  loadAd(AdPosId adPosId, {required AdScene adSense, bool forceLocalJson = false, AdFirstType? adFirstType, LoadCallback? onLoad}) async {
+  //
+  //       required AdFunction adFunction,
+  loadAd(AdPosId adPosId,
+      {required AdSense adSense, bool forceLocalJson = false, AdFirstType? adFirstType, LoadCallback? onLoad}) async {
     String key = adPosId.name;
 
     adFirstType ??= adPosId == AdPosId.open ? AdFirstType.launch_other : AdFirstType.int_main_other;
@@ -110,7 +135,7 @@ class AdUtils {
       return;
     }
 
-    if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
+    if (adSense == AdSense.cold || adSense == AdSense.first) {
       EventUtils.instance.addEvent(
         "open_ad_request",
         data: {"en_time": bus.getTimeDiffNow(bus.appLaunchTime), "appearance": bus.isFirstAppLaunch ? "first" : "cold"},
@@ -162,10 +187,15 @@ class AdUtils {
       }
 
       AppLog.i("广告单元开始加载：$key， $source, $type, ${adSense.name}, $ad_id");
-//"ad_first": adFirstType.name,
       EventUtils.instance.addEvent(
         "ad_request",
-        data: {"ad_pos_id": adPosId.name,  "ad_sense": adPosId == AdPosId.open ? adSense.name : "", "ad_format": type, "ad_source_client": source, "ad_code_id": ad_id},
+        data: {
+          "ad_pos_id": adPosId.name,
+          "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
+          "ad_format": type,
+          "ad_source_client": source,
+          "ad_code_id": ad_id
+        },
       );
 
       DateTime startTime = DateTime.now();
@@ -286,7 +316,8 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
-                  "ad_sense": adSense.name,
+                  // "ad_sense": adSense.name,
+                  // "ad_function": adFunction.name,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -306,7 +337,14 @@ class AdUtils {
                 AppLog.i("原生广告点击:${ad.adUnitId}");
                 EventUtils.instance.addEvent(
                   "ad_click",
-                  data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name},
+                  data: {
+                    "ad_format": "fullnative",
+                    "ad_source_client": source,
+                    "ad_code_id": ad_id,
+                    "ad_pos_id": adPosId.name,
+                    "ad_sense": AdUtils.instance.loadedAdMap[ad_id]["ad_sense"] ?? adSense.name,
+                    "ad_function": AdUtils.instance.loadedAdMap[ad_id]["ad_function"] ?? AdFunction.play.name,
+                  },
                 );
               },
               onAdImpression: (ad) {
@@ -316,10 +354,18 @@ class AdUtils {
               onAdClosed: (ad) {
                 EventUtils.instance.addEvent(
                   "ad_close",
-                  data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name},
+                  data: {
+                    "ad_format": "fullnative",
+                    "ad_source_client": source,
+                    "ad_code_id": ad_id,
+                    "ad_pos_id": adPosId.name,
+                    "ad_sense": AdUtils.instance.loadedAdMap[ad_id]["ad_sense"] ?? adSense.name,
+                    "ad_function": AdUtils.instance.loadedAdMap[ad_id]["ad_function"] ?? AdFunction.play.name,
+                  },
                 );
-                if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
-                  EventUtils.instance.addEvent("open_ad_click", data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
+                if (adSense == AdSense.cold || adSense == AdSense.first) {
+                  EventUtils.instance.addEvent("open_ad_click",
+                      data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
                 }
 
                 //关闭
@@ -337,16 +383,18 @@ class AdUtils {
                 adIsShowing = true;
               },
               onPaidEvent: (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
-                String adSense = AdUtils.instance.loadedAdMap[ad_id]["ad_sense"] ?? AdScene.play.name;
+                String sense = AdUtils.instance.loadedAdMap[ad_id]["ad_sense"] ?? adSense.name;
+                String function = AdUtils.instance.loadedAdMap[ad_id]["ad_function"] ?? AdFunction.play.name;
                 TbaUtils.instance.postAd(
                   ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "admob",
-                  ad_format: "native",
+                  ad_format: "fullnative",
                   ad_source: "admob",
                   ad_unit_id: ad.adUnitId,
-                  adSense: adSense,
+                  adSense: sense,
                   ad_pre_ecpm: valueMicros.toString(),
                   currency: currencyCode,
                   adPosName: key,
+                  adFunction: function,
                 );
               },
             ),
@@ -535,11 +583,11 @@ class AdUtils {
       isLoadSuc = await isCompleter.future;
       if (isLoadSuc) {
         EventUtils.instance.addEvent(
-          "ad_return",
+          "ad_return_sucess",
           data: {
             "ad_pos_id": adPosId.name,
             "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
-            "ad_format": type,
+            "ad_format": type == "native" ? "fullnative" : type,
             "ad_source_client": source,
             "ad_code_id": ad_id,
             "ad_request_time": DateTime.now().difference(startTime).inMilliseconds,
@@ -551,7 +599,7 @@ class AdUtils {
           "ad_return_fail",
           data: {
             "ad_pos_id": adPosId.name,
-            "ad_format": type,
+            "ad_format": type == "native" ? "fullnative" : type,
             "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
             "ad_source_client": source,
             "ad_code_id": ad_id,
@@ -572,7 +620,7 @@ class AdUtils {
       AppLog.e("广告瀑布流请求结束，失败，$key");
     }
 
-    if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
+    if (adSense == AdSense.cold || adSense == AdSense.first) {
       EventUtils.instance.addEvent(
         "open_ad_request_return",
         data: {
@@ -588,17 +636,16 @@ class AdUtils {
 
   bool adIsShowing = false;
 
-  Future<bool> showAd(AdPosId adPosId, {required AdScene adSense, bool forceLocalJson = false, ShowCallback? onShow}) async {
-    // final load_pos = adScene.name;
+  Future<bool> showAd(AdPosId adPosId,
+      {required AdSense adSense,
+      required AdFunction adFunction,
+      bool forceLocalJson = false,
+      ShowCallback? onShow}) async {
     if (adIsShowing) {
       if (onShow != null) {
         onShow.onShowFail!("", AdError(-1, "", "ad is showing"));
       }
       AppLog.e("广告正在展示中");
-      // EventUtils.instance.addEvent(
-      //   "ad_show_fail",
-      //   data: {"ad_pos_id": adPosId.name, "ad_sense": adSense.name, "reason": "ad is showing"},
-      // );
       if (adPosId == AdPosId.behavior) {
         adIsShowing = false;
       }
@@ -655,7 +702,7 @@ class AdUtils {
 
     //优先显示高价
     if (adPosId != AdPosId.level_h && adPosId != AdPosId.muse_local_reward) {
-      var isShow = await showAd(AdPosId.level_h, adSense: adSense);
+      var isShow = await showAd(AdPosId.level_h, adSense: adSense, adFunction: adFunction);
       // AppLog.e("高价显示：$isShow");
       if (isShow) {
         return true;
@@ -665,7 +712,10 @@ class AdUtils {
     final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
 
     // AppLog.e("广告网络：$connectivityResult");
-    if (!connectivityResult.contains(ConnectivityResult.wifi) && !connectivityResult.contains(ConnectivityResult.mobile) && !connectivityResult.contains(ConnectivityResult.ethernet) && !connectivityResult.contains(ConnectivityResult.vpn)) {
+    if (!connectivityResult.contains(ConnectivityResult.wifi) &&
+        !connectivityResult.contains(ConnectivityResult.mobile) &&
+        !connectivityResult.contains(ConnectivityResult.ethernet) &&
+        !connectivityResult.contains(ConnectivityResult.vpn)) {
       //没有网络
       AppLog.e("没有网络，不显示广告");
       if (onShow != null) {
@@ -728,11 +778,19 @@ class AdUtils {
               }
               EventUtils.instance.addEvent(
                 "ad_click",
-                data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name},
+                data: {
+                  "ad_format": type,
+                  "ad_source_client": source,
+                  "ad_code_id": ad_id,
+                  "ad_pos_id": adPosId.name,
+                  "ad_sense": adSense.name,
+                  "ad_function": adFunction.name,
+                },
               );
 
-              if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
-                EventUtils.instance.addEvent("open_ad_click", data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "ad_click"});
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
+                EventUtils.instance.addEvent("open_ad_click",
+                    data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "ad_click"});
               }
             },
             onAdFailedToShowFullScreenContent: (ad, e) {
@@ -750,10 +808,18 @@ class AdUtils {
             onAdDismissedFullScreenContent: (ad) {
               EventUtils.instance.addEvent(
                 "ad_close",
-                data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name},
+                data: {
+                  "ad_format": type,
+                  "ad_source_client": source,
+                  "ad_code_id": ad_id,
+                  "ad_pos_id": adPosId.name,
+                  "ad_sense": adSense.name,
+                  "ad_function": adFunction.name,
+                },
               );
-              if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
-                EventUtils.instance.addEvent("open_ad_click", data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
+                EventUtils.instance.addEvent("open_ad_click",
+                    data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
               }
 
               adIsShowing = false;
@@ -765,7 +831,7 @@ class AdUtils {
               setShowTime();
 
               //重新加载一轮广告
-              loadAd(adPosId, adSense: (adSense == AdScene.open_cool || adSense == AdScene.open_first) ? AdScene.open_hot : adSense);
+              loadAd(adPosId, adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
 
               if (onShow != null) {
                 onShow.onClose!(ad.adUnitId);
@@ -778,10 +844,14 @@ class AdUtils {
               if (onShow != null) {
                 onShow.onShow!(ad.adUnitId);
               }
-              if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
                 EventUtils.instance.addEvent(
                   "open_ad_show",
-                  data: {"en_time": bus.getTimeDiffNow(bus.appLaunchTime), "appearance": bus.isFirstAppLaunch ? "first" : "cold", "type": type},
+                  data: {
+                    "en_time": bus.getTimeDiffNow(bus.appLaunchTime),
+                    "appearance": bus.isFirstAppLaunch ? "first" : "cold",
+                    "type": type
+                  },
                 );
               }
             },
@@ -790,17 +860,18 @@ class AdUtils {
           openAd?.onPaidEvent = (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
             //上报广告收益
             TbaUtils.instance.postAd(
-              ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "",
-              ad_format: "open",
-              ad_source: "admob",
-              ad_unit_id: ad.adUnitId,
-              adSense: adSense.name,
-              ad_pre_ecpm: valueMicros.toString(),
-              currency: currencyCode,
-              adPosName: key,
-              // precision_type: precision.name,
-              // positionKey: loadedItem["load_pos"],
-            );
+                ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "",
+                ad_format: "open",
+                ad_source: "admob",
+                ad_unit_id: ad.adUnitId,
+                adSense: adSense.name,
+                ad_pre_ecpm: valueMicros.toString(),
+                currency: currencyCode,
+                adPosName: key,
+                adFunction: adFunction.name
+                // precision_type: precision.name,
+                // positionKey: loadedItem["load_pos"],
+                );
           };
           openAd?.show();
           isShowAd = true;
@@ -815,10 +886,17 @@ class AdUtils {
               }
               EventUtils.instance.addEvent(
                 "ad_click",
-                data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name},
+                data: {
+                  "ad_format": type,
+                  "ad_source_client": source,
+                  "ad_code_id": ad_id,
+                  "ad_pos_id": adPosId.name,
+                  "ad_sense": adSense.name
+                },
               );
-              if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
-                EventUtils.instance.addEvent("open_ad_click", data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "ad_click"});
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
+                EventUtils.instance.addEvent("open_ad_click",
+                    data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "ad_click"});
               }
             },
             onAdFailedToShowFullScreenContent: (ad, e) {
@@ -836,10 +914,17 @@ class AdUtils {
             onAdDismissedFullScreenContent: (ad) {
               EventUtils.instance.addEvent(
                 "ad_close",
-                data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name},
+                data: {
+                  "ad_format": type,
+                  "ad_source_client": source,
+                  "ad_code_id": ad_id,
+                  "ad_pos_id": adPosId.name,
+                  "ad_sense": adSense.name
+                },
               );
-              if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
-                EventUtils.instance.addEvent("open_ad_click", data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
+                EventUtils.instance.addEvent("open_ad_click",
+                    data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
               }
 
               adIsShowing = false;
@@ -850,7 +935,7 @@ class AdUtils {
               //设置显示时间以判断广告间隔
               setShowTime();
               //重新加载一轮广告
-              loadAd(adPosId, adSense: (adSense == AdScene.open_cool || adSense == AdScene.open_first) ? AdScene.open_hot : adSense);
+              loadAd(adPosId, adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
               if (onShow != null) {
                 onShow.onClose!(ad.adUnitId);
               }
@@ -861,10 +946,14 @@ class AdUtils {
               if (onShow != null) {
                 onShow.onShow!(ad.adUnitId);
               }
-              if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
                 EventUtils.instance.addEvent(
                   "open_ad_show",
-                  data: {"en_time": bus.getTimeDiffNow(bus.appLaunchTime), "appearance": bus.isFirstAppLaunch ? "first" : "cold", "type": type},
+                  data: {
+                    "en_time": bus.getTimeDiffNow(bus.appLaunchTime),
+                    "appearance": bus.isFirstAppLaunch ? "first" : "cold",
+                    "type": type
+                  },
                 );
               }
             },
@@ -873,17 +962,18 @@ class AdUtils {
           interstitialAd?.onPaidEvent = (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
             //上报广告收益
             TbaUtils.instance.postAd(
-              ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "",
-              ad_format: "interstitial",
-              ad_source: "admob",
-              ad_unit_id: ad.adUnitId,
-              adSense: adSense.name,
-              ad_pre_ecpm: valueMicros.toString(),
-              currency: currencyCode,
-              adPosName: key,
-              // precision_type: precision.name,
-              // positionKey: loadedItem["load_pos"],
-            );
+                ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "",
+                ad_format: "interstitial",
+                ad_source: "admob",
+                ad_unit_id: ad.adUnitId,
+                adSense: adSense.name,
+                ad_pre_ecpm: valueMicros.toString(),
+                currency: currencyCode,
+                adPosName: key,
+                adFunction: adFunction.name
+                // precision_type: precision.name,
+                // positionKey: loadedItem["load_pos"],
+                );
           };
           interstitialAd?.show();
           isShowAd = true;
@@ -898,10 +988,18 @@ class AdUtils {
               }
               EventUtils.instance.addEvent(
                 "ad_click",
-                data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name},
+                data: {
+                  "ad_format": type,
+                  "ad_source_client": source,
+                  "ad_code_id": ad_id,
+                  "ad_pos_id": adPosId.name,
+                  "ad_sense": adSense.name,
+                  "ad_function": adFunction.name,
+                },
               );
-              if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
-                EventUtils.instance.addEvent("open_ad_click", data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "ad_click"});
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
+                EventUtils.instance.addEvent("open_ad_click",
+                    data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "ad_click"});
               }
             },
             onAdFailedToShowFullScreenContent: (ad, e) {
@@ -919,10 +1017,18 @@ class AdUtils {
             onAdDismissedFullScreenContent: (ad) {
               EventUtils.instance.addEvent(
                 "ad_close",
-                data: {"ad_format": type, "ad_source_client": source, "ad_code_id": ad_id, "ad_pos_id": adPosId.name, "ad_sense": adSense.name},
+                data: {
+                  "ad_format": type,
+                  "ad_source_client": source,
+                  "ad_code_id": ad_id,
+                  "ad_pos_id": adPosId.name,
+                  "ad_sense": adSense.name,
+                  "ad_function": adFunction.name,
+                },
               );
-              if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
-                EventUtils.instance.addEvent("open_ad_click", data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
+                EventUtils.instance.addEvent("open_ad_click",
+                    data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
               }
 
               adIsShowing = false;
@@ -935,7 +1041,7 @@ class AdUtils {
                 setShowTime();
               }
               //重新加载一轮广告
-              loadAd(adPosId, adSense: (adSense == AdScene.open_cool || adSense == AdScene.open_first) ? AdScene.open_hot : adSense);
+              loadAd(adPosId, adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
 
               if (onShow != null) {
                 onShow.onClose!(ad.adUnitId);
@@ -947,10 +1053,14 @@ class AdUtils {
               if (onShow != null) {
                 onShow.onShow!(ad.adUnitId);
               }
-              if (adSense == AdScene.open_cool || adSense == AdScene.open_first) {
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
                 EventUtils.instance.addEvent(
                   "open_ad_show",
-                  data: {"en_time": bus.getTimeDiffNow(bus.appLaunchTime), "appearance": bus.isFirstAppLaunch ? "first" : "cold", "type": type},
+                  data: {
+                    "en_time": bus.getTimeDiffNow(bus.appLaunchTime),
+                    "appearance": bus.isFirstAppLaunch ? "first" : "cold",
+                    "type": type
+                  },
                 );
               }
             },
@@ -959,17 +1069,18 @@ class AdUtils {
           rewardedAd?.onPaidEvent = (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
             //上报广告收益
             TbaUtils.instance.postAd(
-              ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "",
-              ad_format: "rewarded",
-              ad_source: "admob",
-              ad_unit_id: ad.adUnitId,
-              adSense: adSense.name,
-              ad_pre_ecpm: valueMicros.toString(),
-              currency: currencyCode,
-              adPosName: key,
-              // precision_type: precision.name,
-              // positionKey: loadedItem["load_pos"],
-            );
+                ad_network: ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?? "",
+                ad_format: "rewarded",
+                ad_source: "admob",
+                ad_unit_id: ad.adUnitId,
+                adSense: adSense.name,
+                ad_pre_ecpm: valueMicros.toString(),
+                currency: currencyCode,
+                adPosName: key,
+                adFunction: adFunction.name
+                // precision_type: precision.name,
+                // positionKey: loadedItem["load_pos"],
+                );
           };
           rewardedAd?.show(
             onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
@@ -983,6 +1094,8 @@ class AdUtils {
           if (ad != null) {
             adIsShowing = true;
             if (key == AdPosId.open.name || key == AdPosId.behavior.name || key == AdPosId.level_h.name) {
+              loadedAdMap[ad_id]["ad_function"] = adFunction.name;
+              loadedAdMap[ad_id]["ad_sense"] = adSense.name;
               await Get.bottomSheet(
                 FullAdmobNativePage(
                   ad: ad,
@@ -991,7 +1104,8 @@ class AdUtils {
                     setShowTime();
                     await ad.dispose();
                     loadedAdMap.remove(ad.adUnitId);
-                    loadAd(adPosId, adSense: (adSense == AdScene.open_cool || adSense == AdScene.open_first) ? AdScene.open_hot : adSense);
+                    loadAd(adPosId,
+                        adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
                     if (onShow != null) {
                       onShow.onClose!(ad.adUnitId);
                     }
@@ -1475,8 +1589,7 @@ class AdUtils {
         onShow.onShowFail!("", AdError(-1, "", "no ad show"));
       }
       reason = "ad_nocache";
-      // loadAd(adPosId, adSense: adSense);
-      loadAd(adPosId, adSense: (adSense == AdScene.open_cool || adSense == AdScene.open_first) ? AdScene.open_hot : adSense);
+      loadAd(adPosId, adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
     }
     bool isSuc = await isCompleter.future;
     if (!isSuc) {
@@ -1490,6 +1603,7 @@ class AdUtils {
           "ad_pos_id": adPosId.name,
           "ad_sense": adSense.name,
           "reason": reason,
+          "ad_function": adFunction.name,
         },
       );
     }
@@ -1688,7 +1802,7 @@ class AdUtils {
 
 class BannerNativeAdView extends GetView<BannerNativeAdViewController> {
   final AdPosId posId;
-  final AdScene adScene;
+  final AdSense adScene;
   final bool isSmall;
 
   @override
@@ -1707,7 +1821,7 @@ class BannerNativeAdViewController extends GetxController {
   BannerNativeAdViewController(this.adPosId, this.adScene, this.isSmall);
 
   AdPosId adPosId;
-  AdScene adScene;
+  AdSense adScene;
   var isSmall = false;
   var adId = "";
 
@@ -1718,7 +1832,7 @@ class BannerNativeAdViewController extends GetxController {
 
   Ad? admobAd;
 
-  loadAd(AdPosId adPosId, AdScene adSense) async {
+  loadAd(AdPosId adPosId, AdSense adSense) async {
     String key = adPosId.name;
     AppLog.i("开始加载广告位:$key, ${adSense.name}");
 
@@ -1820,6 +1934,7 @@ class BannerNativeAdViewController extends GetxController {
           "ad_pos_id": adPosId.name,
           "ad_sense": adSense.name,
           "reason": "ad_nocache",
+          "ad_function": "",
         },
       );
     }

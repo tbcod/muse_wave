@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_artist.dart';
 import 'package:muse_wave/uinew/main/u_home.dart';
@@ -139,7 +140,7 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
                   if (isLike) {
                     LikeUtil.instance.unlikeArtist(browseId);
                   } else {
-                    LikeUtil.instance.likeArtist(browseId, item);
+                    LikeUtil.instance.likeArtist(browseId, item, adSense: AdSense.search_page);
                   }
                 },
                 child: Image.asset(

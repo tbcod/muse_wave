@@ -99,6 +99,7 @@ class TbaUtils {
     required String ad_pre_ecpm,
     required String currency,
     required String adPosName,
+    required String adFunction,
     // required String precision_type,
     // required String positionKey,
   }) async {
@@ -172,8 +173,8 @@ class TbaUtils {
         "coppery": adPosName, //广告位逻辑编号，例如：page1_bottom, connect_finished
         "victrola": realMoney.toString(),
         "habitant": currency,
-        "tilth": adSense, //广告场景: backplay,enterplay,open,pause,playing,search
-        // "watanabe": precision_type, //google ltvpingback的预估收益类型
+        "tilth": adSense, //广告场景 home
+        "joyride/ad_function": adFunction, //触发广告点，例如：play
       },
       positionKey: adSense,
       // positionKey: positionKey,

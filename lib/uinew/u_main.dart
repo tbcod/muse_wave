@@ -45,7 +45,10 @@ class UserMain extends GetView<UserMainController> {
 
         // 返回桌面逻辑
         AppLog.e("back");
-        AndroidIntent intent = const AndroidIntent(action: 'android.intent.action.MAIN', category: "android.intent.category.HOME", flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
+        AndroidIntent intent = const AndroidIntent(
+            action: 'android.intent.action.MAIN',
+            category: "android.intent.category.HOME",
+            flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
         intent.launch();
         AppLog.e("back1");
 
@@ -84,39 +87,38 @@ class UserMain extends GetView<UserMainController> {
                 selectedItemColor: Color(0xff141414),
                 selectedLabelStyle: TextStyle(color: Color(0xff141414), fontSize: 12.w),
                 unselectedLabelStyle: TextStyle(color: Color(0xffC4C5D5), fontSize: 12.w),
-                items:
-                    controller.bottomList.map((e) {
-                      return BottomNavigationBarItem(
-                        icon: Image.asset(e["icon"].toString(), width: 24.w, height: 24.w),
-                        activeIcon: Image.asset(e["c_icon"].toString(), width: 24.w, height: 24.w),
-                        label: e["name"],
-                      );
-                    }).toList(),
+                items: controller.bottomList.map((e) {
+                  return BottomNavigationBarItem(
+                    icon: Image.asset(e["icon"].toString(), width: 24.w, height: 24.w),
+                    activeIcon: Image.asset(e["c_icon"].toString(), width: 24.w, height: 24.w),
+                    label: e["name"],
+                  );
+                }).toList(),
               ),
             ),
-            Container(alignment: Alignment.center, child: BannerNativeAdView(posId: AdPosId.normalbanner, adScene: AdScene.home, isSmall: true)),
+            Container(
+                alignment: Alignment.center,
+                child: BannerNativeAdView(posId: AdPosId.normalbanner, adScene: AdSense.home, isSmall: true)),
             SizedBox(height: Get.mediaQuery.padding.bottom),
           ],
         ),
-
         body: PlayerBottomBarView(
           child: Container(
             child: Obx(
               () => PageView(
                 controller: controller.pageC,
                 physics: NeverScrollableScrollPhysics(),
-                children:
-                    controller.bottomList.map((e) {
-                      if (e["name"] == "Home".tr) {
-                        return const KeepStateView(child: UserHome());
-                      } else if (e["name"] == "Library".tr) {
-                        return const KeepStateView(child: UserLibrary());
-                      } else if (e["name"] == "Setting".tr) {
-                        return const KeepStateView(child: UserSetting());
-                      } else {
-                        return Container();
-                      }
-                    }).toList(),
+                children: controller.bottomList.map((e) {
+                  if (e["name"] == "Home".tr) {
+                    return const KeepStateView(child: UserHome());
+                  } else if (e["name"] == "Library".tr) {
+                    return const KeepStateView(child: UserLibrary());
+                  } else if (e["name"] == "Setting".tr) {
+                    return const KeepStateView(child: UserSetting());
+                  } else {
+                    return Container();
+                  }
+                }).toList(),
               ),
             ),
           ),
@@ -127,12 +129,11 @@ class UserMain extends GetView<UserMainController> {
 }
 
 class UserMainController extends GetxController {
-  var bottomList =
-      [
-        {"name": "Home".tr, "icon": "assets/img/icon_b_1_off.png", "c_icon": "assets/img/icon_b_1.png"},
-        {"name": "Library".tr, "icon": "assets/oimg/icon_lib_off.png", "c_icon": "assets/oimg/icon_lib_on.png"},
-        {"name": "Setting".tr, "icon": "assets/img/icon_b_2_off.png", "c_icon": "assets/img/icon_b_2.png"},
-      ].obs;
+  var bottomList = [
+    {"name": "Home".tr, "icon": "assets/img/icon_b_1_off.png", "c_icon": "assets/img/icon_b_1.png"},
+    {"name": "Library".tr, "icon": "assets/oimg/icon_lib_off.png", "c_icon": "assets/oimg/icon_lib_on.png"},
+    {"name": "Setting".tr, "icon": "assets/img/icon_b_2_off.png", "c_icon": "assets/img/icon_b_2.png"},
+  ].obs;
 
   var pageC = PageController();
   var nowIndex = 0.obs;
@@ -154,10 +155,14 @@ class UserMainController extends GetxController {
     initData();
 
     //预加载广告
-    AdUtils.instance.loadAd(AdPosId.behavior, adFirstType: AdFirstType.int_main_first, adSense: AdScene.play, forceLocalJson: bus.isFirstAppLaunch);
+    AdUtils.instance.loadAd(
+      AdPosId.behavior,
+      adFirstType: AdFirstType.int_main_first,
+      adSense: AdSense.play_page,
+      forceLocalJson: bus.isFirstAppLaunch);
 
-
-    StreamSubscription<List<ConnectivityResult>> subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
+    StreamSubscription<List<ConnectivityResult>> subscription =
+        Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
       AppLog.i("网络变化 onConnectivityChanged:$result");
 
       //网络变化
@@ -195,10 +200,9 @@ class UserMainController extends GetxController {
         if (lastResult == ConnectivityResult.mobile || lastResult == ConnectivityResult.wifi) {
           //获取是否有正在下载的数据
           var oldList = DownloadUtils.instance.allDownLoadingData.values;
-          var downloadingList =
-              oldList.where((e) {
-                return e["state"] != 2;
-              }).toList();
+          var downloadingList = oldList.where((e) {
+            return e["state"] != 2;
+          }).toList();
 
           if (downloadingList.isNotEmpty) {
             ToastUtil.showToast(msg: "noNetworkStr1".tr);
@@ -261,11 +265,10 @@ class UserMainController extends GetxController {
     await HistoryUtil.instance.initData();
 
     await Get.find<Application>().initLocPush();
-    if(!Get.find<Application>().isInitMessage){
+    if (!Get.find<Application>().isInitMessage) {
       await Get.find<Application>().initNetPush();
       NativeUtils.instance.startSearchNotificationBar();
     }
-
 
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.local);

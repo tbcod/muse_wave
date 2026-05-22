@@ -128,7 +128,7 @@ class UserSearchController extends GetxController with StateMixin {
     //保存搜索历史记录
     saveHistory(str);
 
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.search);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.search_page, adFunction: AdFunction.search);
 
     if (Get.find<Application>().typeSo == "yt") {
       //youtube的搜索

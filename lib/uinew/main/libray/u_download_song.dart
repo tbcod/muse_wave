@@ -248,7 +248,7 @@ class UserDownloadSongController extends GetxController {
   @override
   onReady() {
     super.onReady();
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.detail);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.playlist_page, adFunction: AdFunction.detail);
   }
 
   bindData() {

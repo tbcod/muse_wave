@@ -42,7 +42,6 @@ class LaunchPageController extends GetxController {
     _requestCloak();
   }
 
-
   @override
   void onReady() async {
     AppLog.i("App开始加载");
@@ -80,7 +79,6 @@ class LaunchPageController extends GetxController {
       }
     }
   }
-
 
   Future _requestCloak() async {
     if (isB) {
@@ -120,7 +118,7 @@ class LaunchPageController extends GetxController {
     await AdUtils.instance.loadAd(
       AdPosId.open,
       adFirstType: AdFirstType.launch_first,
-      adSense: bus.isFirstAppLaunch ? AdScene.open_first : AdScene.open_cool,
+      adSense: bus.isFirstAppLaunch ? AdSense.first : AdSense.cold,
       forceLocalJson: bus.isFirstAppLaunch,
     );
 
@@ -164,12 +162,13 @@ class LaunchPageController extends GetxController {
     } else {
       if (bus.isFirstAppLaunch && !RemoteUtil.shareInstance.isShowOpenAd) {
         AppLog.i("首次启动不开启开屏广告，启动次数：${bus.getAppLaunchCount}, isShowOpenAd：${RemoteUtil.shareInstance.isShowOpenAd}");
-      }else{
+      } else {
         AppLog.i("准备展示开屏广告(B展示open)");
         await AdUtils.instance.showAd(
           AdPosId.open,
-          adSense: bus.isFirstAppLaunch ? AdScene.open_first : AdScene.open_cool,
+          adSense: bus.isFirstAppLaunch ? AdSense.first : AdSense.cold,
           forceLocalJson: bus.isFirstAppLaunch,
+          adFunction: AdFunction.unknown,
         );
       }
     }
@@ -199,7 +198,8 @@ class LaunchPageController extends GetxController {
     } else {
       Get.off(const MainPage(), routeName: "/MainPage");
     }
-    EventUtils.instance.addEvent("home_sh", data: {"en_time": bus.getTimeDiffNow(bus.appLaunchTime), "mode": isB ? "B" : "A"});
+    EventUtils.instance
+        .addEvent("home_sh", data: {"en_time": bus.getTimeDiffNow(bus.appLaunchTime), "mode": isB ? "B" : "A"});
     EventUtils.instance.addEvent("open_click");
   }
 }

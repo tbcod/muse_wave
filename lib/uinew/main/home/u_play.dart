@@ -91,7 +91,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                     actions: [
                       IconButton(
                         onPressed: () {
-                          MoreSheetUtil.instance.showVideoMoreSheet(controller.nowData, isPlayPage: true, clickType: "play");
+                          MoreSheetUtil.instance
+                              .showVideoMoreSheet(controller.nowData, isPlayPage: true, clickType: "play");
                         },
                         icon: Image.asset("assets/oimg/icon_play_more.png", width: 24.w, height: 24.w),
                       ),
@@ -124,7 +125,9 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                         height: double.infinity,
                                         alignment: Alignment.center,
                                         //设置最高高度
-                                        child: AspectRatio(aspectRatio: controller.videoAspectRatio, child: VideoPlayer(controller.player!)),
+                                        child: AspectRatio(
+                                            aspectRatio: controller.videoAspectRatio,
+                                            child: VideoPlayer(controller.player!)),
                                       );
                                     }
                                     return SizedBox(
@@ -151,11 +154,13 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                 // if (!Get.isRegistered<UserMainController>() ||
                                 //     (Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1))
                                 Obx(() {
-                                  if ((Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1)) {
+                                  if ((Get.isRegistered<UserMainController>() &&
+                                      Get.find<UserMainController>().nowIndex.value != 1)) {
                                     return Positioned.fill(
                                       child: Container(
                                         alignment: Alignment.center,
-                                        child: BannerNativeAdView(posId: AdPosId.pagebanner, adScene: AdScene.play),
+                                        child:
+                                            BannerNativeAdView(posId: AdPosId.pagebanner, adScene: AdSense.play_page),
                                       ),
                                     );
                                   }
@@ -214,12 +219,15 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                             width: 32.w,
                             height: 32.w,
                             child: Obx(
-                              () => Image.asset(controller.singleLoop.value ? "assets/oimg/icon_loop_on.png" : "assets/oimg/icon_loop_off.png"),
+                              () => Image.asset(controller.singleLoop.value
+                                  ? "assets/oimg/icon_loop_on.png"
+                                  : "assets/oimg/icon_loop_off.png"),
                             ),
                           ),
                           onTap: () {
                             EventUtils.instance.addEvent("play_page_click", data: {"click": "single"});
-                            AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
+                            AdUtils.instance
+                                .showAd(AdPosId.behavior, adSense: AdSense.play_page, adFunction: AdFunction.play);
                             controller.singleLoop.toggle();
                           },
                         ),
@@ -229,7 +237,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                             child: Container(
                               width: 32.w,
                               height: 32.w,
-                              child: Image.asset("assets/oimg/icon_last.png", color: controller.canLast.value ? Colors.black : Colors.grey),
+                              child: Image.asset("assets/oimg/icon_last.png",
+                                  color: controller.canLast.value ? Colors.black : Colors.grey),
                             ),
                             onTap: () {
                               if (!controller.canLast.value) {
@@ -257,65 +266,67 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                         ),
                         SizedBox(width: 35.w),
                         Obx(
-                          () =>
-                              controller.isLoaded.value
-                                  ? Obx(
-                                    () => InkWell(
-                                      child: Container(
-                                        width: 48.w,
-                                        height: 48.w,
-                                        child: Image.asset(controller.isPlaying.value ? "assets/img/icon_p_pause.png" : "assets/img/icon_p_play.png"),
-                                      ),
-                                      onTap: () async {
-                                        if (controller.player == null || (!controller.player!.value.isInitialized)) {
-                                          //加载视频
-                                          controller.realPlay(controller.nowIndex);
-
-                                          return;
-                                        }
-                                        AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
-
-                                        if (controller.isPlaying.value) {
-                                          controller.player?.pause();
-                                        } else {
-
-                                          controller.player?.play();
-
-                                          EventUtils.instance.addEvent(
-                                            "play_num",
-                                            data: {
-                                              "song_id": controller.nowData["videoId"],
-                                              "song_name": controller.nowData["title"],
-                                              "artist_name": controller.nowData["subtitle"],
-                                              "playlist_id": controller.playlistId,
-                                            },
-                                          );
-                                          EventUtils.instance.addEvent(
-                                            "play_click",
-                                            data: {
-                                              "song_id": controller.nowData["videoId"],
-                                              "song_name": controller.nowData["title"],
-                                              "artist_name": controller.nowData["subtitle"],
-                                              "playlist_id": controller.playlistId,
-                                              "station": "play_center",
-                                            },
-                                          );
-
-                                          EventUtils.instance.addEvent("play_succ", data: {"song_id": controller.nowData["videoId"]});
-                                        }
-
-                                        EventUtils.instance.addEvent("play_page_click", data: {"click": "pause"});
-
-                                        controller.isPlaying.toggle();
-                                      },
+                          () => controller.isLoaded.value
+                              ? Obx(
+                                  () => InkWell(
+                                    child: Container(
+                                      width: 48.w,
+                                      height: 48.w,
+                                      child: Image.asset(controller.isPlaying.value
+                                          ? "assets/img/icon_p_pause.png"
+                                          : "assets/img/icon_p_play.png"),
                                     ),
-                                  )
-                                  : Container(
-                                    padding: EdgeInsets.all(8),
-                                    width: 48.w,
-                                    height: 48.w,
-                                    child: CircularProgressIndicator(strokeWidth: 2.5),
+                                    onTap: () async {
+                                      if (controller.player == null || (!controller.player!.value.isInitialized)) {
+                                        //加载视频
+                                        controller.realPlay(controller.nowIndex);
+
+                                        return;
+                                      }
+                                      AdUtils.instance.showAd(AdPosId.behavior,
+                                          adSense: AdSense.play_page, adFunction: AdFunction.play);
+
+                                      if (controller.isPlaying.value) {
+                                        controller.player?.pause();
+                                      } else {
+                                        controller.player?.play();
+
+                                        EventUtils.instance.addEvent(
+                                          "play_num",
+                                          data: {
+                                            "song_id": controller.nowData["videoId"],
+                                            "song_name": controller.nowData["title"],
+                                            "artist_name": controller.nowData["subtitle"],
+                                            "playlist_id": controller.playlistId,
+                                          },
+                                        );
+                                        EventUtils.instance.addEvent(
+                                          "play_click",
+                                          data: {
+                                            "song_id": controller.nowData["videoId"],
+                                            "song_name": controller.nowData["title"],
+                                            "artist_name": controller.nowData["subtitle"],
+                                            "playlist_id": controller.playlistId,
+                                            "station": "play_center",
+                                          },
+                                        );
+
+                                        EventUtils.instance
+                                            .addEvent("play_succ", data: {"song_id": controller.nowData["videoId"]});
+                                      }
+
+                                      EventUtils.instance.addEvent("play_page_click", data: {"click": "pause"});
+
+                                      controller.isPlaying.toggle();
+                                    },
                                   ),
+                                )
+                              : Container(
+                                  padding: EdgeInsets.all(8),
+                                  width: 48.w,
+                                  height: 48.w,
+                                  child: CircularProgressIndicator(strokeWidth: 2.5),
+                                ),
                         ),
                         SizedBox(width: 35.w),
                         Obx(() {
@@ -323,7 +334,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                             child: Container(
                               width: 32.w,
                               height: 32.w,
-                              child: Image.asset("assets/oimg/icon_next.png", color: controller.canNext.value ? Colors.black : Colors.grey),
+                              child: Image.asset("assets/oimg/icon_next.png",
+                                  color: controller.canNext.value ? Colors.black : Colors.grey),
                             ),
                             onTap: () {
                               if (!controller.canNext.value) {
@@ -353,7 +365,9 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                             width: 32.w,
                             height: 32.w,
                             child: Obx(
-                              () => Image.asset(controller.isShuffle.value ? "assets/oimg/icon_shuffle_on.png" : "assets/oimg/icon_shuffle.png"),
+                              () => Image.asset(controller.isShuffle.value
+                                  ? "assets/oimg/icon_shuffle_on.png"
+                                  : "assets/oimg/icon_shuffle.png"),
                             ),
                           ),
                           onTap: () {
@@ -362,7 +376,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
 
                             //已经重新设置播放列表
                             // ToastUtil.showToast(msg: "The playlist has been reset");
-                            AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
+                            AdUtils.instance
+                                .showAd(AdPosId.behavior, adSense: AdSense.play_page, adFunction: AdFunction.play);
                             EventUtils.instance.addEvent("play_page_click", data: {"click": "shuffle"});
                           },
                         ),
@@ -423,9 +438,11 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                             padding: EdgeInsets.symmetric(horizontal: 5.w),
                             child: Row(
                               children: [
-                                Text(controller.playTime.value, style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
+                                Text(controller.playTime.value,
+                                    style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
                                 Spacer(),
-                                Text(controller.maxTime.value, style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
+                                Text(controller.maxTime.value,
+                                    style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
                               ],
                             ),
                           ),
@@ -527,10 +544,13 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                               if (isLike) {
                                 LikeUtil.instance.unlikeVideo(videoId);
                               } else {
-                                LikeUtil.instance.likeVideo(videoId, controller.nowData);
+                                LikeUtil.instance.likeVideo(videoId, controller.nowData, adSense: AdSense.play_page);
                               }
                             },
-                            child: Image.asset(isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off.png", width: 32.w, height: 32.w),
+                            child: Image.asset(
+                                isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off.png",
+                                width: 32.w,
+                                height: 32.w),
                           );
                         }),
                       ],
@@ -547,144 +567,148 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
         //下载引导
         Positioned.fill(
           child: Obx(
-            () =>
-                controller.isShowDownloadGuide.value
-                    ? GestureDetector(
-                      onTap: () async {
-                        var sp = await SharedPreferences.getInstance();
-                        await sp.setBool("IsShowDownloadGuide", true);
-                        controller.isShowDownloadGuide.value = false;
-                      },
-                      child: Container(
-                        color: Colors.black.withOpacity(0.65),
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              right: 102.w + 10.w,
-                              bottom: Get.mediaQuery.padding.bottom + 30.w - 20.w,
-                              child: Column(
-                                children: [
-                                  //链接线
-                                  Container(
-                                    width: 8.w,
-                                    height: 8.w,
-                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w), color: Color(0xff9279FE)),
-                                  ),
-                                  Container(
-                                    width: 4.w,
-                                    height: 60.w,
-                                    // color: Colors.red,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [Color(0xff9279FE), Color(0xff9279FE).withOpacity(0)],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                      ),
+            () => controller.isShowDownloadGuide.value
+                ? GestureDetector(
+                    onTap: () async {
+                      var sp = await SharedPreferences.getInstance();
+                      await sp.setBool("IsShowDownloadGuide", true);
+                      controller.isShowDownloadGuide.value = false;
+                    },
+                    child: Container(
+                      color: Colors.black.withOpacity(0.65),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            right: 102.w + 10.w,
+                            bottom: Get.mediaQuery.padding.bottom + 30.w - 20.w,
+                            child: Column(
+                              children: [
+                                //链接线
+                                Container(
+                                  width: 8.w,
+                                  height: 8.w,
+                                  decoration:
+                                      BoxDecoration(borderRadius: BorderRadius.circular(4.w), color: Color(0xff9279FE)),
+                                ),
+                                Container(
+                                  width: 4.w,
+                                  height: 60.w,
+                                  // color: Colors.red,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Color(0xff9279FE), Color(0xff9279FE).withOpacity(0)],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
                                     ),
                                   ),
-                                  //下载按钮
-                                  Container(
-                                    width: 72.w,
-                                    height: 72.w,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(color: Color(0xff876CFF), width: 2.w),
-                                      borderRadius: BorderRadius.circular(36.w),
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Obx(() {
-                                      //获取下载状态
-                                      var videoId = controller.nowData["videoId"];
+                                ),
+                                //下载按钮
+                                Container(
+                                  width: 72.w,
+                                  height: 72.w,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(color: Color(0xff876CFF), width: 2.w),
+                                    borderRadius: BorderRadius.circular(36.w),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Obx(() {
+                                    //获取下载状态
+                                    var videoId = controller.nowData["videoId"];
 
-                                      if (DownloadUtils.instance.allDownLoadingData.containsKey(videoId)) {
-                                        //有添加过下载
-                                        var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
-                                        double progress = DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
+                                    if (DownloadUtils.instance.allDownLoadingData.containsKey(videoId)) {
+                                      //有添加过下载
+                                      var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
+                                      double progress = DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
 
-                                        // AppLog.e(
-                                        //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");
+                                      // AppLog.e(
+                                      //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");
 
-                                        if (state == 0) {
-                                          return InkWell(
-                                            onTap: () async {
-                                              var sp = await SharedPreferences.getInstance();
-                                              await sp.setBool("IsShowDownloadGuide", true);
-                                              controller.isShowDownloadGuide.value = false;
+                                      if (state == 0) {
+                                        return InkWell(
+                                          onTap: () async {
+                                            var sp = await SharedPreferences.getInstance();
+                                            await sp.setBool("IsShowDownloadGuide", true);
+                                            controller.isShowDownloadGuide.value = false;
 
-                                              EventUtils.instance.addEvent("play_page_click", data: {"click": "offline"});
+                                            EventUtils.instance.addEvent("play_page_click", data: {"click": "offline"});
 
-                                              controller.downloadFile();
-                                            },
-                                            child: Image.asset("assets/oimg/icon_download_black.png", width: 32.w, height: 32.w),
-                                          );
-                                        } else if (state == 1 || state == 3) {
-                                          //下载中\下载暂停
-                                          return InkWell(
-                                            onTap: () async {
-                                              var sp = await SharedPreferences.getInstance();
-                                              await sp.setBool("IsShowDownloadGuide", true);
-                                              controller.isShowDownloadGuide.value = false;
-                                              controller.removeDownload(state);
-                                            },
-                                            child: Container(
-                                              width: 32.w,
-                                              height: 32.w,
-                                              padding: EdgeInsets.all(3.w),
-                                              child: CircularProgressIndicator(
-                                                value: progress,
-                                                strokeWidth: 2,
-                                                backgroundColor: Color(0xffA995FF).withOpacity(0.35),
-                                                color: Color(0xffA995FF),
-                                              ),
+                                            controller.downloadFile();
+                                          },
+                                          child: Image.asset("assets/oimg/icon_download_black.png",
+                                              width: 32.w, height: 32.w),
+                                        );
+                                      } else if (state == 1 || state == 3) {
+                                        //下载中\下载暂停
+                                        return InkWell(
+                                          onTap: () async {
+                                            var sp = await SharedPreferences.getInstance();
+                                            await sp.setBool("IsShowDownloadGuide", true);
+                                            controller.isShowDownloadGuide.value = false;
+                                            controller.removeDownload(state);
+                                          },
+                                          child: Container(
+                                            width: 32.w,
+                                            height: 32.w,
+                                            padding: EdgeInsets.all(3.w),
+                                            child: CircularProgressIndicator(
+                                              value: progress,
+                                              strokeWidth: 2,
+                                              backgroundColor: Color(0xffA995FF).withOpacity(0.35),
+                                              color: Color(0xffA995FF),
                                             ),
-                                          );
-                                        } else if (state == 2) {
-                                          return InkWell(
-                                            onTap: () async {
-                                              var sp = await SharedPreferences.getInstance();
-                                              await sp.setBool("IsShowDownloadGuide", true);
-                                              controller.isShowDownloadGuide.value = false;
-                                              controller.removeDownload(state);
-                                            },
-                                            child: Image.asset("assets/oimg/icon_download_ok.png", width: 32.w, height: 32.w),
-                                          );
-                                        }
+                                          ),
+                                        );
+                                      } else if (state == 2) {
+                                        return InkWell(
+                                          onTap: () async {
+                                            var sp = await SharedPreferences.getInstance();
+                                            await sp.setBool("IsShowDownloadGuide", true);
+                                            controller.isShowDownloadGuide.value = false;
+                                            controller.removeDownload(state);
+                                          },
+                                          child: Image.asset("assets/oimg/icon_download_ok.png",
+                                              width: 32.w, height: 32.w),
+                                        );
                                       }
+                                    }
 
-                                      return InkWell(
-                                        onTap: () async {
-                                          var sp = await SharedPreferences.getInstance();
-                                          await sp.setBool("IsShowDownloadGuide", true);
-                                          controller.isShowDownloadGuide.value = false;
-                                          EventUtils.instance.addEvent("play_page_click", data: {"click": "offline"});
-                                          controller.downloadFile();
-                                        },
-                                        child: Image.asset("assets/oimg/icon_download_black.png", width: 32.w, height: 32.w),
-                                      );
-                                    }),
-                                  ),
-                                ],
-                              ),
+                                    return InkWell(
+                                      onTap: () async {
+                                        var sp = await SharedPreferences.getInstance();
+                                        await sp.setBool("IsShowDownloadGuide", true);
+                                        controller.isShowDownloadGuide.value = false;
+                                        EventUtils.instance.addEvent("play_page_click", data: {"click": "offline"});
+                                        controller.downloadFile();
+                                      },
+                                      child:
+                                          Image.asset("assets/oimg/icon_download_black.png", width: 32.w, height: 32.w),
+                                    );
+                                  }),
+                                ),
+                              ],
                             ),
+                          ),
 
-                            //上方描述
-                            Positioned(
-                              right: 26.w,
-                              bottom: Get.mediaQuery.padding.bottom + 10.w + 72.w + 72.w,
-                              child: Container(
-                                width: 240.w,
-                                height: 72.w,
-                                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                decoration: BoxDecoration(image: DecorationImage(image: AssetImage(Assets.oimgImgDownloadGuide))),
-                                alignment: Alignment.center,
-                                child: Text("downloadGuideStr".tr, style: TextStyle(fontSize: 14.w, height: 20 / 14)),
-                              ),
+                          //上方描述
+                          Positioned(
+                            right: 26.w,
+                            bottom: Get.mediaQuery.padding.bottom + 10.w + 72.w + 72.w,
+                            child: Container(
+                              width: 240.w,
+                              height: 72.w,
+                              padding: EdgeInsets.symmetric(horizontal: 20.w),
+                              decoration:
+                                  BoxDecoration(image: DecorationImage(image: AssetImage(Assets.oimgImgDownloadGuide))),
+                              alignment: Alignment.center,
+                              child: Text("downloadGuideStr".tr, style: TextStyle(fontSize: 14.w, height: 20 / 14)),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    )
-                    : Container(),
+                    ),
+                  )
+                : Container(),
           ),
         ),
       ],
@@ -812,7 +836,7 @@ class UserPlayInfoController extends GetxController {
       // AppLog.e('Devices removed: ${event.devicesRemoved}');
       if (event.devicesRemoved.isNotEmpty) {
         //设备移除暂停
-        if(Get.isRegistered<UserPlayInfoController>()){
+        if (Get.isRegistered<UserPlayInfoController>()) {
           final controller = Get.find<UserPlayInfoController>();
           controller.isPlaying.value = false;
         }
@@ -820,7 +844,7 @@ class UserPlayInfoController extends GetxController {
       }
     });
 
-    try{
+    try {
       myHandler = await AudioService.init(
         builder: () => MyVideoHandler(),
         config: AudioServiceConfig(
@@ -831,10 +855,9 @@ class UserPlayInfoController extends GetxController {
           androidNotificationIcon: "drawable/ic_launcher_foreground",
         ),
       );
-    }catch(e){
+    } catch (e) {
       AppLog.e("AudioService init error:$e");
     }
-
 
     checkShowDownloadGuide();
 
@@ -1043,7 +1066,8 @@ class UserPlayInfoController extends GetxController {
   }
 
   ///  loadNextData. 范围：搜索结果、首页单曲推荐（包括MV）、音乐人 video 模块、（音乐人主页热门歌曲，为热门歌曲【更多内容】为歌单）
-  setDataAndPlayItem(List list, Map item, {required String clickType, bool loadNextData = false, String pid = ""}) async {
+  setDataAndPlayItem(List list, Map item,
+      {required String clickType, bool loadNextData = false, String pid = ""}) async {
     if (player != null) {
       player?.dispose();
       player = null;
@@ -1112,17 +1136,20 @@ class UserPlayInfoController extends GetxController {
         List oldList = [];
 
         try {
-          oldList = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["results"] ?? [];
-          moreContinuation =
-              result
-                  .data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["continuations"][0]["nextContinuationData"]["continuation"] ??
+          oldList = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]
+                  ["results"] ??
+              [];
+          moreContinuation = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]
+                  ["secondaryResults"]["continuations"][0]["nextContinuationData"]["continuation"] ??
               "";
         } catch (e, s) {
           moreContinuation = "";
 
-          Map r1 = result.data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["results"].last;
+          Map r1 = result
+              .data["contents"]["twoColumnWatchNextResults"]["secondaryResults"]["secondaryResults"]["results"].last;
 
-          moreContinuation = r1["continuationItemRenderer"]?["continuationEndpoint"]?["continuationCommand"]?["token"] ?? "";
+          moreContinuation =
+              r1["continuationItemRenderer"]?["continuationEndpoint"]?["continuationCommand"]?["token"] ?? "";
 
           // AppLog.e("$e,$s");
         }
@@ -1135,20 +1162,23 @@ class UserPlayInfoController extends GetxController {
             String subtitle = itemMap["compactVideoRenderer"]["longBylineText"]["runs"][0]["text"];
             String videoId = itemMap["compactVideoRenderer"]["videoId"] ?? "";
 
-            playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
+            playList
+                .add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
           } else if (itemMap.containsKey("lockupViewModel")) {
             //歌曲
             String? videoId = itemMap["lockupViewModel"]["contentId"];
             if (videoId == null) continue;
-            String? cover = itemMap["lockupViewModel"]["contentImage"]?["thumbnailViewModel"]?["image"]?["sources"].last["url"];
-            cover ??=
-                itemMap["lockupViewModel"]["contentImage"]?["collectionThumbnailViewModel"]?["primaryThumbnail"]?["thumbnailViewModel"]?["image"]?["sources"]
-                    .last["url"];
+            String? cover =
+                itemMap["lockupViewModel"]["contentImage"]?["thumbnailViewModel"]?["image"]?["sources"].last["url"];
+            cover ??= itemMap["lockupViewModel"]["contentImage"]?["collectionThumbnailViewModel"]?["primaryThumbnail"]
+                    ?["thumbnailViewModel"]?["image"]?["sources"]
+                .last["url"];
             String? title = itemMap["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]?["title"]?["content"];
-            String? subtitle =
-                itemMap["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]["metadata"]["contentMetadataViewModel"]["metadataRows"][0]["metadataParts"][0]["text"]["content"];
+            String? subtitle = itemMap["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]["metadata"]
+                ["contentMetadataViewModel"]["metadataRows"][0]["metadataParts"][0]["text"]["content"];
 
-            playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
+            playList
+                .add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
           }
         }
 
@@ -1165,9 +1195,9 @@ class UserPlayInfoController extends GetxController {
     if (result.code == HttpCode.success) {
       List oldList = [];
       try {
-        oldList =
-            result
-                .data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"] ??
+        oldList = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]
+                    ["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]
+                ["content"]["playlistPanelRenderer"]["contents"] ??
             [];
       } catch (e) {
         AppLog.e("解析相似歌曲失败，$e");
@@ -1182,7 +1212,8 @@ class UserPlayInfoController extends GetxController {
             String subtitle = itemMap["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["text"];
             String videoId = itemMap["playlistPanelVideoRenderer"]["videoId"] ?? "";
             if (videoId.isNotEmpty && title.isNotEmpty) {
-              playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likemusic", "videoId": videoId});
+              playList
+                  .add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likemusic", "videoId": videoId});
             }
           } catch (e) {
             AppLog.e("解析相似歌曲失败，$e");
@@ -1206,13 +1237,15 @@ class UserPlayInfoController extends GetxController {
       return;
     }
 
-    var result = await ApiMain.instance.getVideoNext(nowData["videoId"], isMoreVideo: true, continuation: moreContinuation);
+    var result =
+        await ApiMain.instance.getVideoNext(nowData["videoId"], isMoreVideo: true, continuation: moreContinuation);
     if (result.code == HttpCode.success) {
       List oldList = result.data["continuationContents"]["playlistPanelContinuation"]["contents"] ?? [];
 
       try {
-        moreContinuation =
-            result.data["continuationContents"]["playlistPanelContinuation"]["continuations"][0]["nextRadioContinuationData"]["continuation"] ?? "";
+        moreContinuation = result.data["continuationContents"]["playlistPanelContinuation"]["continuations"][0]
+                ["nextRadioContinuationData"]["continuation"] ??
+            "";
       } catch (e) {
         print(e);
         moreContinuation = "";
@@ -1248,10 +1281,12 @@ class UserPlayInfoController extends GetxController {
     if (result.code == HttpCode.success) {
       //解析数据
 
-      List oldList = result.data["onResponseReceivedEndpoints"][0]["appendContinuationItemsAction"]["continuationItems"] ?? [];
+      List oldList =
+          result.data["onResponseReceivedEndpoints"][0]["appendContinuationItemsAction"]["continuationItems"] ?? [];
 
       try {
-        moreContinuation = oldList.last["continuationItemRenderer"]?["continuationEndpoint"]?["continuationCommand"]?["token"] ?? "";
+        moreContinuation =
+            oldList.last["continuationItemRenderer"]?["continuationEndpoint"]?["continuationCommand"]?["token"] ?? "";
       } catch (e) {
         moreContinuation = "";
         print(e);
@@ -1265,7 +1300,8 @@ class UserPlayInfoController extends GetxController {
           String subtitle = itemMap["compactVideoRenderer"]["longBylineText"]["runs"][0]["text"];
           String videoId = itemMap["compactVideoRenderer"]["videoId"] ?? "";
 
-          playList.add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
+          playList
+              .add({"title": title, "subtitle": subtitle, "cover": cover, "type": "likevideos", "videoId": videoId});
         }
       }
 
@@ -1314,7 +1350,7 @@ class UserPlayInfoController extends GetxController {
     }
 
     if (!isAutoNext && !isOpenShowBar) {
-      AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
+      AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.play_page, adFunction: AdFunction.play);
       Future.delayed(Duration(milliseconds: 500)).then((_) {
         //延迟后显示好评引导
         MyDialogUtils.instance.showRateDialog();
@@ -1343,7 +1379,11 @@ class UserPlayInfoController extends GetxController {
     isPlaying.value = false;
 
     //更新播放
-    var item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: Duration.zero, artUri: Uri.parse(nowData["cover"] ?? ""));
+    var item = MediaItem(
+        id: nowData["videoId"],
+        title: nowData["title"],
+        duration: Duration.zero,
+        artUri: Uri.parse(nowData["cover"] ?? ""));
     myHandler?.showItem(item);
     myHandler?._updateState(isLoading: true);
 
@@ -1381,7 +1421,8 @@ class UserPlayInfoController extends GetxController {
           player?.removeListener(playListener);
           player?.dispose();
         }
-        player = VideoPlayerController.file(File(cachePath), videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
+        player = VideoPlayerController.file(File(cachePath),
+            videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
       } else {
         //请求播放数据
 
@@ -1405,7 +1446,8 @@ class UserPlayInfoController extends GetxController {
           if (lasthttpvideoId == nowData["videoId"]) {
             //判断是否无网络
             final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
-            hasNetwork = connectivityResult.contains(ConnectivityResult.wifi) || connectivityResult.contains(ConnectivityResult.mobile);
+            hasNetwork = connectivityResult.contains(ConnectivityResult.wifi) ||
+                connectivityResult.contains(ConnectivityResult.mobile);
 
             EventUtils.instance.addEvent(
               "play_num",
@@ -1495,7 +1537,8 @@ class UserPlayInfoController extends GetxController {
           player?.removeListener(playListener);
           player?.dispose();
         }
-        player = VideoPlayerController.networkUrl(Uri.parse(nowPlayUrl), videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
+        player = VideoPlayerController.networkUrl(Uri.parse(nowPlayUrl),
+            videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
       }
     } else {
       AppLog.i("播放下载歌曲$downloadPath");
@@ -1504,7 +1547,8 @@ class UserPlayInfoController extends GetxController {
         player?.removeListener(playListener);
         player?.dispose();
       }
-      player = VideoPlayerController.file(File(downloadPath), videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
+      player = VideoPlayerController.file(File(downloadPath),
+          videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
     }
 
     // await player?.initialize();
@@ -1552,7 +1596,11 @@ class UserPlayInfoController extends GetxController {
     saveBarData();
 
     //更新播放
-    item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: player?.value.duration, artUri: Uri.parse(nowData["cover"] ?? ""));
+    item = MediaItem(
+        id: nowData["videoId"],
+        title: nowData["title"],
+        duration: player?.value.duration,
+        artUri: Uri.parse(nowData["cover"] ?? ""));
     myHandler?.showItem(item);
 
     if (isOpenShowBar) {
@@ -1623,7 +1671,8 @@ class UserPlayInfoController extends GetxController {
     }
 
     //更新通知栏进度
-    var item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: maxD, artUri: Uri.parse(nowData["cover"] ?? ""));
+    var item = MediaItem(
+        id: nowData["videoId"], title: nowData["title"], duration: maxD, artUri: Uri.parse(nowData["cover"] ?? ""));
     myHandler?.showItem(item);
 
     myHandler?._updateState();
@@ -1807,7 +1856,8 @@ class UserPlayInfoController extends GetxController {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           children: [
@@ -1836,7 +1886,11 @@ class UserPlayInfoController extends GetxController {
                 height: 72.w,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Row(
-                  children: [Image.asset("assets/oimg/icon_add.png", width: 56.w, height: 56.w), SizedBox(width: 22.w), Text("New list".tr)],
+                  children: [
+                    Image.asset("assets/oimg/icon_add.png", width: 56.w, height: 56.w),
+                    SizedBox(width: 22.w),
+                    Text("New list".tr)
+                  ],
                 ),
               ),
             ),
@@ -1870,7 +1924,8 @@ class UserPlayInfoController extends GetxController {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1911,7 +1966,8 @@ class UserPlayInfoController extends GetxController {
                           borderRadius: BorderRadius.circular(24.w),
                           border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w),
                         ),
-                        child: Text("Cancel".tr, style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75))),
+                        child: Text("Cancel".tr,
+                            style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75))),
                       ),
                     ),
                   ),
@@ -1943,7 +1999,8 @@ class UserPlayInfoController extends GetxController {
                       child: Container(
                         height: 48.w,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(color: Color(0xff824EFF).withOpacity(0.5), borderRadius: BorderRadius.circular(24.w)),
+                        decoration: BoxDecoration(
+                            color: Color(0xff824EFF).withOpacity(0.5), borderRadius: BorderRadius.circular(24.w)),
                         child: Text("Confirm".tr, style: TextStyle(fontSize: 14.w, color: Colors.white)),
                       ),
                     ),
@@ -1971,7 +2028,8 @@ class UserPlayInfoController extends GetxController {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           children: [
@@ -1979,7 +2037,8 @@ class UserPlayInfoController extends GetxController {
               margin: EdgeInsets.symmetric(horizontal: 16.w),
               child: Row(
                 children: [
-                  Obx(() => Text("${"Playlist".tr}（${playList.length}）", style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.w500))),
+                  Obx(() => Text("${"Playlist".tr}（${playList.length}）",
+                      style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.w500))),
                   // Spacer(),
                   // IconButton(
                   //     onPressed: () {
@@ -2110,12 +2169,11 @@ class UserPlayInfoController extends GetxController {
                       height: 54.w,
                       clipBehavior: Clip.hardEdge,
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.w)),
-                      child:
-                          item["cover"] == null
-                              ?
-                              //默认封面
-                              Image.asset("assets/oimg/icon_d_item.png")
-                              : NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
+                      child: item["cover"] == null
+                          ?
+                          //默认封面
+                          Image.asset("assets/oimg/icon_d_item.png")
+                          : NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
                     ),
                   ),
                 ],
@@ -2127,9 +2185,13 @@ class UserPlayInfoController extends GetxController {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(item["title"], maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
+                  Text(item["title"],
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
                   SizedBox(height: 12.w),
-                  Text("${childList.length} songs", style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5))),
+                  Text("${childList.length} songs",
+                      style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5))),
                 ],
               ),
             ),
@@ -2208,7 +2270,8 @@ class UserPlayInfoController extends GetxController {
                         item["subtitle"],
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 12.w, color: isCheck ? Color(0xff8569FF) : Colors.black.withOpacity(0.75)),
+                        style: TextStyle(
+                            fontSize: 12.w, color: isCheck ? Color(0xff8569FF) : Colors.black.withOpacity(0.75)),
                       ),
                     ],
                   ),
@@ -2231,7 +2294,7 @@ class UserPlayInfoController extends GetxController {
   }
 
   downloadFile() async {
-    DownloadUtils.instance.download(nowData["videoId"], nowData, clickType: "play");
+    DownloadUtils.instance.download(nowData["videoId"], nowData, clickType: "play", adSense: AdSense.play_page);
   }
 
   removeDownload(int state) async {
@@ -2494,4 +2557,3 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     );
   }
 }
-

@@ -534,11 +534,11 @@ class MyAppController extends SuperController {
         if (bus.isBMode) {
           EventUtils.instance.addEvent("enter_home", data: {"source": "b"});
           EventUtils.instance.addEvent("home_source");
-          AdUtils.instance.showAd(AdPosId.open, adSense: AdScene.open_hot);
+          AdUtils.instance.showAd(AdPosId.open, adSense: AdSense.hot, adFunction: AdFunction.unknown);
         } else {
           EventUtils.instance.addEvent("enter_home", data: {"source": "a"});
           EventUtils.instance.addEvent("home_no");
-          AdUtils.instance.showAd(AdPosId.muse_local_int, adSense: AdScene.open_hot, forceLocalJson: true);
+          AdUtils.instance.showAd(AdPosId.muse_local_int, adSense: AdSense.hot, forceLocalJson: true, adFunction: AdFunction.unknown);
         }
         TbaUtils.instance.checkUnFinishedEvent();
       } else if (state == AppState.background) {

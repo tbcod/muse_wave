@@ -22,6 +22,7 @@ import '../../../view/base_view.dart';
 import '../home/u_artist.dart';
 import '../home/u_play.dart';
 import '../home/u_play_list.dart';
+
 //
 import 'u_search_controller.dart';
 
@@ -32,7 +33,9 @@ class UserSearch extends GetView<UserSearchController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserSearchController());
     return Container(
-      decoration: const BoxDecoration(color: Colors.white, image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
+      decoration: const BoxDecoration(
+          color: Colors.white,
+          image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -44,76 +47,80 @@ class UserSearch extends GetView<UserSearchController> {
               ),
               Expanded(
                   child: SizedBox(
-                    height: 44.w,
-                    child: CupertinoTextField(
-                      controller: controller.inputC,
-                      focusNode: controller.inputFocusNode,
-                      onChanged: (str) {
-                        controller.showClearBtn.value = str.isNotEmpty;
+                height: 44.w,
+                child: CupertinoTextField(
+                  controller: controller.inputC,
+                  focusNode: controller.inputFocusNode,
+                  onChanged: (str) {
+                    controller.showClearBtn.value = str.isNotEmpty;
 
-                        if (str.isEmpty) {
-                          return;
-                        }
-                        controller.getSearchList(str);
-                      },
-                      onSubmitted: (str) {
-                        controller.toSearch(str);
-                      },
-                      // autofocus: true,
-                      style: TextStyle(fontSize: 12.w),
-                      placeholder: "Search for music/artist/playlist".tr,
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      textInputAction: TextInputAction.search,
-                      decoration: BoxDecoration(color: Colors.white, border: Border.all(color: const Color(0xffA995FF), width: 1.5.w), borderRadius: BorderRadius.circular(22.w)),
-                      suffix: Obx(() => controller.showClearBtn.value
-                          ? GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
-                          child: const Icon(Icons.clear),
-                          // child: Image.asset(
-                          //   Assets.oimgIconDialogClose,
-                          //   width: 20,
-                          //   height: 20,
-                          // ),
-                        ),
-                        onTap: () {
-                          controller.inputC.text = "";
-                          controller.showClearBtn.value = false;
-                          controller.showSuggestions.value = false;
-                          controller.inputFocusNode.requestFocus();
+                    if (str.isEmpty) {
+                      return;
+                    }
+                    controller.getSearchList(str);
+                  },
+                  onSubmitted: (str) {
+                    controller.toSearch(str);
+                  },
+                  // autofocus: true,
+                  style: TextStyle(fontSize: 12.w),
+                  placeholder: "Search for music/artist/playlist".tr,
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  textInputAction: TextInputAction.search,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: const Color(0xffA995FF), width: 1.5.w),
+                      borderRadius: BorderRadius.circular(22.w)),
+                  suffix: Obx(() => controller.showClearBtn.value
+                      ? GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16),
+                            child: const Icon(Icons.clear),
+                            // child: Image.asset(
+                            //   Assets.oimgIconDialogClose,
+                            //   width: 20,
+                            //   height: 20,
+                            // ),
+                          ),
+                          onTap: () {
+                            controller.inputC.text = "";
+                            controller.showClearBtn.value = false;
+                            controller.showSuggestions.value = false;
+                            controller.inputFocusNode.requestFocus();
 
-                          // controller.bindSearchWordsData();
+                            // controller.bindSearchWordsData();
 
-                          //有结果上报
-                          // if (controller.resultList.isNotEmpty) {
-                          //   EventUtil.ins.searchResultClick(kid: "2");
-                          // }
+                            //有结果上报
+                            // if (controller.resultList.isNotEmpty) {
+                            //   EventUtil.ins.searchResultClick(kid: "2");
+                            // }
 
-                          // controller.sourceType = "4";
-                          // controller.inputC.text = "";
-                          // controller.showClearBtn.value = false;
-                          // controller.bindData("");
-                          //
-                          // //搜索页返回到中间页
-                          // EventUtils.instance.addEvent("search_sh",
-                          //     data: {"statuses": 1, "page_source": 4});
-                        },
-                      )
-                          : Container(
-                        height: 28.w,
-                        width: 42.w,
-                        padding: EdgeInsets.symmetric(vertical: 4.w),
-                        margin: EdgeInsets.only(right: 8.w),
-                        decoration: BoxDecoration(color: const Color(0xffA995FF), borderRadius: BorderRadius.circular(14.w)),
-                        child: Image.asset(
-                          "assets/oimg/icon_search.png",
-                          width: 20.w,
-                          height: 20.w,
-                        ),
-                      )),
-                    ),
-                  )),
+                            // controller.sourceType = "4";
+                            // controller.inputC.text = "";
+                            // controller.showClearBtn.value = false;
+                            // controller.bindData("");
+                            //
+                            // //搜索页返回到中间页
+                            // EventUtils.instance.addEvent("search_sh",
+                            //     data: {"statuses": 1, "page_source": 4});
+                          },
+                        )
+                      : Container(
+                          height: 28.w,
+                          width: 42.w,
+                          padding: EdgeInsets.symmetric(vertical: 4.w),
+                          margin: EdgeInsets.only(right: 8.w),
+                          decoration:
+                              BoxDecoration(color: const Color(0xffA995FF), borderRadius: BorderRadius.circular(14.w)),
+                          child: Image.asset(
+                            "assets/oimg/icon_search.png",
+                            width: 20.w,
+                            height: 20.w,
+                          ),
+                        )),
+                ),
+              )),
               TextButton(
                   onPressed: () {
                     Get.back();
@@ -134,187 +141,195 @@ class UserSearch extends GetView<UserSearchController> {
                 //下方历史记录
                 Positioned.fill(
                     child: Listener(
-                      onPointerDown: (e) {
-                        if (Get.focusScope?.hasFocus ?? false) {
-                          Get.focusScope?.unfocus();
-                        }
-                      },
-                      child: controller.obxView(
-                            (state) =>
+                  onPointerDown: (e) {
+                    if (Get.focusScope?.hasFocus ?? false) {
+                      Get.focusScope?.unfocus();
+                    }
+                  },
+                  child: controller.obxView(
+                    (state) =>
                         //搜索结果
                         Get.find<Application>().typeSo == "yt"
                             ? Obx(() => EasyRefresh(
-                            onLoad: () async {
-                              await controller.moreYoutubeSearch();
-                              return controller.youtubeMoreToken.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
-                            },
-                            child: ListView.separated(
-                                itemBuilder: (_, i) {
-                                  return getYTItem(i);
+                                onLoad: () async {
+                                  await controller.moreYoutubeSearch();
+                                  return controller.youtubeMoreToken.isEmpty
+                                      ? IndicatorResult.noMore
+                                      : IndicatorResult.success;
                                 },
-                                separatorBuilder: (_, i) {
-                                  return SizedBox(
-                                    height: 10.w,
-                                  );
-                                },
-                                itemCount: controller.ytList.length)))
+                                child: ListView.separated(
+                                    itemBuilder: (_, i) {
+                                      return getYTItem(i);
+                                    },
+                                    separatorBuilder: (_, i) {
+                                      return SizedBox(
+                                        height: 10.w,
+                                      );
+                                    },
+                                    itemCount: controller.ytList.length)))
                             : DefaultTabController(
-                          length: controller.tabList.length,
-                          child: Column(
-                            key: controller.tabKey,
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                height: 30,
-                                padding: const EdgeInsets.symmetric(horizontal: 4),
-                                child: TabBar(
-                                  tabs: controller.tabList
-                                      .map((e) => Tab(
-                                    text: e,
-                                  ))
-                                      .toList(),
-                                  onTap: (int index) {
-                                    if (index == 0) {
-                                      EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "all"});
-                                    } else {
-                                      EventUtils.instance.addEvent("search_result_click", data: {
-                                        "detail_click": controller.tabEnList.length == controller.tabList.length ? controller.tabEnList[index] : controller.tabList[index],
-                                      });
-                                    }
-                                  },
-                                  isScrollable: true,
-                                  labelPadding: const EdgeInsets.only(left: 12, right: 12),
-                                  indicatorPadding: const EdgeInsets.only(right: 6, left: 6),
-                                  indicatorWeight: 4,
-                                  indicatorSize: TabBarIndicatorSize.label,
-                                  tabAlignment: TabAlignment.start,
-                                  unselectedLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                                  unselectedLabelColor: Colors.black.withOpacity(0.5),
-                                  labelColor: const Color(0xff8468FF),
-                                  indicatorColor: const Color(0xff8468FF),
-                                  labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                                  dividerHeight: 1,
-                                  dividerColor: const Color(0xff141414).withOpacity(0.08),
+                                length: controller.tabList.length,
+                                child: Column(
+                                  key: controller.tabKey,
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      height: 30,
+                                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                                      child: TabBar(
+                                        tabs: controller.tabList
+                                            .map((e) => Tab(
+                                                  text: e,
+                                                ))
+                                            .toList(),
+                                        onTap: (int index) {
+                                          if (index == 0) {
+                                            EventUtils.instance
+                                                .addEvent("search_result_click", data: {"detail_click": "all"});
+                                          } else {
+                                            EventUtils.instance.addEvent("search_result_click", data: {
+                                              "detail_click": controller.tabEnList.length == controller.tabList.length
+                                                  ? controller.tabEnList[index]
+                                                  : controller.tabList[index],
+                                            });
+                                          }
+                                        },
+                                        isScrollable: true,
+                                        labelPadding: const EdgeInsets.only(left: 12, right: 12),
+                                        indicatorPadding: const EdgeInsets.only(right: 6, left: 6),
+                                        indicatorWeight: 4,
+                                        indicatorSize: TabBarIndicatorSize.label,
+                                        tabAlignment: TabAlignment.start,
+                                        unselectedLabelStyle:
+                                            const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                        unselectedLabelColor: Colors.black.withOpacity(0.5),
+                                        labelColor: const Color(0xff8468FF),
+                                        indicatorColor: const Color(0xff8468FF),
+                                        labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                                        dividerHeight: 1,
+                                        dividerColor: const Color(0xff141414).withOpacity(0.08),
+                                      ),
+                                    ),
+                                    Expanded(
+                                        child: TabBarView(
+                                            children: controller.tabList
+                                                .map((e) => KeepStateView(child: getPage(e)))
+                                                .toList()))
+                                  ],
                                 ),
                               ),
-                              Expanded(child: TabBarView(children: controller.tabList.map((e) => KeepStateView(child: getPage(e))).toList()))
-                            ],
-                          ),
-                        ),
-                        onLoading:
+                    onLoading:
                         //历史记录
                         Obx(() => controller.historyList.isEmpty
                             ? Container()
                             : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              height: 16.w,
-                            ),
-                            //标题
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 12.w,
-                                ),
-                                Text(
-                                  "History record".tr,
-                                  style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold),
-                                ),
-                                const Spacer(),
-                                GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    onTap: () {
-                                      Get.dialog(BaseDialog(
-                                        title: "Delete".tr,
-                                        content: "deleteStr".tr,
-                                        lBtnText: "Cancel".tr,
-                                        rBtnText: "Confirm".tr,
-                                        rBtnOnTap: () async {
-                                          var box = await Hive.openBox(DBKey.mySearchHistoryData);
-                                          //删除全部
-                                          await box.clear();
-                                          controller.historyList.clear();
-                                          // Get.back();
-                                        },
-                                        lBtnOnTap: () {
-                                          // Get.back();
-                                        },
-                                      ));
-                                    },
-                                    child: Image.asset(
-                                      "assets/oimg/icon_s_del.png",
-                                      width: 24.w,
-                                      height: 24.w,
-                                    )),
-                                SizedBox(
-                                  width: 12.w,
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 16.w,
-                            ),
-                            // 数据
-                            Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                                child: Obx(
-                                      () => ExtendedWrap(
-                                    spacing: 12.w,
-                                    runSpacing: 16.w,
-                                    maxLines: 3,
-                                    children: controller.historyList.map((e) => getHistoryItem(e)).toList(),
-
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    height: 16.w,
                                   ),
-                                ))
-                            , Container(
-                              padding: EdgeInsets.symmetric(vertical:0),
-                              alignment: Alignment.center,
-                              child: BannerNativeAdView(
-                                posId: AdPosId.pagebanner,
-                                adScene: AdScene.search,
-                              ),
-                            ),
-
-                          ],
-                        )),
-                      ),
-                    )),
+                                  //标题
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 12.w,
+                                      ),
+                                      Text(
+                                        "History record".tr,
+                                        style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.bold),
+                                      ),
+                                      const Spacer(),
+                                      GestureDetector(
+                                          behavior: HitTestBehavior.opaque,
+                                          onTap: () {
+                                            Get.dialog(BaseDialog(
+                                              title: "Delete".tr,
+                                              content: "deleteStr".tr,
+                                              lBtnText: "Cancel".tr,
+                                              rBtnText: "Confirm".tr,
+                                              rBtnOnTap: () async {
+                                                var box = await Hive.openBox(DBKey.mySearchHistoryData);
+                                                //删除全部
+                                                await box.clear();
+                                                controller.historyList.clear();
+                                                // Get.back();
+                                              },
+                                              lBtnOnTap: () {
+                                                // Get.back();
+                                              },
+                                            ));
+                                          },
+                                          child: Image.asset(
+                                            "assets/oimg/icon_s_del.png",
+                                            width: 24.w,
+                                            height: 24.w,
+                                          )),
+                                      SizedBox(
+                                        width: 12.w,
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 16.w,
+                                  ),
+                                  // 数据
+                                  Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                      child: Obx(
+                                        () => ExtendedWrap(
+                                          spacing: 12.w,
+                                          runSpacing: 16.w,
+                                          maxLines: 3,
+                                          children: controller.historyList.map((e) => getHistoryItem(e)).toList(),
+                                        ),
+                                      )),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(vertical: 0),
+                                    alignment: Alignment.center,
+                                    child: BannerNativeAdView(
+                                      posId: AdPosId.pagebanner,
+                                      adScene: AdSense.search_page,
+                                    ),
+                                  ),
+                                ],
+                              )),
+                  ),
+                )),
 
                 //上方关键词联想列表
                 Positioned.fill(
                     child: Obx(() => controller.showSuggestions.value
                         ? Obx(() => Listener(
-                      onPointerDown: (e) {
-                        if (Get.focusScope?.hasFocus ?? false) {
-                          Get.focusScope?.unfocus();
-                        }
-                      },
-                      child: Container(
-                        color: Colors.white,
-                        child: ListView.separated(
-                          itemBuilder: (BuildContext context, int index) {
-                            return ListTile(
-                              title: controller.list[index]["view"],
-                              onTap: () {
-                                var str = controller.list[index]["text"] ?? "";
-                                controller.inputC.text = str;
-
-                                controller.showClearBtn.value = true;
-                                controller.toSearch(str);
+                              onPointerDown: (e) {
+                                if (Get.focusScope?.hasFocus ?? false) {
+                                  Get.focusScope?.unfocus();
+                                }
                               },
-                            );
-                          },
-                          separatorBuilder: (BuildContext context, int index) {
-                            return SizedBox(
-                              height: 1.w,
-                            );
-                          },
-                          itemCount: controller.list.length,
-                        ),
-                      ),
-                    ))
+                              child: Container(
+                                color: Colors.white,
+                                child: ListView.separated(
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return ListTile(
+                                      title: controller.list[index]["view"],
+                                      onTap: () {
+                                        var str = controller.list[index]["text"] ?? "";
+                                        controller.inputC.text = str;
+
+                                        controller.showClearBtn.value = true;
+                                        controller.toSearch(str);
+                                      },
+                                    );
+                                  },
+                                  separatorBuilder: (BuildContext context, int index) {
+                                    return SizedBox(
+                                      height: 1.w,
+                                    );
+                                  },
+                                  itemCount: controller.list.length,
+                                ),
+                              ),
+                            ))
                         : Container()))
               ],
             ),
@@ -340,7 +355,7 @@ class UserSearch extends GetView<UserSearchController> {
     if (title == "Songs".tr) {
       //歌曲列表
       return Obx(
-            () {
+        () {
           if (controller.songList.isEmpty) {
             return const EmotyView();
           }
@@ -366,7 +381,7 @@ class UserSearch extends GetView<UserSearchController> {
     } else if (title == "Videos".tr) {
       //视频列表
       return Obx(
-            () {
+        () {
           if (controller.videoList.isEmpty) {
             return const EmotyView();
           }
@@ -392,7 +407,7 @@ class UserSearch extends GetView<UserSearchController> {
     } else if (title == "Artists".tr) {
       //歌手列表
       return Obx(
-            () {
+        () {
           if (controller.artistList.isEmpty) {
             return const EmotyView();
           }
@@ -447,7 +462,7 @@ class UserSearch extends GetView<UserSearchController> {
     } else if (title == "playlists".tr) {
       //歌单
       return Obx(
-            () {
+        () {
           if (controller.playlistList.isEmpty) {
             return const EmotyView();
           }
@@ -512,8 +527,10 @@ class UserSearch extends GetView<UserSearchController> {
               return GestureDetector(
                 onTap: () {
                   Debounce(500).run(() {
-                    EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                    Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+                    EventUtils.instance.addEvent("search_result_click",
+                        data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
+                    Get.find<UserPlayInfoController>()
+                        .setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
                   });
                 },
                 child: Obx(() {
@@ -534,52 +551,52 @@ class UserSearch extends GetView<UserSearchController> {
                         const SizedBox(width: 16),
                         Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text(
+                              item["title"] ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: isCheck ? const Color(0xff8569FF) : Colors.black,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
                               children: [
-                                Text(
-                                  item["title"] ?? "",
+                                Obx(() {
+                                  var isLike = LikeUtil.instance.allVideoMap.containsKey(item["videoId"]);
+                                  if (isLike) {
+                                    return Container(
+                                      width: 16,
+                                      height: 16,
+                                      margin: const EdgeInsets.only(right: 4),
+                                      child: Image.asset("assets/oimg/icon_like_on.png"),
+                                    );
+                                  }
+
+                                  return Container();
+                                }),
+                                Expanded(
+                                    child: Text(
+                                  item["subtitle"] ?? "",
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: isCheck ? const Color(0xff8569FF) : Colors.black,
+                                    fontSize: 12,
+                                    color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Obx(() {
-                                      var isLike = LikeUtil.instance.allVideoMap.containsKey(item["videoId"]);
-                                      if (isLike) {
-                                        return Container(
-                                          width: 16,
-                                          height: 16,
-                                          margin: const EdgeInsets.only(right: 4),
-                                          child: Image.asset("assets/oimg/icon_like_on.png"),
-                                        );
-                                      }
-
-                                      return Container();
-                                    }),
-                                    Expanded(
-                                        child: Text(
-                                          item["subtitle"] ?? "",
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75),
-                                          ),
-                                        ))
-                                  ],
-                                ),
+                                ))
                               ],
-                            )),
+                            ),
+                          ],
+                        )),
                         const SizedBox(
                           width: 12,
                         ),
@@ -685,15 +702,19 @@ class UserSearch extends GetView<UserSearchController> {
               onTap: () {
                 if (isArtist) {
                   EventUtils.instance.addEvent("det_artist_show", data: {"from": "search"});
-                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
+                  EventUtils.instance
+                      .addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
                   Get.to(() => UserArtistInfo(), arguments: item);
                 } else if (isPlaylist) {
                   EventUtils.instance.addEvent("det_playlist_show", data: {"from": "search"});
-                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "playlist", "playlist_id": item["browseId"]});
-                  Get.to(() => UserPlayListInfo(isFormSearch: true), arguments: item);
+                  EventUtils.instance.addEvent("search_result_click",
+                      data: {"detail_click": "playlist", "playlist_id": item["browseId"]});
+                  Get.to(() => UserPlayListInfo(isFormSearch: true, adSense: AdSense.search_page), arguments: item);
                 } else {
-                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                  Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+                  EventUtils.instance.addEvent("search_result_click",
+                      data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
+                  Get.find<UserPlayInfoController>()
+                      .setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
                 }
               },
               behavior: HitTestBehavior.opaque,
@@ -705,27 +726,27 @@ class UserSearch extends GetView<UserSearchController> {
                 children: [
                   isArtist
                       ? NetImageView(
-                    radius: 27,
-                    imgUrl: item["cover"] ?? "",
-                    fit: BoxFit.cover,
-                    width: 54,
-                    height: 54,
-                  )
+                          radius: 27,
+                          imgUrl: item["cover"] ?? "",
+                          fit: BoxFit.cover,
+                          width: 54,
+                          height: 54,
+                        )
                       : isVideo
-                      ? NetImageView(
-                    radius: 4,
-                    imgUrl: item["cover"] ?? "",
-                    fit: BoxFit.cover,
-                    width: 88,
-                    height: 50,
-                  )
-                      : NetImageView(
-                    radius: 8,
-                    imgUrl: item["cover"] ?? "",
-                    fit: BoxFit.cover,
-                    width: 54,
-                    height: 54,
-                  ),
+                          ? NetImageView(
+                              radius: 4,
+                              imgUrl: item["cover"] ?? "",
+                              fit: BoxFit.cover,
+                              width: 88,
+                              height: 50,
+                            )
+                          : NetImageView(
+                              radius: 8,
+                              imgUrl: item["cover"] ?? "",
+                              fit: BoxFit.cover,
+                              width: 54,
+                              height: 54,
+                            ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
@@ -733,46 +754,51 @@ class UserSearch extends GetView<UserSearchController> {
                       children: [
                         Text(
                           item["title"] ?? "",
-                          style: TextStyle(fontSize: 14, color: isCheck ? const Color(0xff7453ff) : const Color(0xff141414), fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: isCheck ? const Color(0xff7453ff) : const Color(0xff141414),
+                              fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           item["subtitle"] ?? "",
                           maxLines: 1,
-                          style: TextStyle(fontSize: 12, color: isCheck ? const Color(0xff7453ff) : const Color(0xff141414).withOpacity(0.75)),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: isCheck ? const Color(0xff7453ff) : const Color(0xff141414).withOpacity(0.75)),
                         ),
                       ],
                     ),
                   ),
                   isArtist || isPlaylist
                       ? Container(
-                    padding: const EdgeInsets.all(6),
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: Image.asset("assets/oimg/ic_more.png"),
-                    ),
-                  )
+                          padding: const EdgeInsets.all(6),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: Image.asset("assets/oimg/ic_more.png"),
+                          ),
+                        )
                       : InkWell(
-                    onTap: () {
-                      if (type == "net_playlist" || type == "loc_playlist") {
-                        EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "more"});
-                      }
-                      if (type == "artist_more_song" || type == "artist") {
-                        EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "more"});
-                      }
+                          onTap: () {
+                            if (type == "net_playlist" || type == "loc_playlist") {
+                              EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "more"});
+                            }
+                            if (type == "artist_more_song" || type == "artist") {
+                              EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "more"});
+                            }
 
-                      MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: type);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: Image.asset("assets/oimg/icon_more.png"),
-                      ),
-                    ),
-                  )
+                            MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: type);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Image.asset("assets/oimg/icon_more.png"),
+                            ),
+                          ),
+                        )
                 ],
               ),
             ),
@@ -799,20 +825,26 @@ class UserSearch extends GetView<UserSearchController> {
                 if (isArtist || isPlaylist) {
                   if (content.isNotEmpty) {
                     final item = content.first;
-                    EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                    Get.find<UserPlayInfoController>().setDataAndPlayItem(content, item, clickType: "search", loadNextData: true);
+                    EventUtils.instance.addEvent("search_result_click",
+                        data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
+                    Get.find<UserPlayInfoController>()
+                        .setDataAndPlayItem(content, item, clickType: "search", loadNextData: true);
                   } else {
                     List list = controller.resultList;
                     if (list.isNotEmpty) {
                       list.removeAt(0);
                       final item = list.first;
-                      EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                      Get.find<UserPlayInfoController>().setDataAndPlayItem(list, item, clickType: "search", loadNextData: true);
+                      EventUtils.instance.addEvent("search_result_click",
+                          data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
+                      Get.find<UserPlayInfoController>()
+                          .setDataAndPlayItem(list, item, clickType: "search", loadNextData: true);
                     }
                   }
                 } else {
-                  EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                  Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+                  EventUtils.instance.addEvent("search_result_click",
+                      data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
+                  Get.find<UserPlayInfoController>()
+                      .setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
                 }
               });
             },
@@ -842,128 +874,136 @@ class UserSearch extends GetView<UserSearchController> {
         Expanded(
           child: (isArtist || isPlaylist)
               ? InkWell(
-            onTap: () {
-              Debounce(500).run(() {
-                if (isPlaylist) {
-                  final browseId = item["browseId"];
-                  var isLike = LikeUtil.instance.allPlaylistMap.containsKey(browseId);
-                  if (isLike) {
-                    LikeUtil.instance.unlikeList(browseId);
-                  } else {
-                    LikeUtil.instance.likeList(browseId, item, "");
-                  }
-                  EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "collection"});
-                } else if (isArtist) {
-                  final browseId = item["browseId"];
-                  var isLike = LikeUtil.instance.allArtistMap.containsKey(browseId);
-                  if (isLike) {
-                    LikeUtil.instance.unlikeArtist(browseId);
-                  } else {
-                    LikeUtil.instance.likeArtist(browseId, item);
-                  }
-                }
-              });
-            },
-            child: Container(
-              height: 42,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(21), border: Border.all(color: const Color(0xff7453FF), width: 2), color: Colors.white),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Obx(() {
-                    final browseId = item["browseId"];
-                    var isLike = false;
-                    if (isArtist) {
-                      isLike = LikeUtil.instance.allArtistMap.containsKey(browseId);
-                    } else {
-                      isLike = LikeUtil.instance.allPlaylistMap.containsKey(browseId);
-                    }
-                    return Image.asset(isLike ? "assets/oimg/ic_like_x.png" : "assets/oimg/ic_like.png", width: 24, height: 24, color: const Color(0xff7453FF));
-                  }),
-                  const SizedBox(width: 8),
-                  Text(
-                    "like".tr,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xff7453FF)),
-                  )
-                ],
-              ),
-            ),
-          )
+                  onTap: () {
+                    Debounce(500).run(() {
+                      if (isPlaylist) {
+                        final browseId = item["browseId"];
+                        var isLike = LikeUtil.instance.allPlaylistMap.containsKey(browseId);
+                        if (isLike) {
+                          LikeUtil.instance.unlikeList(browseId);
+                        } else {
+                          LikeUtil.instance.likeList(browseId, item, "", adSense: AdSense.search_page);
+                        }
+                        EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "collection"});
+                      } else if (isArtist) {
+                        final browseId = item["browseId"];
+                        var isLike = LikeUtil.instance.allArtistMap.containsKey(browseId);
+                        if (isLike) {
+                          LikeUtil.instance.unlikeArtist(browseId);
+                        } else {
+                          LikeUtil.instance.likeArtist(browseId, item, adSense: AdSense.search_page);
+                        }
+                      }
+                    });
+                  },
+                  child: Container(
+                    height: 42,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(21),
+                        border: Border.all(color: const Color(0xff7453FF), width: 2),
+                        color: Colors.white),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Obx(() {
+                          final browseId = item["browseId"];
+                          var isLike = false;
+                          if (isArtist) {
+                            isLike = LikeUtil.instance.allArtistMap.containsKey(browseId);
+                          } else {
+                            isLike = LikeUtil.instance.allPlaylistMap.containsKey(browseId);
+                          }
+                          return Image.asset(isLike ? "assets/oimg/ic_like_x.png" : "assets/oimg/ic_like.png",
+                              width: 24, height: 24, color: const Color(0xff7453FF));
+                        }),
+                        const SizedBox(width: 8),
+                        Text(
+                          "like".tr,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xff7453FF)),
+                        )
+                      ],
+                    ),
+                  ),
+                )
               : InkWell(
-            onTap: () {
-              Debounce(500).run(() {
-                var videoId = item["videoId"];
-                var state = DownloadUtils.instance.allDownLoadingData[videoId]?["state"];
-                if (state == 1 || state == 3) {
-                  DownloadUtils.instance.remove(videoId, state: state);
-                } else if (state == 2) {
-                  DownloadUtils.instance.remove(videoId, state: state);
-                } else {
-                  DownloadUtils.instance.download(videoId, item, clickType: "search");
-                }
-              });
-            },
-            child: Container(
-              height: 42,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(21), border: Border.all(color: const Color(0xff7453FF), width: 2), color: Colors.white),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Obx(() {
-                    //获取下载状态
-                    var videoId = item["videoId"];
-
-                    if (DownloadUtils.instance.allDownLoadingData.containsKey(videoId)) {
-                      //有添加过下载
-                      var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
-                      double progress = DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
-
-                      // AppLog.e(
-                      //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");
-
+                  onTap: () {
+                    Debounce(500).run(() {
+                      var videoId = item["videoId"];
+                      var state = DownloadUtils.instance.allDownLoadingData[videoId]?["state"];
                       if (state == 1 || state == 3) {
-                        //下载中\下载暂停
-                        return Container(
-                          height: 24,
-                          width: 24,
-                          padding: const EdgeInsets.all(2.5),
-                          alignment: Alignment.center,
-                          child: CircularProgressIndicator(
-                            value: progress,
-                            strokeWidth: 2.5,
-                            backgroundColor: const Color(0xff7453ff).withOpacity(0.35),
-                            color: const Color(0xff7453ff),
-                          ),
-                        );
+                        DownloadUtils.instance.remove(videoId, state: state);
                       } else if (state == 2) {
-                        return InkWell(
-                          onTap: () {
-                            DownloadUtils.instance.remove(videoId, state: state);
-                          },
-                          child: Image.asset(
-                            "assets/oimg/ic_download_x.png",
+                        DownloadUtils.instance.remove(videoId, state: state);
+                      } else {
+                        DownloadUtils.instance
+                            .download(videoId, item, clickType: "search", adSense: AdSense.search_page);
+                      }
+                    });
+                  },
+                  child: Container(
+                    height: 42,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(21),
+                        border: Border.all(color: const Color(0xff7453FF), width: 2),
+                        color: Colors.white),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Obx(() {
+                          //获取下载状态
+                          var videoId = item["videoId"];
+
+                          if (DownloadUtils.instance.allDownLoadingData.containsKey(videoId)) {
+                            //有添加过下载
+                            var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
+                            double progress = DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
+
+                            // AppLog.e(
+                            //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");
+
+                            if (state == 1 || state == 3) {
+                              //下载中\下载暂停
+                              return Container(
+                                height: 24,
+                                width: 24,
+                                padding: const EdgeInsets.all(2.5),
+                                alignment: Alignment.center,
+                                child: CircularProgressIndicator(
+                                  value: progress,
+                                  strokeWidth: 2.5,
+                                  backgroundColor: const Color(0xff7453ff).withOpacity(0.35),
+                                  color: const Color(0xff7453ff),
+                                ),
+                              );
+                            } else if (state == 2) {
+                              return InkWell(
+                                onTap: () {
+                                  DownloadUtils.instance.remove(videoId, state: state);
+                                },
+                                child: Image.asset(
+                                  "assets/oimg/ic_download_x.png",
+                                  width: 24,
+                                  height: 24,
+                                ),
+                              );
+                            }
+                          }
+
+                          return Image.asset(
+                            "assets/oimg/ic_download.png",
                             width: 24,
                             height: 24,
-                          ),
-                        );
-                      }
-                    }
-
-                    return Image.asset(
-                      "assets/oimg/ic_download.png",
-                      width: 24,
-                      height: 24,
-                    );
-                  }),
-                  const SizedBox(width: 8),
-                  Text(
-                    "Offline".tr,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xff7453FF)),
-                  )
-                ],
-              ),
-            ),
-          ),
+                          );
+                        }),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Offline".tr,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xff7453FF)),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
         )
       ],
     );
@@ -997,12 +1037,19 @@ class UserSearch extends GetView<UserSearchController> {
 
     return InkWell(
       onTap: () {
-        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
+        EventUtils.instance
+            .addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
 
         //添加单曲并播放
         // var pList = List.of(Get.find<UserPlayInfoController>().playList)
         //   ..add(item);
-        EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"] ?? "", "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
+        EventUtils.instance.addEvent("play_click", data: {
+          "song_id": item["videoId"] ?? "",
+          "song_name": item["title"],
+          "artist_name": item["subtitle"],
+          "playlist_id": "",
+          "station": "search"
+        });
 
         Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);
@@ -1024,25 +1071,28 @@ class UserSearch extends GetView<UserSearchController> {
                   children: [
                     Positioned.fill(
                         child: NetImageView(
-                          imgUrl: item["cover"] ?? "",
-                          fit: BoxFit.cover,
-                        )),
+                      imgUrl: item["cover"] ?? "",
+                      fit: BoxFit.cover,
+                    )),
                     //蒙版
                     Positioned.fill(
                         child: Container(
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(colors: [Colors.black.withOpacity(0), const Color(0xff060606).withOpacity(0.75)], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-                        )),
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              colors: [Colors.black.withOpacity(0), const Color(0xff060606).withOpacity(0.75)],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter)),
+                    )),
 
                     Positioned(
                         left: 6,
                         top: 6,
                         child: isCheck
                             ? Image.asset(
-                          "assets/oimg/icon_s_v_play.png",
-                          width: 20,
-                          height: 14,
-                        )
+                                "assets/oimg/icon_s_v_play.png",
+                                width: 20,
+                                height: 14,
+                              )
                             : Container()),
                     Positioned(
                       bottom: 3,
@@ -1060,35 +1110,40 @@ class UserSearch extends GetView<UserSearchController> {
               ),
               Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    item["title"] ?? "",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: isCheck ? const Color(0xffA491F7) : Colors.black),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  Row(
                     children: [
-                      Text(
-                        item["title"] ?? "",
-                        maxLines: 2,
+                      Expanded(
+                          child: Text(
+                        item["subtitle"],
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: isCheck ? const Color(0xffA491F7) : Colors.black),
-                      ),
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: isCheck ? const Color(0xffA491F7).withOpacity(0.5) : Colors.black.withOpacity(0.5)),
+                      )),
                       const SizedBox(
-                        height: 6,
+                        width: 12,
                       ),
-                      Row(
-                        children: [
-                          Expanded(
-                              child: Text(
-                                item["subtitle"],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 14, color: isCheck ? const Color(0xffA491F7).withOpacity(0.5) : Colors.black.withOpacity(0.5)),
-                              )),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          getDownloadAndMoreBtn(item, "search", iconHeight: 30)
-                        ],
-                      )
+                      getDownloadAndMoreBtn(item, "search", iconHeight: 30)
                     ],
-                  ))
+                  )
+                ],
+              ))
             ],
           ),
         );
@@ -1099,9 +1154,16 @@ class UserSearch extends GetView<UserSearchController> {
   getMusicItem(Map item) {
     return InkWell(
       onTap: () {
-        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
+        EventUtils.instance
+            .addEvent("search_result_click", data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
 
-        EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"] ?? "", "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
+        EventUtils.instance.addEvent("play_click", data: {
+          "song_id": item["videoId"] ?? "",
+          "song_name": item["title"],
+          "artist_name": item["subtitle"],
+          "playlist_id": "",
+          "station": "search"
+        });
 
         Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);
@@ -1139,61 +1201,61 @@ class UserSearch extends GetView<UserSearchController> {
               ),
               Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    item["title"],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: isCheck ? const Color(0xff8569FF) : Colors.black,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
                     children: [
-                      Text(
-                        item["title"],
+                      Obx(() {
+                        var isLike = LikeUtil.instance.allVideoMap.containsKey(item["videoId"]);
+                        if (isLike) {
+                          return Container(
+                            width: 16,
+                            height: 16,
+                            margin: const EdgeInsets.only(right: 4),
+                            child: Image.asset("assets/oimg/icon_like_on.png"),
+                          );
+                        }
+
+                        return Container();
+                      }),
+                      // if (isLike)
+                      //   Container(
+                      //     width: 16,
+                      //     height: 16,
+                      //     margin:
+                      //     EdgeInsets.only(right: 4),
+                      //     child: Image.asset(
+                      //         "assets/oimg/icon_like_on.png"),
+                      //   ),
+                      Expanded(
+                          child: Text(
+                        item["subtitle"] ?? "",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: isCheck ? const Color(0xff8569FF) : Colors.black,
+                          fontSize: 12,
+                          color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          Obx(() {
-                            var isLike = LikeUtil.instance.allVideoMap.containsKey(item["videoId"]);
-                            if (isLike) {
-                              return Container(
-                                width: 16,
-                                height: 16,
-                                margin: const EdgeInsets.only(right: 4),
-                                child: Image.asset("assets/oimg/icon_like_on.png"),
-                              );
-                            }
-
-                            return Container();
-                          }),
-                          // if (isLike)
-                          //   Container(
-                          //     width: 16,
-                          //     height: 16,
-                          //     margin:
-                          //     EdgeInsets.only(right: 4),
-                          //     child: Image.asset(
-                          //         "assets/oimg/icon_like_on.png"),
-                          //   ),
-                          Expanded(
-                              child: Text(
-                                item["subtitle"] ?? "",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75),
-                                ),
-                              ))
-                        ],
-                      ),
+                      ))
                     ],
-                  )),
+                  ),
+                ],
+              )),
               const SizedBox(width: 12),
               getDownloadAndMoreBtn(item, "search")
 
@@ -1309,11 +1371,13 @@ class UserSearch extends GetView<UserSearchController> {
     return InkWell(
       onTap: () {
         EventUtils.instance.addEvent("det_playlist_show", data: {"from": "search"});
-        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "playlist", "playlist_id": item["browseId"]});
+        EventUtils.instance
+            .addEvent("search_result_click", data: {"detail_click": "playlist", "playlist_id": item["browseId"]});
 
         Get.to(
             UserPlayListInfo(
               isFormSearch: true,
+              adSense: AdSense.search_page,
             ),
             arguments: item);
       },
@@ -1337,41 +1401,41 @@ class UserSearch extends GetView<UserSearchController> {
             ),
             Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(
+                  item["title"],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(
+                  height: 10.w,
+                ),
+                Row(
                   children: [
-                    Text(
-                      item["title"],
+                    // if (isLike)
+                    //   Container(
+                    //     width: 16.w,
+                    //     height: 16.w,
+                    //     margin:
+                    //     EdgeInsets.only(right: 4.w),
+                    //     child: Image.asset(
+                    //         "assets/oimg/icon_like_on.png"),
+                    //   ),
+                    Expanded(
+                        child: Text(
+                      item["subtitle"] ?? "",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(
-                      height: 10.w,
-                    ),
-                    Row(
-                      children: [
-                        // if (isLike)
-                        //   Container(
-                        //     width: 16.w,
-                        //     height: 16.w,
-                        //     margin:
-                        //     EdgeInsets.only(right: 4.w),
-                        //     child: Image.asset(
-                        //         "assets/oimg/icon_like_on.png"),
-                        //   ),
-                        Expanded(
-                            child: Text(
-                              item["subtitle"] ?? "",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.75)),
-                            ))
-                      ],
-                    ),
+                      style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.75)),
+                    ))
                   ],
-                )),
+                ),
+              ],
+            )),
             Container(
               padding: const EdgeInsets.all(6),
               child: SizedBox(
@@ -1390,7 +1454,8 @@ class UserSearch extends GetView<UserSearchController> {
     return InkWell(
       onTap: () {
         EventUtils.instance.addEvent("det_artist_show", data: {"from": "search"});
-        EventUtils.instance.addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
+        EventUtils.instance
+            .addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
         Get.to(() => UserArtistInfo(), arguments: item);
       },
       child: Container(
@@ -1413,41 +1478,41 @@ class UserSearch extends GetView<UserSearchController> {
             ),
             Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(
+                  item["title"],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(
+                  height: 10.w,
+                ),
+                Row(
                   children: [
-                    Text(
-                      item["title"],
+                    // if (isLike)
+                    //   Container(
+                    //     width: 16.w,
+                    //     height: 16.w,
+                    //     margin:
+                    //     EdgeInsets.only(right: 4.w),
+                    //     child: Image.asset(
+                    //         "assets/oimg/icon_like_on.png"),
+                    //   ),
+                    Expanded(
+                        child: Text(
+                      item["subtitle"] ?? "",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(
-                      height: 10.w,
-                    ),
-                    Row(
-                      children: [
-                        // if (isLike)
-                        //   Container(
-                        //     width: 16.w,
-                        //     height: 16.w,
-                        //     margin:
-                        //     EdgeInsets.only(right: 4.w),
-                        //     child: Image.asset(
-                        //         "assets/oimg/icon_like_on.png"),
-                        //   ),
-                        Expanded(
-                            child: Text(
-                              item["subtitle"] ?? "",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.75)),
-                            ))
-                      ],
-                    ),
+                      style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.75)),
+                    ))
                   ],
-                )),
+                ),
+              ],
+            )),
             Container(
               padding: const EdgeInsets.all(6),
               child: SizedBox(
@@ -1466,7 +1531,8 @@ class UserSearch extends GetView<UserSearchController> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.w), color: const Color(0xffEFEFFF).withOpacity(0.5)),
+        decoration:
+            BoxDecoration(borderRadius: BorderRadius.circular(12.w), color: const Color(0xffEFEFFF).withOpacity(0.5)),
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.w),
         child: Text(
           item["str"] ?? "",
@@ -1490,7 +1556,13 @@ class UserSearch extends GetView<UserSearchController> {
         //添加单曲并播放
         // var pList = List.of(Get.find<UserPlayInfoController>().playList)
         //   ..add(item);
-        EventUtils.instance.addEvent("play_click", data: {"song_id": item["videoId"], "song_name": item["title"], "artist_name": item["subtitle"], "playlist_id": "", "station": "search"});
+        EventUtils.instance.addEvent("play_click", data: {
+          "song_id": item["videoId"],
+          "song_name": item["title"],
+          "artist_name": item["subtitle"],
+          "playlist_id": "",
+          "station": "search"
+        });
 
         Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);
@@ -1512,25 +1584,28 @@ class UserSearch extends GetView<UserSearchController> {
                   children: [
                     Positioned.fill(
                         child: NetImageView(
-                          imgUrl: item["cover"] ?? "",
-                          fit: BoxFit.cover,
-                        )),
+                      imgUrl: item["cover"] ?? "",
+                      fit: BoxFit.cover,
+                    )),
                     //蒙版
                     Positioned.fill(
                         child: Container(
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(colors: [Colors.black.withOpacity(0), const Color(0xff060606).withOpacity(0.75)], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-                        )),
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              colors: [Colors.black.withOpacity(0), const Color(0xff060606).withOpacity(0.75)],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter)),
+                    )),
 
                     Positioned(
                         left: 6.w,
                         top: 6.w,
                         child: isCheck
                             ? Image.asset(
-                          "assets/oimg/icon_s_v_play.png",
-                          width: 20.w,
-                          height: 14.w,
-                        )
+                                "assets/oimg/icon_s_v_play.png",
+                                width: 20.w,
+                                height: 14.w,
+                              )
                             : Container()),
                     Positioned(
                       bottom: 3.w,
@@ -1548,35 +1623,40 @@ class UserSearch extends GetView<UserSearchController> {
               ),
               Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    item["title"] ?? "",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 14.w,
+                        fontWeight: FontWeight.w500,
+                        color: isCheck ? const Color(0xffA491F7) : Colors.black),
+                  ),
+                  SizedBox(
+                    height: 6.w,
+                  ),
+                  Row(
                     children: [
-                      Text(
-                        item["title"] ?? "",
-                        maxLines: 2,
+                      Expanded(
+                          child: Text(
+                        item["subtitle"],
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500, color: isCheck ? const Color(0xffA491F7) : Colors.black),
-                      ),
+                        style: TextStyle(
+                            fontSize: 14.w,
+                            color: isCheck ? const Color(0xffA491F7).withOpacity(0.5) : Colors.black.withOpacity(0.5)),
+                      )),
                       SizedBox(
-                        height: 6.w,
+                        width: 12.w,
                       ),
-                      Row(
-                        children: [
-                          Expanded(
-                              child: Text(
-                                item["subtitle"],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 14.w, color: isCheck ? const Color(0xffA491F7).withOpacity(0.5) : Colors.black.withOpacity(0.5)),
-                              )),
-                          SizedBox(
-                            width: 12.w,
-                          ),
-                          getDownloadAndMoreBtn(item, "search", iconHeight: 30.w)
-                        ],
-                      )
+                      getDownloadAndMoreBtn(item, "search", iconHeight: 30.w)
                     ],
-                  ))
+                  )
+                ],
+              ))
             ],
           ),
         );
@@ -1584,7 +1664,6 @@ class UserSearch extends GetView<UserSearchController> {
     );
   }
 }
-
 
 // class UserSearch extends GetView<UserSearchController> {
 //   const UserSearch({super.key});

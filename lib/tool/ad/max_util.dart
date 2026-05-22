@@ -60,7 +60,7 @@
 //                       AppLog.e("max native加载成功");
 //                       adLoaded.value = true;
 //                       completer.complete(true);
-//                       EventUtils.instance.addEvent("ad_return", data: {"ad_format": "native", "ad_source_client": "max", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId, "ad_request_time": DateTime.now().difference(now).inMilliseconds});
+//                       EventUtils.instance.addEvent("ad_return_sucess", data: {"ad_format": "native", "ad_source_client": "max", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId, "ad_request_time": DateTime.now().difference(now).inMilliseconds});
 //                     },
 //                     onAdLoadFailedCallback: (adUnitId, error) {
 //                       AppLog.e("max原生加载失败:$error");
@@ -158,7 +158,7 @@
 //                   AppLog.i("原生广告max banner加载完成");
 //                   adLoaded.value = true;
 //                   completer.complete(true);
-//                   EventUtils.instance.addEvent("ad_return", data: {"ad_format": "banner", "ad_sense": adSense.name, "ad_pos_id": key, "ad_id": adId, "ad_source_client": "max", "ad_request_time": DateTime.now().difference(now).inMilliseconds});
+//                   EventUtils.instance.addEvent("ad_return_sucess", data: {"ad_format": "banner", "ad_sense": adSense.name, "ad_pos_id": key, "ad_id": adId, "ad_source_client": "max", "ad_request_time": DateTime.now().difference(now).inMilliseconds});
 //                   EventUtils.instance.addEvent("ad_chance", data: {"ad_sense": adSense.name, "ad_pos_id": key});
 //                 },
 //                 onAdLoadFailedCallback: (adUnitId, error) {

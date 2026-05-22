@@ -144,7 +144,7 @@ class UserLikeArtist extends GetView<UserLikeArtistController> {
                   if (isLike) {
                     LikeUtil.instance.unlikeArtist(browseId);
                   } else {
-                    LikeUtil.instance.likeArtist(browseId, item);
+                    LikeUtil.instance.likeArtist(browseId, item, adSense: AdSense.artist_detail_page);
                   }
                 },
                 child: Image.asset(
@@ -175,7 +175,7 @@ class UserLikeArtistController extends GetxController {
   @override
   onReady() {
     super.onReady();
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.detail);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.playlist_page, adFunction: AdFunction.detail);
   }
 
   bindData() {

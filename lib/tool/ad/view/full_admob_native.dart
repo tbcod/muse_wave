@@ -96,18 +96,24 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                 top: 16,
                 child: StatefulBuilder(
                   builder: (context, a) {
-                    return SizedBox(
-                      height: 620,
-                      child: Builder(
-                        builder: (_) {
-                          try {
-                            return AdWidget(ad: widget.ad);
-                          } catch (e) {
-                            AppLog.e("AdWidget报错了：${e.toString()}");
-                            _closeType.value = CloseType.normal;
-                            return const SizedBox.shrink();
-                          }
-                        },
+                    return Listener(
+                      onPointerDown: (e){
+                        AppLog.i("广告被点击了");
+                        _closeType.value = CloseType.normal;
+                      },
+                      child: SizedBox(
+                        height: 620,
+                        child: Builder(
+                          builder: (_) {
+                            try {
+                              return AdWidget(ad: widget.ad);
+                            } catch (e) {
+                              AppLog.e("AdWidget报错了：${e.toString()}");
+                              _closeType.value = CloseType.normal;
+                              return const SizedBox.shrink();
+                            }
+                          },
+                        ),
                       ),
                     );
                   },

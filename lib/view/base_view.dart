@@ -3,6 +3,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 
 import '../generated/assets.dart';
 import '../tool/ad/topon_util.dart';
@@ -373,22 +374,25 @@ getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsH
 
           return InkWell(
             onTap: () {
+              AdSense adSense = AdSense.playlist_page;
               if (type == "net_playlist" || type == "loc_playlist") {
                 EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "dl"});
               }
               if (type == "artist_more_song" || type == "artist") {
                 EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "dl"});
+                adSense = AdSense.artist_detail_page;
               }
+
 
               if (type == "net_playlist" || type == "artist_more_song" || type == "artist") {
-                DownloadUtils.instance.download(videoId, item, clickType: isSearch ? "s_detail" : "h_detail");
+                DownloadUtils.instance.download(videoId, item, clickType: isSearch ? "s_detail" : "h_detail", adSense: adSense);
                 return;
               } else if (type == "loc_playlist" || type == "liked" || type == "download") {
-                DownloadUtils.instance.download(videoId, item, clickType: locIsHome ? "h_detail" : "library");
+                DownloadUtils.instance.download(videoId, item, clickType: locIsHome ? "h_detail" : "library", adSense: adSense);
                 return;
               }
 
-              DownloadUtils.instance.download(videoId, item, clickType: type);
+              DownloadUtils.instance.download(videoId, item, clickType: type, adSense: adSense);
             },
             child: Container(
               height: iconHeight,

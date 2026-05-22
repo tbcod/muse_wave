@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/tba/event_util.dart';
 import 'package:muse_wave/view/base_view.dart';
 
@@ -20,13 +21,19 @@ class AdmobUtils {
   }
 
   Future init() async {
-    DateTime start = DateTime.now();
+    // DateTime start = DateTime.now();
+
+    EventUtils.instance.addEvent("ad_init",
+        data: {"ad_source_client": "admob", "start_time": DateTime.now().difference(bus.appLaunchTime).inMilliseconds});
 
     await MobileAds.instance.initialize();
 
     await MobileAds.instance.setAppMuted(true);
 
-    EventUtils.instance.addEvent("ad_initsuc", data: {"ad_source_client": "admob", "ad_init_time":  DateTime.now().difference(start).inMilliseconds});
+    EventUtils.instance.addEvent("ad_initsuc", data: {
+      "ad_source_client": "admob",
+      "ad_init_time": DateTime.now().difference(bus.appLaunchTime).inMilliseconds
+    });
 
     AppLog.i("admob sdk 初始化 success");
 
@@ -50,12 +57,19 @@ class AdmobUtils {
     // });
   }
 
-  Future<Ad?> loadBanner(String adId, String key, AdScene adSense, Rx<Widget> adView, {bool isSmall = false}) {
+  Future<Ad?> loadBanner(String adId, String key, AdSense adSense, Rx<Widget> adView, {bool isSmall = false}) {
     Widget view = Container();
     Completer<Ad?> completer = Completer();
     EventUtils.instance.addEvent(
       "ad_request",
-      data: {"ad_format": "banner", "ad_source_client": "admob", "ad_sense": adSense.name, "ad_pos_id": key,  "ad_code_id": adId},
+      data: {
+        "ad_format": "banner",
+        "ad_source_client": "admob",
+        "ad_sense": adSense.name,
+        "ad_pos_id": key,
+        "ad_code_id": adId,
+        "ad_function": AdFunction.unknown.name,
+      },
     );
     DateTime now = DateTime.now();
     view = Container(
@@ -70,8 +84,15 @@ class AdmobUtils {
               adView.value = isSmall ? view : getAdCloseView(view);
               completer.complete(ad);
               EventUtils.instance.addEvent(
-                "ad_return",
-                data: {"ad_format": "banner","ad_sense": adSense.name, "ad_source_client": "admob", "ad_pos_id": key,  "ad_code_id": adId},
+                "ad_return_sucess",
+                data: {
+                  "ad_format": "banner",
+                  "ad_sense": adSense.name,
+                  "ad_source_client": "admob",
+                  "ad_pos_id": key,
+                  "ad_code_id": adId,
+                  "ad_function": AdFunction.unknown.name,
+                },
               );
               EventUtils.instance.addEvent("ad_chance", data: {"ad_sense": adSense.name, "ad_pos_id": key});
             },
@@ -89,19 +110,34 @@ class AdmobUtils {
                   "ad_code_id": adId,
                   "reason": e.message,
                   "ad_request_time": DateTime.now().difference(now).inMilliseconds,
+                  "ad_function": AdFunction.unknown.name,
                 },
               );
             },
             onAdClicked: (ad) {
               EventUtils.instance.addEvent(
                 "ad_click",
-                data: {"ad_format": "banner", "ad_source_client": "admob", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId},
+                data: {
+                  "ad_format": "banner",
+                  "ad_source_client": "admob",
+                  "ad_pos_id": key,
+                  "ad_sense": adSense.name,
+                  "ad_code_id": adId,
+                  "ad_function": AdFunction.unknown.name,
+                },
               );
             },
             onAdClosed: (ad) {
               EventUtils.instance.addEvent(
                 "ad_close",
-                data: {"ad_format": "banner", "ad_source_client": "admob", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId},
+                data: {
+                  "ad_format": "banner",
+                  "ad_source_client": "admob",
+                  "ad_pos_id": key,
+                  "ad_sense": adSense.name,
+                  "ad_code_id": adId,
+                  "ad_function": AdFunction.unknown.name,
+                },
               );
             },
             onPaidEvent: (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
@@ -115,8 +151,7 @@ class AdmobUtils {
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
                 adPosName: key,
-                // precision_type: precision.name,
-                //   positionKey: positionKey
+                adFunction: AdFunction.unknown.name,
               );
             },
           ),
@@ -128,14 +163,20 @@ class AdmobUtils {
     return completer.future;
   }
 
-  Future<Ad?> loadNativeAd(String adId, String key, AdScene adSense, Rx<Widget> adView) async {
+  Future<Ad?> loadNativeAd(String adId, String key, AdSense adSense, Rx<Widget> adView) async {
     Widget view = Container();
     Completer<Ad?> completer = Completer();
 
     DateTime now = DateTime.now();
     EventUtils.instance.addEvent(
       "ad_request",
-      data: {"ad_format": "native", "ad_source_client": "admob","ad_sense": adSense.name, "ad_pos_id": key,  "ad_code_id": adId},
+      data: {
+        "ad_format": "native",
+        "ad_source_client": "admob",
+        "ad_sense": adSense.name,
+        "ad_pos_id": key,
+        "ad_code_id": adId
+      },
     );
 
     view = Container(
@@ -153,8 +194,15 @@ class AdmobUtils {
 
               completer.complete(ad);
               EventUtils.instance.addEvent(
-                "ad_return",
-                data: {"ad_format": "banner","ad_sense": adSense.name, "ad_source_client": "admob", "ad_pos_id": key, "ad_code_id": adId},
+                "ad_return_sucess",
+                data: {
+                  "ad_format": "banner",
+                  "ad_sense": adSense.name,
+                  "ad_source_client": "admob",
+                  "ad_pos_id": key,
+                  "ad_code_id": adId,
+                  "ad_function": AdFunction.unknown.name,
+                },
               );
             },
             onAdFailedToLoad: (ad, e) {
@@ -171,19 +219,34 @@ class AdmobUtils {
                   "ad_code_id": adId,
                   "reason": e.message,
                   "ad_request_time": DateTime.now().difference(now).inMilliseconds,
+                  "ad_function": AdFunction.unknown.name,
                 },
               );
             },
             onAdClicked: (ad) {
               EventUtils.instance.addEvent(
                 "ad_click",
-                data: {"ad_format": "native", "ad_source_client": "admob", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId},
+                data: {
+                  "ad_format": "native",
+                  "ad_source_client": "admob",
+                  "ad_pos_id": key,
+                  "ad_sense": adSense.name,
+                  "ad_code_id": adId,
+                  "ad_function": AdFunction.unknown.name,
+                },
               );
             },
             onAdClosed: (ad) {
               EventUtils.instance.addEvent(
                 "ad_close",
-                data: {"ad_format": "native", "ad_source_client": "admob", "ad_pos_id": key, "ad_sense": adSense.name, "ad_code_id": adId},
+                data: {
+                  "ad_format": "native",
+                  "ad_source_client": "admob",
+                  "ad_pos_id": key,
+                  "ad_sense": adSense.name,
+                  "ad_code_id": adId,
+                  "ad_function": AdFunction.unknown.name,
+                },
               );
             },
             onPaidEvent: (Ad ad, double valueMicros, PrecisionType precision, String currencyCode) {
@@ -196,8 +259,7 @@ class AdmobUtils {
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
                 adPosName: key,
-                // precision_type: precision.name,
-                //   positionKey: positionKey
+                adFunction: AdFunction.unknown.name,
               );
             },
           ),

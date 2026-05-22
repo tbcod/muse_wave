@@ -138,7 +138,7 @@ class UserHome extends GetView<UserHomeController> {
             },
           ),
           onError: (e) {
-            return Container(
+            return SizedBox(
               width: double.infinity,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -233,7 +233,7 @@ class UserHome extends GetView<UserHomeController> {
           builder: (c) {
             if (type == "MUSIC_VIDEO_TYPE_OMV") {
               //大的视频音乐
-              return Container(
+              return SizedBox(
                 height: 185.w,
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -250,7 +250,7 @@ class UserHome extends GetView<UserHomeController> {
                           Get.find<UserPlayInfoController>().setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
                           // Get.to(UserPlayInfo());
                         },
-                        child: Container(
+                        child: SizedBox(
                           width: 248.w,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,7 +307,7 @@ class UserHome extends GetView<UserHomeController> {
               //小的歌曲列表
               var isRec = title == "Listen now";
               // AppLog.i("MUSIC_VIDEO_TYPE_ATV type:$type, data:${data.length}");
-              return Container(
+              return SizedBox(
                 height: 226.w,
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -444,7 +444,7 @@ class UserHome extends GetView<UserHomeController> {
                                                     width: 32.w,
                                                     alignment: Alignment.center,
                                                     padding: EdgeInsets.all(6.w),
-                                                    child: Container(
+                                                    child: SizedBox(
                                                       width: 20.w,
                                                       height: 20.w,
                                                       // padding: EdgeInsets.all(5.w),
@@ -479,7 +479,7 @@ class UserHome extends GetView<UserHomeController> {
                                                   EventUtils.instance.addEvent("home_model", data: {"click_type": "offline", "title": title});
                                                 }
 
-                                                DownloadUtils.instance.download(videoId, subItem, clickType: "home");
+                                                DownloadUtils.instance.download(videoId, subItem, clickType: "home", adSense: AdSense.home);
                                               },
                                               child: Container(
                                                 height: 50.w,
@@ -498,7 +498,7 @@ class UserHome extends GetView<UserHomeController> {
                                           child: Container(
                                             height: 50.w,
                                             padding: EdgeInsets.all(6.w),
-                                            child: Container(width: 20.w, height: 20.w, child: Image.asset("assets/oimg/icon_more.png")),
+                                            child: SizedBox(width: 20.w, height: 20.w, child: Image.asset("assets/oimg/icon_more.png")),
                                           ),
                                         ),
                                       ],
@@ -518,7 +518,7 @@ class UserHome extends GetView<UserHomeController> {
               );
             } else if (type == "MUSIC_PAGE_TYPE_PLAYLIST") {
               //歌单
-              return Container(
+              return SizedBox(
                 height: 185.w,
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -531,9 +531,9 @@ class UserHome extends GetView<UserHomeController> {
                         AppLog.e(childItem);
 
                         EventUtils.instance.addEvent("det_playlist_show", data: {"from": "home"});
-                        Get.to(UserPlayListInfo(), arguments: childItem);
+                        Get.to(UserPlayListInfo(adSense: AdSense.home), arguments: childItem);
                       },
-                      child: Container(
+                      child: SizedBox(
                         width: 140.w,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -565,7 +565,7 @@ class UserHome extends GetView<UserHomeController> {
               );
             } else if (type == "MUSIC_PAGE_TYPE_ALBUM") {
               //专辑
-              return Container(
+              return SizedBox(
                 height: 185.w,
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -577,9 +577,9 @@ class UserHome extends GetView<UserHomeController> {
                         EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
                         AppLog.e(childItem);
                         EventUtils.instance.addEvent("det_playlist_show", data: {"from": "home"});
-                        Get.to(UserPlayListInfo(), arguments: childItem);
+                        Get.to(UserPlayListInfo(adSense: AdSense.home), arguments: childItem);
                       },
-                      child: Container(
+                      child: SizedBox(
                         width: 140.w,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,7 +611,7 @@ class UserHome extends GetView<UserHomeController> {
               );
             } else if (type == "MUSIC_PAGE_TYPE_ARTIST") {
               //歌手
-              return Container(
+              return SizedBox(
                 height: 160.w,
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -655,7 +655,7 @@ class UserHome extends GetView<UserHomeController> {
                               child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))]),
                             ),
                             SizedBox(height: 12.w),
-                            Container(
+                            SizedBox(
                               width: 68.w,
                               child: Text(
                                 childItem["title"],
@@ -678,7 +678,7 @@ class UserHome extends GetView<UserHomeController> {
               );
             } else if (type == "MUSIC_PAGE_TYPE_TOP_CHART") {
               //自定义排行榜
-              return Container(
+              return SizedBox(
                 height: 185.w,
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -697,9 +697,9 @@ class UserHome extends GetView<UserHomeController> {
                           itemMap.remove("browseId");
                         }
 
-                        Get.to(UserPlayListInfo(), arguments: itemMap);
+                        Get.to(UserPlayListInfo(adSense: AdSense.home), arguments: itemMap);
                       },
-                      child: Container(
+                      child: SizedBox(
                         width: 140.w,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -733,7 +733,7 @@ class UserHome extends GetView<UserHomeController> {
               //自定义歌曲
             } else if (type == "My_Playlist") {
               //自定义歌单
-              return Container(
+              return SizedBox(
                 height: 130.w,
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -765,7 +765,7 @@ class UserHome extends GetView<UserHomeController> {
                           EventUtils.instance.addEvent("det_playlist_show", data: {"from": "home"});
                           if (childType == 1) {
                             // AppLog.e(childItem);
-                            Get.to(UserPlayListInfo(), arguments: childItem);
+                            Get.to(UserPlayListInfo(adSense: AdSense.home), arguments: childItem);
                             // Get.to(UserPlayListInfo(),
                             //     arguments: {"browseId": childItem["id"]});
                           } else {
@@ -773,7 +773,7 @@ class UserHome extends GetView<UserHomeController> {
                           }
                         }
                       },
-                      child: Container(
+                      child: SizedBox(
                         width: 88.w,
                         // color: Colors.red,
                         height: double.infinity,
@@ -801,7 +801,7 @@ class UserHome extends GetView<UserHomeController> {
                             //   width: 10,
                             //   height: 1000,
                             // ),
-                            Container(
+                            SizedBox(
                               width: 88.w,
                               child: Text(
                                 childItem["title"],
@@ -823,7 +823,7 @@ class UserHome extends GetView<UserHomeController> {
               );
             } else if (type == "LOCKUP_CONTENT_TYPE_ALBUM" || type == "LOCKUP_CONTENT_TYPE_PLAYLIST") {
               //youtube的歌单
-              return Container(
+              return SizedBox(
                 height: 185.w,
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -838,9 +838,9 @@ class UserHome extends GetView<UserHomeController> {
                         //
                         // EventUtils.instance.addEvent("det_playlist_show",
                         //     data: {"from": "home"});
-                        Get.to(UserPlayListInfo(), arguments: childItem);
+                        Get.to(UserPlayListInfo(adSense: AdSense.home), arguments: childItem);
                       },
-                      child: Container(
+                      child: SizedBox(
                         width: 140.w,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -872,7 +872,7 @@ class UserHome extends GetView<UserHomeController> {
               );
             } else if (type == "Video") {
               //youtube的视频列表
-              return Container(
+              return SizedBox(
                 height: 185.w,
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -945,7 +945,7 @@ class UserHome extends GetView<UserHomeController> {
             }
 
             return Container(height: 0, color: Colors.red);
-            return Container(
+            return SizedBox(
               height: 200.w,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
@@ -954,7 +954,7 @@ class UserHome extends GetView<UserHomeController> {
 
                   return Column(
                     children: [
-                      Container(width: 100.w, height: 100.w, child: NetImageView(imgUrl: childItem["cover"] ?? "")),
+                      SizedBox(width: 100.w, height: 100.w, child: NetImageView(imgUrl: childItem["cover"] ?? "")),
                       // Text(childItem["title"]),
                       Text(childItem["subtitle"]),
                     ],

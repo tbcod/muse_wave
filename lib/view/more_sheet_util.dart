@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:muse_wave/main.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/uinew/main/home/u_yt_channel.dart';
 
 import 'package:uuid/uuid.dart';
@@ -47,7 +48,8 @@ class MoreSheetUtil {
       Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -73,7 +75,11 @@ class MoreSheetUtil {
                             child: NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
                           ),
                           SizedBox(width: 12.w),
-                          Expanded(child: Text(item["title"], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500))),
+                          Expanded(
+                              child: Text(item["title"],
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500))),
                         ],
                       ),
                     ),
@@ -133,7 +139,11 @@ class MoreSheetUtil {
                                 width: 24.w,
                                 height: 24.w,
                                 // padding: EdgeInsets.all(5.w),
-                                child: CircularProgressIndicator(value: progress, strokeWidth: 1.5, backgroundColor: Color(0xffA995FF).withOpacity(0.35), color: Color(0xffA995FF)),
+                                child: CircularProgressIndicator(
+                                    value: progress,
+                                    strokeWidth: 1.5,
+                                    backgroundColor: Color(0xffA995FF).withOpacity(0.35),
+                                    color: Color(0xffA995FF)),
                               ),
                               SizedBox(width: 16.w),
                               Text("Downloading".tr, style: TextStyle(fontSize: 14.w)),
@@ -153,7 +163,8 @@ class MoreSheetUtil {
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: Row(
                             children: [
-                              Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_download_ok.png")),
+                              Container(
+                                  width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_download_ok.png")),
                               SizedBox(width: 16.w),
                               Text("Downloaded".tr, style: TextStyle(fontSize: 14.w)),
                             ],
@@ -165,7 +176,11 @@ class MoreSheetUtil {
 
                       return InkWell(
                         onTap: () {
-                          DownloadUtils.instance.download(item["videoId"], item, clickType: clickType);
+                          DownloadUtils.instance.download(item["videoId"], item,
+                              clickType: clickType,
+                              adSense: clickType == "artist_more_song" || clickType == "artist"
+                                  ? AdSense.artist_detail_page
+                                  : AdSense.playlist_page);
                         },
                         child: Container(
                           height: 40.w,
@@ -173,7 +188,8 @@ class MoreSheetUtil {
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: Row(
                             children: [
-                              Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_download_black.png")),
+                              Container(
+                                  width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_download_black.png")),
                               SizedBox(width: 16.w),
                               Text("Offline".tr, style: TextStyle(fontSize: 14.w)),
                             ],
@@ -193,7 +209,10 @@ class MoreSheetUtil {
               return InkWell(
                 onTap: () {
                   if (!isLike) {
-                    LikeUtil.instance.likeVideo(item["videoId"], item);
+                    LikeUtil.instance.likeVideo(item["videoId"], item,
+                        adSense: clickType == "artist_more_song" || clickType == "artist"
+                            ? AdSense.artist_detail_page
+                            : AdSense.playlist_page);
                   } else {
                     LikeUtil.instance.unlikeVideo(item["videoId"]);
                   }
@@ -211,7 +230,11 @@ class MoreSheetUtil {
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Row(
                     children: [
-                      Container(width: 24.w, height: 24.w, child: Image.asset(isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off.png")),
+                      Container(
+                          width: 24.w,
+                          height: 24.w,
+                          child:
+                              Image.asset(isLike ? "assets/oimg/icon_like_on.png" : "assets/oimg/icon_like_off.png")),
                       SizedBox(width: 16.w),
                       Text(isLike ? "Remove from library".tr : "Add to Library".tr, style: TextStyle(fontSize: 14.w)),
                     ],
@@ -323,7 +346,8 @@ class MoreSheetUtil {
                 }
 
                 if (clickType == "play_playlist" || clickType == "play") {
-                  EventUtils.instance.addEvent("play_page_click", data: {"song_id": item["videoId"], "station": "view_artist"});
+                  EventUtils.instance
+                      .addEvent("play_page_click", data: {"song_id": item["videoId"], "station": "view_artist"});
                 }
                 AppLog.e(item);
 
@@ -358,9 +382,11 @@ class MoreSheetUtil {
 
                 if (result.code == HttpCode.success) {
                   try {
-                    var browseId =
-                        result
-                            .data["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"][0]["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"];
+                    var browseId = result.data["contents"]["singleColumnMusicWatchNextResultsRenderer"]
+                                    ["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"][0]["tabRenderer"]
+                                ["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"][0]
+                            ["playlistPanelVideoRenderer"]["longBylineText"]["runs"][0]["navigationEndpoint"]
+                        ["browseEndpoint"]["browseId"];
 
                     Get.back();
                     LoadingUtil.hideAllLoading();
@@ -438,7 +464,8 @@ class MoreSheetUtil {
       Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -463,7 +490,11 @@ class MoreSheetUtil {
                               children: [
                                 Align(
                                   alignment: Alignment.centerRight,
-                                  child: Container(width: 36.w, height: 36.w, decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w), color: Color(0xffE0E0EF))),
+                                  child: Container(
+                                      width: 36.w,
+                                      height: 36.w,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(2.w), color: Color(0xffE0E0EF))),
                                 ),
 
                                 //默认封面
@@ -474,19 +505,22 @@ class MoreSheetUtil {
                                     height: 40.w,
                                     clipBehavior: Clip.hardEdge,
                                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
-                                    child:
-                                        item["cover"] == null
-                                            ?
-                                            //默认封面
-                                            Image.asset("assets/oimg/icon_d_item.png")
-                                            : NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
+                                    child: item["cover"] == null
+                                        ?
+                                        //默认封面
+                                        Image.asset("assets/oimg/icon_d_item.png")
+                                        : NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           SizedBox(width: 12.w),
-                          Expanded(child: Text(item["title"], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500))),
+                          Expanded(
+                              child: Text(item["title"],
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500))),
                         ],
                       ),
                     ),
@@ -525,7 +559,11 @@ class MoreSheetUtil {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Row(
-                  children: [Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_rename.png")), SizedBox(width: 16.w), Text("Rename".tr, style: TextStyle(fontSize: 14.w))],
+                  children: [
+                    Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_rename.png")),
+                    SizedBox(width: 16.w),
+                    Text("Rename".tr, style: TextStyle(fontSize: 14.w))
+                  ],
                 ),
               ),
             ),
@@ -574,7 +612,11 @@ class MoreSheetUtil {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Row(
-                  children: [Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_del.png")), SizedBox(width: 16.w), Text("Delete".tr, style: TextStyle(fontSize: 14.w))],
+                  children: [
+                    Container(width: 24.w, height: 24.w, child: Image.asset("assets/oimg/icon_del.png")),
+                    SizedBox(width: 16.w),
+                    Text("Delete".tr, style: TextStyle(fontSize: 14.w))
+                  ],
                 ),
               ),
             ),
@@ -614,7 +656,8 @@ class MoreSheetUtil {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           children: [
@@ -642,7 +685,11 @@ class MoreSheetUtil {
               child: Container(
                 height: 72.w,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Row(children: [Image.asset("assets/oimg/icon_add.png", width: 56.w, height: 56.w), SizedBox(width: 22.w), Text("New list".tr)]),
+                child: Row(children: [
+                  Image.asset("assets/oimg/icon_add.png", width: 56.w, height: 56.w),
+                  SizedBox(width: 22.w),
+                  Text("New list".tr)
+                ]),
               ),
             ),
 
@@ -675,13 +722,16 @@ class MoreSheetUtil {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(padding: EdgeInsets.symmetric(horizontal: 16.w), child: Text("Create playlist".tr, style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.w500))),
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Text("Create playlist".tr, style: TextStyle(fontSize: 20.w, fontWeight: FontWeight.w500))),
             SizedBox(height: 16.w),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -709,8 +759,11 @@ class MoreSheetUtil {
                       child: Container(
                         height: 48.w,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.w), border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
-                        child: Text("Cancel".tr, style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75))),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24.w),
+                            border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
+                        child: Text("Cancel".tr,
+                            style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75))),
                       ),
                     ),
                   ),
@@ -742,7 +795,8 @@ class MoreSheetUtil {
                       child: Container(
                         height: 48.w,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(color: Color(0xff824EFF).withOpacity(0.5), borderRadius: BorderRadius.circular(24.w)),
+                        decoration: BoxDecoration(
+                            color: Color(0xff824EFF).withOpacity(0.5), borderRadius: BorderRadius.circular(24.w)),
                         child: Text("Confirm".tr, style: TextStyle(fontSize: 14.w, color: Colors.white)),
                       ),
                     ),
@@ -833,7 +887,13 @@ class MoreSheetUtil {
               height: 54.w,
               child: Stack(
                 children: [
-                  Align(alignment: Alignment.centerRight, child: Container(width: 48.w, height: 48.w, decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w), color: Color(0xffE0E0EF)))),
+                  Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                          width: 48.w,
+                          height: 48.w,
+                          decoration:
+                              BoxDecoration(borderRadius: BorderRadius.circular(2.w), color: Color(0xffE0E0EF)))),
 
                   //默认封面
                   Align(
@@ -843,12 +903,11 @@ class MoreSheetUtil {
                       height: 54.w,
                       clipBehavior: Clip.hardEdge,
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.w)),
-                      child:
-                          item["cover"] == null
-                              ?
-                              //默认封面
-                              Image.asset("assets/oimg/icon_d_item.png")
-                              : NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
+                      child: item["cover"] == null
+                          ?
+                          //默认封面
+                          Image.asset("assets/oimg/icon_d_item.png")
+                          : NetImageView(imgUrl: item["cover"], fit: BoxFit.cover),
                     ),
                   ),
                 ],
@@ -860,9 +919,13 @@ class MoreSheetUtil {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(item["title"], style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text(item["title"],
+                      style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis),
                   SizedBox(height: 12.w),
-                  Text("${childList.length} songs", style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5))),
+                  Text("${childList.length} songs",
+                      style: TextStyle(fontSize: 12.w, color: Colors.black.withOpacity(0.5))),
                 ],
               ),
             ),
@@ -888,13 +951,16 @@ class MoreSheetUtil {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffEAE8F9), Color(0xfffafafa)]),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(padding: EdgeInsets.symmetric(horizontal: 16.w), child: Text("Rename playlist".tr, style: TextStyle(fontSize: 20.w))),
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Text("Rename playlist".tr, style: TextStyle(fontSize: 20.w))),
             SizedBox(height: 16.w),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -922,8 +988,11 @@ class MoreSheetUtil {
                       child: Container(
                         height: 48.w,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.w), border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
-                        child: Text("Cancel".tr, style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75))),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24.w),
+                            border: Border.all(color: Color(0xff824EFF).withOpacity(0.75), width: 2.w)),
+                        child: Text("Cancel".tr,
+                            style: TextStyle(fontSize: 14.w, color: Color(0xff824EFF).withOpacity(0.75))),
                       ),
                     ),
                   ),
@@ -953,7 +1022,8 @@ class MoreSheetUtil {
                       child: Container(
                         height: 48.w,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(color: Color(0xff824EFF).withOpacity(0.5), borderRadius: BorderRadius.circular(24.w)),
+                        decoration: BoxDecoration(
+                            color: Color(0xff824EFF).withOpacity(0.5), borderRadius: BorderRadius.circular(24.w)),
                         child: Text("Confirm".tr, style: TextStyle(fontSize: 14.w, color: Colors.white)),
                       ),
                     ),

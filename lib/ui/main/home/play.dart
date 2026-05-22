@@ -534,7 +534,7 @@ class PlayPageController extends GetxController {
 
     isPlaying.value = true;
 
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdScene.play);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.play_page, adFunction: AdFunction.play);
 
     if (_playerCompleteSubscription != null) {
       return;

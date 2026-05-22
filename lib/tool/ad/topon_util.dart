@@ -85,7 +85,7 @@
 //       // AppLog.e("topon ${e.placementID}");
 //       // AppLog.e("${e.requestMessage}");
 //       if (e.bannerStatus == BannerStatus.bannerAdDidFinishLoading) {
-//         EventUtils.instance.addEvent("ad_return", data: {"ad_format": "banner", "ad_sense": adScene.name, "ad_id": adId, "ad_source_client": "topon", "ad_request_time": DateTime.now().difference(now).inMilliseconds});
+//         EventUtils.instance.addEvent("ad_return_sucess", data: {"ad_format": "banner", "ad_sense": adScene.name, "ad_id": adId, "ad_source_client": "topon", "ad_request_time": DateTime.now().difference(now).inMilliseconds});
 //         allCom[e.placementID]?.complete(true);
 //       } else if (e.bannerStatus == BannerStatus.bannerAdFailToLoadAD) {
 //           EventUtils.instance.addEvent("ad_return_fail", data: {"ad_format": "banner", "ad_sense": adScene.name, "ad_id": adId, "ad_source_client": "topon", "ad_request_time": DateTime.now().difference(now).inMilliseconds, "reason": e.requestMessage});
@@ -164,7 +164,7 @@
 //       AppLog.e("${e.requestMessage}");
 //       if (e.nativeStatus == NativeStatus.nativeAdDidFinishLoading) {
 //         allCom[e.placementID]?.complete(true);
-//         EventUtils.instance.addEvent("ad_return", data: {"ad_format": "native", "ad_sense": adScene.name, "ad_id": adId, "ad_source_client": "topon", "ad_request_time": DateTime.now().difference(now).inMilliseconds});
+//         EventUtils.instance.addEvent("ad_return_sucess", data: {"ad_format": "native", "ad_sense": adScene.name, "ad_id": adId, "ad_source_client": "topon", "ad_request_time": DateTime.now().difference(now).inMilliseconds});
 //       } else if (e.nativeStatus == NativeStatus.nativeAdFailToLoadAD) {
 //         allCom[e.placementID]?.complete(false);
 //         EventUtils.instance.addEvent("ad_return_fail", data: {"ad_format": "native", "ad_sense": adScene.name, "ad_id": adId, "ad_source_client": "topon", "ad_request_time": DateTime.now().difference(now).inMilliseconds, "reason": e.requestMessage});

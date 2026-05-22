@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:muse_wave/generated/assets.dart';
 import 'package:muse_wave/static/app_color.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
@@ -58,7 +59,7 @@ class SettingPage extends GetView<SettingPageController> {
                       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20.w)),
                       child: ListView.separated(
                         itemBuilder: (_, i) {
-                          if(i == 0) return _videoRewardItem();
+                          if (i == 0) return _videoRewardItem();
                           return getItem(i - 1);
                         },
                         shrinkWrap: true,
@@ -131,13 +132,15 @@ class SettingPage extends GetView<SettingPageController> {
           //     ),
           //     barrierDismissible: true);
         } else if (itemTitle == "Share") {
-          var url = GetPlatform.isAndroid ? "https://play.google.com/store/apps/details?id=com.musewave.player.music" : "";
+          var url =
+              GetPlatform.isAndroid ? "https://play.google.com/store/apps/details?id=com.musewave.player.music" : "";
           await Clipboard.setData(ClipboardData(text: url));
           ToastUtil.showToast(msg: "Copy download link ok!");
 
           Share.share(url);
         } else if (itemTitle == "Evaluate") {
-          var url = GetPlatform.isAndroid ? "https://play.google.com/store/apps/details?id=com.musewave.player.music" : "";
+          var url =
+              GetPlatform.isAndroid ? "https://play.google.com/store/apps/details?id=com.musewave.player.music" : "";
           if (await canLaunchUrl(Uri.parse(url))) {
             launchUrl(Uri.parse(url));
           } else {
@@ -169,12 +172,14 @@ class SettingPage extends GetView<SettingPageController> {
                       direction: Axis.vertical,
                       spacing: 0,
                       children: [
-                        Text("Rewarded Ad", style: const TextStyle(height: 1, color: Color(0xff4d4d4d), fontSize: 14, fontWeight: FontWeight.w500)),
+                        Text("Rewarded Ad",
+                            style: const TextStyle(
+                                height: 1, color: Color(0xff4d4d4d), fontSize: 14, fontWeight: FontWeight.w500)),
                         const SizedBox(height: 4),
                         Obx(() {
                           return Text(
                             "Remaining：${controller.curRemindHour.value}h",
-                            style: TextStyle(fontSize: 12, color: Color(0xff3B7BFF),fontWeight: FontWeight.w500),
+                            style: TextStyle(fontSize: 12, color: Color(0xff3B7BFF), fontWeight: FontWeight.w500),
                           );
                         }),
                       ],
@@ -195,7 +200,8 @@ class SettingPage extends GetView<SettingPageController> {
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: Color(0xff3B7BFF)),
-                    child: Text("Rewarded AD", style: TextStyle(fontSize: 12, color: Color(0xffffffff), fontWeight: FontWeight.w500)),
+                    child: Text("Rewarded AD",
+                        style: TextStyle(fontSize: 12, color: Color(0xffffffff), fontWeight: FontWeight.w500)),
                   ),
                 ),
               ),
@@ -213,7 +219,6 @@ class SettingPageController extends GetxController {
 
   var listIcon = [Assets.imgIconMe1, Assets.imgIconMe2, Assets.imgIconMe3];
 
-
   var curRemindHour = 12.obs;
 
   DateTime? lastVideoAdTime;
@@ -227,9 +232,7 @@ class SettingPageController extends GetxController {
     curRemindHour.value = museSp.getInt('keyRemindListenTimeHours', def: 12);
 
     rewardCd = RemoteUtil.shareInstance.rewardVideoCd;
-
   }
-
 
   changeRemindHour(int hour) {
     curRemindHour.value = hour;
@@ -253,7 +256,11 @@ class SettingPageController extends GetxController {
               return;
             }
           }
-          bool isSuccess = await AdUtils.instance.showAd(AdPosId.muse_local_reward, adSense: AdScene.set);
+          bool isSuccess = await AdUtils.instance.showAd(
+            AdPosId.muse_local_reward,
+            adSense: AdSense.set,
+            adFunction: AdFunction.unknown,
+          );
           if (isSuccess) {
             lastVideoAdTime = DateTime.now();
             changeRemindHour(curRemindHour.value + 1);
