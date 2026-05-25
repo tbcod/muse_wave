@@ -291,7 +291,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
 
                         String browseId = bigItem["moreBrowseId"] ?? "";
                         String params = bigItem["moreParams"] ?? "";
-                        AppLog.e("type==$type\nbrowseId==$browseId\nparams==$params");
+                        // AppLog.e("type==$type\nbrowseId==$browseId\nparams==$params");
                         var title = bigItem["title"] ?? "";
                         if (type == "music") {
                           Get.to(UserMoreSong(barTitle: title, isFormSearch: isFormSearch),
@@ -310,12 +310,15 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                         //   "params": params,
                         // });
                       },
-                      child: Row(
-                        children: [
-                          Text("More".tr, style: TextStyle(fontSize: 12.w, color: Color(0xffa6a6a6))),
-                          SizedBox(width: 4.w),
-                          Image.asset("assets/oimg/icon_more_right.png", width: 12.w, height: 12.w),
-                        ],
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 2,vertical: 4),
+                        child: Row(
+                          children: [
+                            Text("More".tr, style: TextStyle(fontSize: 12.w, color: Color(0xffa6a6a6))),
+                            SizedBox(width: 4.w),
+                            Image.asset("assets/oimg/icon_more_right.png", width: 12.w, height: 12.w),
+                          ],
+                        ),
                       ),
                     ),
             ],
@@ -853,6 +856,12 @@ class UserArtistInfoController extends GetxController with StateMixin {
       //     statusBarIconBrightness:
       //         isHeaderExpanded.value ? Brightness.light : Brightness.dark));
     });
+  }
+
+  @override
+  void onReady() {
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.artist_detail_page, adFunction: AdFunction.detail);
+    super.onReady();
   }
 
   @override

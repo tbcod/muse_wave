@@ -160,7 +160,7 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                       ? IgnorePointer(
                           ignoring: true,
                           child: Container(
-                            decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(11)),
+                            decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(12)),
                             child: const Padding(
                                 padding: EdgeInsets.all(2.0),
                                 child: Icon(Icons.close_rounded, size: 20, color: Colors.black38)),
@@ -174,7 +174,9 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                               child: Container(
                                 decoration:
                                     BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(12)),
-                                child: Icon(Icons.close_rounded, size: 24, color: Colors.black54),
+                                child: Padding(
+                                    padding: EdgeInsets.all(2),
+                                    child: Icon(Icons.close_rounded, size: 20, color: Colors.black54)),
                               ),
                             ),
                             GestureDetector(
@@ -182,7 +184,6 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                                 AppLog.i("关闭点击广告");
                                 // AppLog.i("关闭点击广告2 ${Get.currentRoute}, ${Get.previousRoute}, isBottomSheet:${Get.routing.isBottomSheet}, removed:${Get.routing.removed}");
                                 Get.back();
-                                // AppLog.i("关闭点击广告3 ${Get.currentRoute}, ${Get.previousRoute}, isBottomSheet:${Get.routing.isBottomSheet}, removed:${Get.routing.removed}");
                                 if (Get.previousRoute == "LaunchLoad") {
                                   Get.back();
                                 }
@@ -194,10 +195,6 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                                 color: Colors.transparent,
                               ),
                             ),
-                            // child: Container(
-                            //   decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(11)),
-                            //   child: const Padding(padding: EdgeInsets.all(2.0), child: Icon(Icons.close_rounded, size: 20, color: Colors.black54)),
-                            // ),
                           ],
                         ),
                 );

@@ -258,7 +258,7 @@ class SettingPageController extends GetxController {
           }
           bool isSuccess = await AdUtils.instance.showAd(
             AdPosId.muse_local_reward,
-            adSense: AdSense.set,
+            adSense: AdSense.setting,
             adFunction: AdFunction.unknown,
           );
           if (isSuccess) {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/log.dart';
 
 import '../generated/assets.dart';
 import '../tool/ad/topon_util.dart';
@@ -18,7 +19,9 @@ class BasePage extends GetView {
 
   @override
   Widget build(BuildContext context) {
-    return Container(decoration: BoxDecoration(image: DecorationImage(fit: BoxFit.fill, image: AssetImage(Assets.imgBgAll))), child: child);
+    return Container(
+        decoration: BoxDecoration(image: DecorationImage(fit: BoxFit.fill, image: AssetImage(Assets.imgBgAll))),
+        child: child);
   }
 }
 
@@ -74,7 +77,10 @@ class BaseDialog extends GetView {
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.w),
               decoration: BoxDecoration(
                 color: Color(0xff202020),
-                gradient: LinearGradient(colors: [Color(0xffEAEAFF), Color(0xffFAFAFA)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+                gradient: LinearGradient(
+                    colors: [Color(0xffEAEAFF), Color(0xffFAFAFA)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter),
                 borderRadius: BorderRadius.circular(24.w),
               ),
               child: Column(
@@ -89,69 +95,70 @@ class BaseDialog extends GetView {
                     height: 40.w,
                     width: double.infinity,
                     child: Row(
-                      children:
-                          single
-                              ? [
-                                Expanded(
-                                  child: GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    onTap: () {
-                                      if (rBtnOnTap != null) {
-                                        rBtnOnTap!();
-                                      }
-                                      Get.back();
-                                    },
-                                    child: Container(
-                                      height: double.infinity,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.w), color: mainColor),
-                                      child: Text(rBtnText ?? "", style: TextStyle(fontSize: 14.w, color: Colors.white)),
-                                    ),
+                      children: single
+                          ? [
+                              Expanded(
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    if (rBtnOnTap != null) {
+                                      rBtnOnTap!();
+                                    }
+                                    Get.back();
+                                  },
+                                  child: Container(
+                                    height: double.infinity,
+                                    alignment: Alignment.center,
+                                    decoration:
+                                        BoxDecoration(borderRadius: BorderRadius.circular(20.w), color: mainColor),
+                                    child: Text(rBtnText ?? "", style: TextStyle(fontSize: 14.w, color: Colors.white)),
                                   ),
                                 ),
-                              ]
-                              : [
-                                Expanded(
-                                  child: GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    onTap: () {
-                                      if (lBtnOnTap != null) {
-                                        lBtnOnTap!();
-                                      }
-                                      Get.back();
-                                    },
-                                    child: Container(
-                                      height: double.infinity,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20.w),
+                              ),
+                            ]
+                          : [
+                              Expanded(
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    if (lBtnOnTap != null) {
+                                      lBtnOnTap!();
+                                    }
+                                    Get.back();
+                                  },
+                                  child: Container(
+                                    height: double.infinity,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20.w),
 
-                                        // color: Colors.white.withOpacity(0.15)
-                                        border: Border.all(color: mainColor, width: 2.w),
-                                      ),
-                                      child: Text(lBtnText ?? "", style: TextStyle(fontSize: 14.w, color: mainColor)),
+                                      // color: Colors.white.withOpacity(0.15)
+                                      border: Border.all(color: mainColor, width: 2.w),
                                     ),
+                                    child: Text(lBtnText ?? "", style: TextStyle(fontSize: 14.w, color: mainColor)),
                                   ),
                                 ),
-                                SizedBox(width: 23.w),
-                                Expanded(
-                                  child: GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    onTap: () {
-                                      if (rBtnOnTap != null) {
-                                        rBtnOnTap!();
-                                      }
-                                      Get.back();
-                                    },
-                                    child: Container(
-                                      height: double.infinity,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.w), color: mainColor),
-                                      child: Text(rBtnText ?? "", style: TextStyle(fontSize: 14.w, color: Colors.white)),
-                                    ),
+                              ),
+                              SizedBox(width: 23.w),
+                              Expanded(
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    if (rBtnOnTap != null) {
+                                      rBtnOnTap!();
+                                    }
+                                    Get.back();
+                                  },
+                                  child: Container(
+                                    height: double.infinity,
+                                    alignment: Alignment.center,
+                                    decoration:
+                                        BoxDecoration(borderRadius: BorderRadius.circular(20.w), color: mainColor),
+                                    child: Text(rBtnText ?? "", style: TextStyle(fontSize: 14.w, color: Colors.white)),
                                   ),
                                 ),
-                              ],
+                              ),
+                            ],
                     ),
                   ),
                 ],
@@ -173,7 +180,16 @@ class NetImageView extends GetView {
   final Color? bgColor;
   final double? radius;
 
-  const NetImageView({Key? key, required this.imgUrl, this.width, this.height, this.fit = BoxFit.cover, this.errorAsset, this.bgColor, this.radius}) : super(key: key);
+  const NetImageView(
+      {Key? key,
+      required this.imgUrl,
+      this.width,
+      this.height,
+      this.fit = BoxFit.cover,
+      this.errorAsset,
+      this.bgColor,
+      this.radius})
+      : super(key: key);
 
   int? _cacheSize(double? value) {
     if (value == null || value <= 0) {
@@ -199,15 +215,15 @@ class NetImageView extends GetView {
         placeholder: (c, url) {
           return errorAsset == null
               ? Container(
-                color: bgColor ?? Colors.black.withOpacity(0.08),
-              )
+                  color: bgColor ?? Colors.black.withOpacity(0.08),
+                )
               : Image.asset(errorAsset!, fit: BoxFit.cover);
         },
         errorWidget: (c, url, error) {
           return errorAsset == null
               ? Container(
-                color: bgColor ?? Colors.black.withOpacity(0.08),
-              )
+                  color: bgColor ?? Colors.black.withOpacity(0.08),
+                )
               : Image.asset(errorAsset!, fit: BoxFit.cover);
         },
       ),
@@ -223,7 +239,15 @@ class NetAvatarView extends GetView {
   final Color borderColor;
   final Color bgColor;
 
-  const NetAvatarView({Key? key, required this.imgUrl, this.size = 40, this.borderWidth = 0, this.borderColor = Colors.grey, this.bgColor = Colors.grey, this.errorAsset = ""}) : super(key: key);
+  const NetAvatarView(
+      {Key? key,
+      required this.imgUrl,
+      this.size = 40,
+      this.borderWidth = 0,
+      this.borderColor = Colors.grey,
+      this.bgColor = Colors.grey,
+      this.errorAsset = ""})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -353,7 +377,11 @@ getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsH
                     width: 20.w,
                     height: 20.w,
                     // padding: EdgeInsets.all(5.w),
-                    child: CircularProgressIndicator(value: progress, strokeWidth: 1.5, backgroundColor: Color(0xffA995FF).withOpacity(0.35), color: Color(0xffA995FF)),
+                    child: CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 1.5,
+                        backgroundColor: Color(0xffA995FF).withOpacity(0.35),
+                        color: Color(0xffA995FF)),
                   ),
                 ),
               );
@@ -377,18 +405,23 @@ getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsH
               AdSense adSense = AdSense.playlist_page;
               if (type == "net_playlist" || type == "loc_playlist") {
                 EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "dl"});
-              }
-              if (type == "artist_more_song" || type == "artist") {
+              } else if (type == "artist") {
                 EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "dl"});
                 adSense = AdSense.artist_detail_page;
+              }  else if (type == "artist_more_song") {
+                EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "dl"});
+                adSense = AdSense.song_list;
+              }else if (type == "search") {
+                adSense = AdSense.search_page;
               }
 
-
               if (type == "net_playlist" || type == "artist_more_song" || type == "artist") {
-                DownloadUtils.instance.download(videoId, item, clickType: isSearch ? "s_detail" : "h_detail", adSense: adSense);
+                DownloadUtils.instance
+                    .download(videoId, item, clickType: isSearch ? "s_detail" : "h_detail", adSense: adSense);
                 return;
               } else if (type == "loc_playlist" || type == "liked" || type == "download") {
-                DownloadUtils.instance.download(videoId, item, clickType: locIsHome ? "h_detail" : "library", adSense: adSense);
+                DownloadUtils.instance
+                    .download(videoId, item, clickType: locIsHome ? "h_detail" : "library", adSense: adSense);
                 return;
               }
 
@@ -416,7 +449,10 @@ getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsH
 
           MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: type);
         },
-        child: Container(height: iconHeight, padding: EdgeInsets.all(6.w), child: Container(width: 20.w, height: 20.w, child: Image.asset("assets/oimg/icon_more.png"))),
+        child: Container(
+            height: iconHeight,
+            padding: EdgeInsets.all(6.w),
+            child: Container(width: 20.w, height: 20.w, child: Image.asset("assets/oimg/icon_more.png"))),
       ),
     ],
   );
@@ -426,38 +462,38 @@ Widget getAdCloseView(Widget adView, {String toponAdId = ""}) {
   var isShow = true.obs;
   return Container(
     child: Obx(
-      () =>
-          isShow.value
-              ? Container(
-                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.w),
-                child: Stack(
-                  children: [
-                    adView,
-                    //关闭按钮
-                    Positioned(
-                      left: 4,
-                      top: 4,
-                      child: InkWell(
-                        onTap: () {
-                          isShow.value = false;
+      () => isShow.value
+          ? Container(
+              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.w),
+              child: Stack(
+                children: [
+                  adView,
+                  //关闭按钮
+                  Positioned(
+                    left: 4,
+                    top: 4,
+                    child: InkWell(
+                      onTap: () {
+                        isShow.value = false;
 
-                          // if (toponAdId.isNotEmpty) {
-                          //   //topon 删除
-                          //   TopOnUtils.instance.allCom.remove(toponAdId);
-                          // }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w), color: Colors.black.withOpacity(0.5)),
-                          width: 20.w,
-                          height: 20.w,
-                          child: Icon(Icons.close, color: Colors.white, size: 15.w),
-                        ),
+                        // if (toponAdId.isNotEmpty) {
+                        //   //topon 删除
+                        //   TopOnUtils.instance.allCom.remove(toponAdId);
+                        // }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.w), color: Colors.black.withOpacity(0.5)),
+                        width: 20.w,
+                        height: 20.w,
+                        child: Icon(Icons.close, color: Colors.white, size: 15.w),
                       ),
                     ),
-                  ],
-                ),
-              )
-              : Container(),
+                  ),
+                ],
+              ),
+            )
+          : Container(),
     ),
   );
 }

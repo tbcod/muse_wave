@@ -1,7 +1,9 @@
 import 'package:android_play_install_referrer/android_play_install_referrer.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/muse_config.dart';
 import 'package:muse_wave/static/db_key.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/adjust_util.dart';
@@ -119,10 +121,15 @@ class TbaUtils {
       realMoney = realMoney * 1000000;
     }
 
+    if (kDebugMode && !MuseConfig.isUser && realMoney == 0) {
+      realMoney = 0.005 * 1000000; //测试环境，非用户，金额为0时，默认上报0.005美元的广告价值，方便测试广告价值相关功能
+    }
+
     // final adMoney = realMoney.toDouble();
     //不是admob广告，其他平台不是admob聚合
     // double amount = (num.tryParse(ad_pre_ecpm) ?? 0).toDouble();
     double amount = realMoney / 1000000;
+
     if (ad_source != "admob" && (!ad_network.toLowerCase().contains("admob"))) {
       FirebaseAnalytics.instance.logAdImpression(
         adFormat: ad_format,
@@ -236,6 +243,7 @@ class TbaUtils {
     accumulate = accumulate + revenue;
 
     if (accumulate >= threshold) {
+      AppLog.i("累计广告价值达到$threshold美元，触发事件$eventName, 累计价值：$accumulate");
       try {
         if (eventName == "ads_revenue_001") {
           EventUtils.instance.addEvent(eventName, data: {"value": accumulate, "currency": "USD"}, hasPrefix: true);

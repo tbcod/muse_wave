@@ -74,7 +74,7 @@ class UserMoreAlbum extends GetView<UserMoreAlbumController> {
 
     return GestureDetector(
       onTap: () {
-        AppLog.e(childItem);
+        // AppLog.e(childItem);
         EventUtils.instance.addEvent(
           "det_playlist_show",
           data: {"from": "artist_album"},

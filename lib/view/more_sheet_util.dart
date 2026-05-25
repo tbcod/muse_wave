@@ -208,16 +208,23 @@ class MoreSheetUtil {
               var isLike = LikeUtil.instance.allVideoMap.containsKey(videoId);
               return InkWell(
                 onTap: () {
+                  AppLog.i("电机收藏 clickType:$clickType");
+
+                  AdSense adSense = AdSense.playlist_page;
+                  if (clickType == "search") {
+                    adSense = AdSense.search_page;
+                  } else if (clickType == "artist") {
+                    adSense = AdSense.artist_detail_page;
+                  } else if (clickType == "home") {
+                    adSense = AdSense.home;
+                  } else if (clickType == 'artist_more_song') {
+                    adSense = AdSense.song_list;
+                  }
+
                   if (!isLike) {
-                    LikeUtil.instance.likeVideo(item["videoId"], item,
-                        adSense: clickType == "artist_more_song" || clickType == "artist"
-                            ? AdSense.artist_detail_page
-                            : AdSense.playlist_page);
+                    LikeUtil.instance.likeVideo(item["videoId"], item, adSense: adSense);
                   } else {
-                    LikeUtil.instance.unlikeVideo(item["videoId"],
-                        adSense: clickType == "artist_more_song" || clickType == "artist"
-                            ? AdSense.artist_detail_page
-                            : AdSense.playlist_page);
+                    LikeUtil.instance.unlikeVideo(item["videoId"], adSense: adSense);
                   }
 
                   if (clickType == "net_playlist" || clickType == "loc_playlist") {

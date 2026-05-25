@@ -2,6 +2,7 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/tool/log.dart';
 import 'package:muse_wave/uinew/main/home/u_play.dart';
@@ -275,8 +276,13 @@ class UserMoreSongController extends GetxController with StateMixin {
     bindData();
   }
 
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
   Future bindData() async {
-    AppLog.e("更多歌曲$moreData");
+    // AppLog.e("更多歌曲$moreData");
 
     BaseModel result = await ApiMain.instance.getData(
       moreData["browseId"],
@@ -354,4 +360,6 @@ class UserMoreSongController extends GetxController with StateMixin {
 
     list.addAll(newMusicData);
   }
+
+
 }

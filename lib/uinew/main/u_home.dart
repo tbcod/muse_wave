@@ -45,7 +45,8 @@ class UserHome extends GetView<UserHomeController> {
     Get.lazyPut(() => UserHomeController());
 
     return Container(
-      decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
+      decoration: const BoxDecoration(
+          image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -69,7 +70,8 @@ class UserHome extends GetView<UserHomeController> {
                   SizedBox(width: 16.w),
                   Text(
                     "Search for music/artist/playlist".tr,
-                    style: TextStyle(fontSize: 12.w, fontWeight: FontWeight.w400, color: const Color(0xff141414).withOpacity(0.56)),
+                    style: TextStyle(
+                        fontSize: 12.w, fontWeight: FontWeight.w400, color: const Color(0xff141414).withOpacity(0.56)),
                   ),
                   const Spacer(),
                   Container(
@@ -77,7 +79,8 @@ class UserHome extends GetView<UserHomeController> {
                     width: 42.w,
                     padding: EdgeInsets.symmetric(vertical: 4.w),
                     margin: EdgeInsets.only(right: 8.w),
-                    decoration: BoxDecoration(color: const Color(0xffA995FF), borderRadius: BorderRadius.circular(14.w)),
+                    decoration:
+                        BoxDecoration(color: const Color(0xffA995FF), borderRadius: BorderRadius.circular(14.w)),
                     child: Image.asset("assets/oimg/icon_search.png", width: 20.w, height: 20.w),
                   ),
                 ],
@@ -115,13 +118,12 @@ class UserHome extends GetView<UserHomeController> {
                       type: type,
                       data: childList,
                       title: item["title"],
-                      onMoreClick:
-                          item["title"] == "Artist".tr && Get.find<Application>().typeSo == "ytm"
-                              ? () {
-                                //跳转到全部歌手
-                                Get.to(const UserMoreArtist());
-                              }
-                              : null,
+                      onMoreClick: item["title"] == "Artist".tr && Get.find<Application>().typeSo == "ytm"
+                          ? () {
+                              //跳转到全部歌手
+                              Get.to(const UserMoreArtist());
+                            }
+                          : null,
                     );
                   },
                   separatorBuilder: (_, i) {
@@ -212,18 +214,18 @@ class UserHome extends GetView<UserHomeController> {
               // Spacer(),
               onMoreClick != null
                   ? InkWell(
-                    onTap: () {
-                      onMoreClick();
-                      EventUtils.instance.addEvent("home_artist", data: {"click_type": "more"});
-                    },
-                    child: Row(
-                      children: [
-                        Text("More".tr, style: TextStyle(fontSize: 12.w, color: const Color(0xffa6a6a6))),
-                        SizedBox(width: 4.w),
-                        Image.asset("assets/oimg/icon_more_right.png", width: 12.w, height: 12.w),
-                      ],
-                    ),
-                  )
+                      onTap: () {
+                        onMoreClick();
+                        EventUtils.instance.addEvent("home_artist", data: {"click_type": "more"});
+                      },
+                      child: Row(
+                        children: [
+                          Text("More".tr, style: TextStyle(fontSize: 12.w, color: const Color(0xffa6a6a6))),
+                          SizedBox(width: 4.w),
+                          Image.asset("assets/oimg/icon_more_right.png", width: 12.w, height: 12.w),
+                        ],
+                      ),
+                    )
                   : Container(),
             ],
           ),
@@ -247,7 +249,8 @@ class UserHome extends GetView<UserHomeController> {
                           AppLog.e(childItem);
                           EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
 
-                          Get.find<UserPlayInfoController>().setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
+                          Get.find<UserPlayInfoController>()
+                              .setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
                           // Get.to(UserPlayInfo());
                         },
                         child: SizedBox(
@@ -262,14 +265,18 @@ class UserHome extends GetView<UserHomeController> {
                                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                 child: Stack(
                                   children: [
-                                    Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover)),
+                                    Positioned.fill(
+                                        child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover)),
                                     isCheck
                                         ? Positioned(
-                                          left: 6.w,
-                                          top: 6.w,
-                                          child: Image.asset("assets/oimg/icon_s_v_play.png", width: 20.w, height: 14.w),
-                                        )
-                                        : Center(child: Image.asset("assets/oimg/icon_c_play.png", width: 51.w, height: 51.w)),
+                                            left: 6.w,
+                                            top: 6.w,
+                                            child:
+                                                Image.asset("assets/oimg/icon_s_v_play.png", width: 20.w, height: 14.w),
+                                          )
+                                        : Center(
+                                            child:
+                                                Image.asset("assets/oimg/icon_c_play.png", width: 51.w, height: 51.w)),
                                   ],
                                 ),
                               ),
@@ -336,177 +343,188 @@ class UserHome extends GetView<UserHomeController> {
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children:
-                            subList.map((subItem) {
-                              return InkWell(
-                                onTap: () {
-                                  if (isRec) {
-                                    EventUtils.instance.addEvent("home_song", data: {"click_type": "play"});
-                                  } else {
-                                    EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
-                                  }
+                        children: subList.map((subItem) {
+                          return InkWell(
+                            onTap: () {
+                              if (isRec) {
+                                EventUtils.instance.addEvent("home_song", data: {"click_type": "play"});
+                              } else {
+                                EventUtils.instance
+                                    .addEvent("home_model", data: {"click_type": "play", "title": title});
+                              }
 
-                                  // AppLog.e(subItem);
-                                  var plist = List.of(data);
-                                  var pItem = Map.of(subItem);
+                              // AppLog.e(subItem);
+                              var plist = List.of(data);
+                              var pItem = Map.of(subItem);
 
-                                  Get.find<UserPlayInfoController>().setDataAndPlayItem([pItem], pItem, clickType: "home", loadNextData: true);
+                              Get.find<UserPlayInfoController>()
+                                  .setDataAndPlayItem([pItem], pItem, clickType: "home", loadNextData: true);
 
-                                  // Get.to(UserPlayInfo());
-                                },
-                                child: Obx(() {
-                                  var isCheck = subItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
-                                  return Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.w),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12.w),
-                                      color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent,
+                              // Get.to(UserPlayInfo());
+                            },
+                            child: Obx(() {
+                              var isCheck = subItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
+                              return Container(
+                                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.w),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.w),
+                                  color: isCheck ? const Color(0xfff7f7f7) : Colors.transparent,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 54.w,
+                                      height: 54.w,
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
+                                      child: NetImageView(imgUrl: subItem["cover"], fit: BoxFit.cover),
                                     ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 54.w,
-                                          height: 54.w,
-                                          clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                                          child: NetImageView(imgUrl: subItem["cover"], fit: BoxFit.cover),
-                                        ),
-                                        SizedBox(width: 16.w),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                    SizedBox(width: 16.w),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            subItem["title"],
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: isCheck ? const Color(0xff8569FF) : Colors.black,
+                                              fontSize: 14.w,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          SizedBox(height: 10.w),
+                                          Row(
                                             children: [
-                                              Text(
-                                                subItem["title"],
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  color: isCheck ? const Color(0xff8569FF) : Colors.black,
-                                                  fontSize: 14.w,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                              SizedBox(height: 10.w),
-                                              Row(
-                                                children: [
-                                                  Obx(() {
-                                                    var isLike = LikeUtil.instance.allVideoMap.containsKey(subItem["videoId"]);
-                                                    if (isLike) {
-                                                      return Container(
-                                                        width: 16.w,
-                                                        height: 16.w,
-                                                        margin: EdgeInsets.only(right: 4.w),
-                                                        child: Image.asset("assets/oimg/icon_like_on.png"),
-                                                      );
-                                                    }
+                                              Obx(() {
+                                                var isLike =
+                                                    LikeUtil.instance.allVideoMap.containsKey(subItem["videoId"]);
+                                                if (isLike) {
+                                                  return Container(
+                                                    width: 16.w,
+                                                    height: 16.w,
+                                                    margin: EdgeInsets.only(right: 4.w),
+                                                    child: Image.asset("assets/oimg/icon_like_on.png"),
+                                                  );
+                                                }
 
-                                                    return Container();
-                                                  }),
-                                                  Expanded(
-                                                    child: Text(
-                                                      subItem["subtitle"] ?? "",
-                                                      maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontSize: 12.w,
-                                                        fontWeight: FontWeight.w400,
-                                                        color: isCheck ? const Color(0xff8569FF) : Colors.black.withOpacity(0.75),
-                                                      ),
-                                                    ),
+                                                return Container();
+                                              }),
+                                              Expanded(
+                                                child: Text(
+                                                  subItem["subtitle"] ?? "",
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 12.w,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: isCheck
+                                                        ? const Color(0xff8569FF)
+                                                        : Colors.black.withOpacity(0.75),
                                                   ),
-                                                ],
+                                                ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        SizedBox(width: 12.w),
-                                        if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off")
-                                          Obx(() {
-                                            //获取下载状态
-                                            var videoId = subItem["videoId"];
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off")
+                                      Obx(() {
+                                        //获取下载状态
+                                        var videoId = subItem["videoId"];
 
-                                            if (DownloadUtils.instance.allDownLoadingData.containsKey(videoId)) {
-                                              //有添加过下载
-                                              var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
-                                              double progress = DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
+                                        if (DownloadUtils.instance.allDownLoadingData.containsKey(videoId)) {
+                                          //有添加过下载
+                                          var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
+                                          double progress =
+                                              DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
 
-                                              // AppLog.e(
-                                              //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");
+                                          // AppLog.e(
+                                          //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");
 
-                                              if (state == 1 || state == 3) {
-                                                //下载中\下载暂停
-                                                return InkWell(
-                                                  onTap: () {
-                                                    DownloadUtils.instance.remove(videoId, state: state);
-                                                  },
-                                                  child: Container(
-                                                    height: 50.w,
-                                                    width: 32.w,
-                                                    alignment: Alignment.center,
-                                                    padding: EdgeInsets.all(6.w),
-                                                    child: SizedBox(
-                                                      width: 20.w,
-                                                      height: 20.w,
-                                                      // padding: EdgeInsets.all(5.w),
-                                                      child: CircularProgressIndicator(
-                                                        value: progress,
-                                                        strokeWidth: 1.5,
-                                                        backgroundColor: const Color(0xffA995FF).withOpacity(0.35),
-                                                        color: const Color(0xffA995FF),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              } else if (state == 2) {
-                                                return InkWell(
-                                                  onTap: () {
-                                                    DownloadUtils.instance.remove(videoId, state: state);
-                                                  },
-                                                  child: Container(
-                                                    height: 50.w,
-                                                    padding: EdgeInsets.all(6.w),
-                                                    child: Image.asset("assets/oimg/icon_download_ok.png", width: 20.w, height: 20.w),
-                                                  ),
-                                                );
-                                              }
-                                            }
-
+                                          if (state == 1 || state == 3) {
+                                            //下载中\下载暂停
                                             return InkWell(
                                               onTap: () {
-                                                if (isRec) {
-                                                  EventUtils.instance.addEvent("home_song", data: {"click_type": "offline"});
-                                                } else {
-                                                  EventUtils.instance.addEvent("home_model", data: {"click_type": "offline", "title": title});
-                                                }
-
-                                                DownloadUtils.instance.download(videoId, subItem, clickType: "home", adSense: AdSense.home);
+                                                DownloadUtils.instance.remove(videoId, state: state);
+                                              },
+                                              child: Container(
+                                                height: 50.w,
+                                                width: 32.w,
+                                                alignment: Alignment.center,
+                                                padding: EdgeInsets.all(6.w),
+                                                child: SizedBox(
+                                                  width: 20.w,
+                                                  height: 20.w,
+                                                  // padding: EdgeInsets.all(5.w),
+                                                  child: CircularProgressIndicator(
+                                                    value: progress,
+                                                    strokeWidth: 1.5,
+                                                    backgroundColor: const Color(0xffA995FF).withOpacity(0.35),
+                                                    color: const Color(0xffA995FF),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          } else if (state == 2) {
+                                            return InkWell(
+                                              onTap: () {
+                                                DownloadUtils.instance.remove(videoId, state: state);
                                               },
                                               child: Container(
                                                 height: 50.w,
                                                 padding: EdgeInsets.all(6.w),
-                                                child: Image.asset("assets/oimg/icon_download_gray.png", width: 20.w, height: 20.w),
+                                                child: Image.asset("assets/oimg/icon_download_ok.png",
+                                                    width: 20.w, height: 20.w),
                                               ),
                                             );
-                                          }),
-                                        // SizedBox(
-                                        //   width: 12.w,
-                                        // ),
-                                        InkWell(
+                                          }
+                                        }
+
+                                        return InkWell(
                                           onTap: () {
-                                            MoreSheetUtil.instance.showVideoMoreSheet(subItem, clickType: "home");
+                                            if (isRec) {
+                                              EventUtils.instance
+                                                  .addEvent("home_song", data: {"click_type": "offline"});
+                                            } else {
+                                              EventUtils.instance.addEvent("home_model",
+                                                  data: {"click_type": "offline", "title": title});
+                                            }
+
+                                            DownloadUtils.instance
+                                                .download(videoId, subItem, clickType: "home", adSense: AdSense.home);
                                           },
                                           child: Container(
                                             height: 50.w,
                                             padding: EdgeInsets.all(6.w),
-                                            child: SizedBox(width: 20.w, height: 20.w, child: Image.asset("assets/oimg/icon_more.png")),
+                                            child: Image.asset("assets/oimg/icon_download_gray.png",
+                                                width: 20.w, height: 20.w),
                                           ),
-                                        ),
-                                      ],
+                                        );
+                                      }),
+                                    // SizedBox(
+                                    //   width: 12.w,
+                                    // ),
+                                    InkWell(
+                                      onTap: () {
+                                        MoreSheetUtil.instance.showVideoMoreSheet(subItem, clickType: "home");
+                                      },
+                                      child: Container(
+                                        height: 50.w,
+                                        padding: EdgeInsets.all(6.w),
+                                        child: SizedBox(
+                                            width: 20.w, height: 20.w, child: Image.asset("assets/oimg/icon_more.png")),
+                                      ),
                                     ),
-                                  );
-                                }),
+                                  ],
+                                ),
                               );
-                            }).toList(),
+                            }),
+                          );
+                        }).toList(),
                       ),
                     );
                   },
@@ -543,7 +561,10 @@ class UserHome extends GetView<UserHomeController> {
                               height: 140.w,
                               clipBehavior: Clip.hardEdge,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                              child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))]),
+                              child: Stack(children: [
+                                Positioned.fill(
+                                    child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))
+                              ]),
                             ),
                             SizedBox(height: 4.w),
                             Text(
@@ -589,7 +610,10 @@ class UserHome extends GetView<UserHomeController> {
                               height: 140.w,
                               clipBehavior: Clip.hardEdge,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                              child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))]),
+                              child: Stack(children: [
+                                Positioned.fill(
+                                    child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))
+                              ]),
                             ),
                             SizedBox(height: 4.w),
                             Text(
@@ -652,7 +676,10 @@ class UserHome extends GetView<UserHomeController> {
                               height: 68.w,
                               clipBehavior: Clip.hardEdge,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(34.w)),
-                              child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))]),
+                              child: Stack(children: [
+                                Positioned.fill(
+                                    child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))
+                              ]),
                             ),
                             SizedBox(height: 12.w),
                             SizedBox(
@@ -709,7 +736,10 @@ class UserHome extends GetView<UserHomeController> {
                               height: 140.w,
                               clipBehavior: Clip.hardEdge,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                              child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))]),
+                              child: Stack(children: [
+                                Positioned.fill(
+                                    child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))
+                              ]),
                             ),
                             SizedBox(height: 4.w),
                             Text(
@@ -789,7 +819,10 @@ class UserHome extends GetView<UserHomeController> {
                                   if (childType == -1 || childType == -2) {
                                     return Image.asset(childItem["icon"], fit: BoxFit.cover);
                                   } else {
-                                    return NetImageView(imgUrl: childItem["cover"], fit: BoxFit.cover, errorAsset: Assets.oimgIconDItem);
+                                    return NetImageView(
+                                        imgUrl: childItem["cover"],
+                                        fit: BoxFit.cover,
+                                        errorAsset: Assets.oimgIconDItem);
                                   }
                                 },
                               ),
@@ -832,13 +865,7 @@ class UserHome extends GetView<UserHomeController> {
                     var childItem = data[i];
                     return GestureDetector(
                       onTap: () {
-                        // EventUtils.instance.addEvent("home_model",
-                        //     data: {"click_type": "play", "title": title});
-                        // AppLog.e(childItem);
-                        //
-                        // EventUtils.instance.addEvent("det_playlist_show",
-                        //     data: {"from": "home"});
-                        Get.to(UserPlayListInfo(adSense: AdSense.home), arguments: childItem);
+                        Get.to(() => UserPlayListInfo(adSense: AdSense.home), arguments: childItem);
                       },
                       child: SizedBox(
                         width: 140.w,
@@ -850,7 +877,10 @@ class UserHome extends GetView<UserHomeController> {
                               height: 140.w,
                               clipBehavior: Clip.hardEdge,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
-                              child: Stack(children: [Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))]),
+                              child: Stack(children: [
+                                Positioned.fill(
+                                    child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover))
+                              ]),
                             ),
                             SizedBox(height: 4.w),
                             Text(
@@ -886,7 +916,8 @@ class UserHome extends GetView<UserHomeController> {
                           // AppLog.e(childItem);
                           EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
 
-                          Get.find<UserPlayInfoController>().setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
+                          Get.find<UserPlayInfoController>()
+                              .setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
                           // Get.to(UserPlayInfo());
                         },
                         child: SizedBox(
@@ -901,14 +932,18 @@ class UserHome extends GetView<UserHomeController> {
                                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(6.w)),
                                 child: Stack(
                                   children: [
-                                    Positioned.fill(child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover)),
+                                    Positioned.fill(
+                                        child: NetImageView(imgUrl: childItem["cover"] ?? "", fit: BoxFit.cover)),
                                     isCheck
                                         ? Positioned(
-                                          left: 6.w,
-                                          top: 6.w,
-                                          child: Image.asset("assets/oimg/icon_s_v_play.png", width: 20.w, height: 14.w),
-                                        )
-                                        : Center(child: Image.asset("assets/oimg/icon_c_play.png", width: 51.w, height: 51.w)),
+                                            left: 6.w,
+                                            top: 6.w,
+                                            child:
+                                                Image.asset("assets/oimg/icon_s_v_play.png", width: 20.w, height: 14.w),
+                                          )
+                                        : Center(
+                                            child:
+                                                Image.asset("assets/oimg/icon_c_play.png", width: 51.w, height: 51.w)),
                                   ],
                                 ),
                               ),
@@ -1025,7 +1060,8 @@ class UserHomeController extends GetxController with StateMixin {
     BaseModel result = await ApiMain.instance.getData("FEmusic_home");
 
     if (result.code != HttpCode.success) {
-      EventUtils.instance.addEvent("refresh_result_and", data: {"source": source, "value": "fail", "reason": result.message ?? "No data"});
+      EventUtils.instance.addEvent("refresh_result_and",
+          data: {"source": source, "value": "fail", "reason": result.message ?? "No data"});
       if (netList.length < 5) {
         change("", status: RxStatus.error());
         // TbaUtils.instance.postUserData({"mm_type_so": "no"});
@@ -1057,9 +1093,8 @@ class UserHomeController extends GetxController with StateMixin {
     }
 
     try {
-      nextData =
-          result
-              .data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]["sectionListRenderer"]["continuations"]?[0]?["nextContinuationData"] ??
+      nextData = result.data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]?["content"]
+              ["sectionListRenderer"]["continuations"]?[0]?["nextContinuationData"] ??
           {};
     } catch (e) {
       AppLog.e(e);
@@ -1068,20 +1103,23 @@ class UserHomeController extends GetxController with StateMixin {
     List realList = [];
 
     try {
-      List bigList =
-          result.data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]?["tabRenderer"]?["content"]?["sectionListRenderer"]?["contents"] ??
+      List bigList = result.data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]?["tabRenderer"]
+              ?["content"]?["sectionListRenderer"]?["contents"] ??
           [];
 
       var moreId = "";
       for (Map item in bigList) {
         //大标题
-        var bigTitle = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"] ?? "";
+        var bigTitle = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]["title"]
+                ["runs"][0]["text"] ??
+            "";
 
         List childList = item["musicCarouselShelfRenderer"]?["contents"] ?? [];
 
         //more id
-        moreId =
-            item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]?["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["watchPlaylistEndpoint"]?["playlistId"] ??
+        moreId = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]
+                    ?["moreContentButton"]?["buttonRenderer"]?["navigationEndpoint"]?["watchPlaylistEndpoint"]
+                ?["playlistId"] ??
             "";
 
         List realChildList = [];
@@ -1095,37 +1133,48 @@ class UserHomeController extends GetxController with StateMixin {
           if (childItem.containsKey("musicResponsiveListItemRenderer")) {
             //音乐
             List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
-            var musicType =
-                flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"] ??
+            var musicType = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]
+                        ["navigationEndpoint"]["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]
+                    ["watchEndpointMusicConfig"]["musicVideoType"] ??
                 "";
 
             type = musicType;
 
             //标题
-            var childItemTitle = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
-            var childItemSubTitle = flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
+            var childItemTitle =
+                flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
+            var childItemSubTitle =
+                flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
             //id
-            var videoId =
-                flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["videoId"] ??
+            var videoId = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]
+                    ["navigationEndpoint"]["watchEndpoint"]?["videoId"] ??
                 "";
-            var playlistId =
-                flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["playlistId"] ??
+            var playlistId = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]
+                    ["navigationEndpoint"]["watchEndpoint"]?["playlistId"] ??
                 "";
 
             //封面
-            var childItemCover =
-                childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]?[0]?["url"] ?? "";
+            var childItemCover = childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]
+                    ["thumbnail"]["thumbnails"]?[0]?["url"] ??
+                "";
 
             if (type.isNotEmpty) {
-              realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
+              realChildList.add({
+                "title": childItemTitle,
+                "subtitle": childItemSubTitle,
+                "cover": childItemCover,
+                "type": type,
+                "videoId": videoId
+              });
             }
 
             continue;
           } else if (childItem.containsKey("musicTwoRowItemRenderer")) {
             //歌单
             //歌单、专辑、歌手
-            var childItemType =
-                childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"] ??
+            var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]
+                        ?["browseEndpoint"]["browseEndpointContextSupportedConfigs"]
+                    ?["browseEndpointContextMusicConfig"]?["pageType"] ??
                 "";
             type = childItemType;
 
@@ -1134,10 +1183,14 @@ class UserHomeController extends GetxController with StateMixin {
             List childItemSubTitleList = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"] ?? [];
             String childItemSubTitle = childItemSubTitleList.map((e) => e["text"] ?? "").toList().join("");
             //id
-            String browseId = childItem["musicTwoRowItemRenderer"]?["title"]?["runs"][0]["navigationEndpoint"]?["browseEndpoint"]?["browseId"] ?? "";
+            String browseId = childItem["musicTwoRowItemRenderer"]?["title"]?["runs"][0]["navigationEndpoint"]
+                    ?["browseEndpoint"]?["browseId"] ??
+                "";
 
             //封面
-            List list = childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
+            List list = childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]?["musicThumbnailRenderer"]
+                    ?["thumbnail"]?["thumbnails"] ??
+                [];
             var childItemCover = "";
             if (list.length > 1) {
               childItemCover = list[1]["url"];
@@ -1248,7 +1301,9 @@ class UserHomeController extends GetxController with StateMixin {
     try {
       for (Map item in bigList) {
         //大标题
-        var bigTitle = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]["title"]["runs"][0]["text"] ?? "";
+        var bigTitle = item["musicCarouselShelfRenderer"]?["header"]?["musicCarouselShelfBasicHeaderRenderer"]["title"]
+                ["runs"][0]["text"] ??
+            "";
 
         // moreId = item["musicCarouselShelfRenderer"]?["header"]
         //                     ?["musicCarouselShelfBasicHeaderRenderer"]
@@ -1273,32 +1328,39 @@ class UserHomeController extends GetxController with StateMixin {
             //音乐
             List flexColumns = childItem["musicResponsiveListItemRenderer"]?["flexColumns"] ?? [];
             if (flexColumns.isEmpty) continue;
-            var musicType =
-                flexColumns
-                    .firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]?["text"]?["runs"][0]["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]?["musicVideoType"] ??
+            var musicType = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]?["text"]?["runs"][0]
+                        ["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]
+                    ?["watchEndpointMusicConfig"]?["musicVideoType"] ??
                 "";
 
             type = musicType;
 
             //标题
-            var childItemTitle = flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
-            var childItemSubTitle = flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
+            var childItemTitle =
+                flexColumns[0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
+            var childItemSubTitle =
+                flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"] ?? "";
             //id
-            var videoId =
-                flexColumns
-                    .firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["videoId"] ??
+            var videoId = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]
+                    ["navigationEndpoint"]["watchEndpoint"]?["videoId"] ??
                 "";
-            var playlistId =
-                flexColumns
-                    .firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]?["playlistId"] ??
+            var playlistId = flexColumns.firstOrNull?["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]
+                    ["navigationEndpoint"]["watchEndpoint"]?["playlistId"] ??
                 "";
 
             //封面
-            var childItemCover =
-                childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]?[0]?["url"] ?? "";
+            var childItemCover = childItem["musicResponsiveListItemRenderer"]?["thumbnail"]["musicThumbnailRenderer"]
+                    ["thumbnail"]["thumbnails"]?[0]?["url"] ??
+                "";
 
             if (type.isNotEmpty) {
-              realChildList.add({"title": childItemTitle, "subtitle": childItemSubTitle, "cover": childItemCover, "type": type, "videoId": videoId});
+              realChildList.add({
+                "title": childItemTitle,
+                "subtitle": childItemSubTitle,
+                "cover": childItemCover,
+                "type": type,
+                "videoId": videoId
+              });
             }
 
             continue;
@@ -1316,8 +1378,9 @@ class UserHomeController extends GetxController with StateMixin {
             try {
               // List runs = childItem["musicTwoRowItemRenderer"]["title"]["runs"] ?? [];
               // if (runs.isEmpty) continue;
-              var childItemType =
-                  childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]?["browseEndpoint"]["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"] ??
+              var childItemType = childItem["musicTwoRowItemRenderer"]["title"]["runs"][0]["navigationEndpoint"]
+                          ?["browseEndpoint"]["browseEndpointContextSupportedConfigs"]
+                      ?["browseEndpointContextMusicConfig"]?["pageType"] ??
                   "";
 
               type = childItemType;
@@ -1327,11 +1390,14 @@ class UserHomeController extends GetxController with StateMixin {
               String childItemSubTitle = childItemSubTitleList.map((e) => e["text"] ?? "").toList().join("");
 
               //id
-              var browseId = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"] ?? "";
+              var browseId = childItem["musicTwoRowItemRenderer"]?["title"]["runs"][0]["navigationEndpoint"]
+                      ["browseEndpoint"]["browseId"] ??
+                  "";
 
               //封面
-              List thumbnails =
-                  childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]?["musicThumbnailRenderer"]?["thumbnail"]?["thumbnails"] ?? [];
+              List thumbnails = childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]?["musicThumbnailRenderer"]
+                      ?["thumbnail"]?["thumbnails"] ??
+                  [];
               var childItemCover = "";
               if (thumbnails.isNotEmpty) {
                 childItemCover = thumbnails.lastOrNull?["url"];
@@ -1350,8 +1416,8 @@ class UserHomeController extends GetxController with StateMixin {
               // AppLog.e("出错的item");
               // AppLog.e(childItem);
 
-              var childItemType =
-                  childItem["musicTwoRowItemRenderer"]?["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]?["musicVideoType"] ??
+              var childItemType = childItem["musicTwoRowItemRenderer"]?["navigationEndpoint"]?["watchEndpoint"]
+                      ?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]?["musicVideoType"] ??
                   "";
 
               type = childItemType;
@@ -1366,11 +1432,12 @@ class UserHomeController extends GetxController with StateMixin {
               String childItemSubTitle = childItem["musicTwoRowItemRenderer"]?["subtitle"]["runs"][0]["text"];
 
               //id
-              var videoId = childItem["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["videoId"] ?? "";
+              var videoId =
+                  childItem["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["videoId"] ?? "";
 
               //封面
-              var childItemCover =
-                  childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"][0]["url"];
+              var childItemCover = childItem["musicTwoRowItemRenderer"]?["thumbnailRenderer"]["musicThumbnailRenderer"]
+                  ["thumbnail"]["thumbnails"][0]["url"];
 
               if (type.isNotEmpty) {
                 realChildList.add({
@@ -1410,7 +1477,12 @@ class UserHomeController extends GetxController with StateMixin {
 
     var historySongList = List.of(HistoryUtil.instance.songHistoryList);
 
-    var historySongData = {"title": "Listen now".tr, "list": historySongList, "moreId": "", "type": "MUSIC_VIDEO_TYPE_ATV"};
+    var historySongData = {
+      "title": "Listen now".tr,
+      "list": historySongList,
+      "moreId": "",
+      "type": "MUSIC_VIDEO_TYPE_ATV"
+    };
     netList[0] = historySongData;
 
     var myPlaylist = [];
@@ -1424,10 +1496,9 @@ class UserHomeController extends GetxController with StateMixin {
 
     //获取所有下载完成歌曲
     var allDList = DownloadUtils.instance.allDownLoadingData.values;
-    var downloadedList =
-        allDList.where((e) {
-          return e["state"] == 2;
-        }).toList();
+    var downloadedList = allDList.where((e) {
+      return e["state"] == 2;
+    }).toList();
     var hasDownloadList = downloadedList.isNotEmpty;
     // if (FirebaseRemoteConfig.instance
     //     .getString(
@@ -1450,10 +1521,11 @@ class UserHomeController extends GetxController with StateMixin {
       return bDate.compareTo(aDate);
     });
 
-    List homePlaylist = List.of(oldList)..removeWhere((e) {
-      List childList = e["list"] ?? [];
-      return childList.isEmpty && e["type"] != 1;
-    });
+    List homePlaylist = List.of(oldList)
+      ..removeWhere((e) {
+        List childList = e["list"] ?? [];
+        return childList.isEmpty && e["type"] != 1;
+      });
 
     //添加历史歌单
     myPlaylist.addAll(homePlaylist);
@@ -1571,12 +1643,13 @@ class UserHomeController extends GetxController with StateMixin {
     try {
       // Get.find<Application>().visitorData = result.data["responseContext"]?["visitorData"] ?? "";
 
-      List oldList =
-          result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]?["sectionListRenderer"]?["contents"] ??
+      List oldList = result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]
+              ?["sectionListRenderer"]?["contents"] ??
           [];
       if (oldList.isEmpty) {
-        oldList =
-            result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]?["richGridRenderer"]?["contents"] ?? [];
+        oldList = result.data["contents"]?["twoColumnBrowseResultsRenderer"]?["tabs"]?[0]["tabRenderer"]["content"]
+                ?["richGridRenderer"]?["contents"] ??
+            [];
       }
       var realList = FormatMyData.instance.getYoutubeHomeList(oldList);
       AppLog.i("首页youtube数据, ${realList.length}");

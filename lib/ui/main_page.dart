@@ -117,7 +117,7 @@ class MainPageController extends GetxController {
   void onReady() {
     //预加载广告
     AdUtils.instance.loadAd(AdPosId.muse_local_int,adFirstType: AdFirstType.launch_first, adSense: AdSense.hot,forceLocalJson: bus.isFirstAppLaunch);
-    AdUtils.instance.loadAd(AdPosId.muse_local_reward, adSense: AdSense.set);
+    AdUtils.instance.loadAd(AdPosId.muse_local_reward, adSense: AdSense.setting);
     super.onReady();
   }
 

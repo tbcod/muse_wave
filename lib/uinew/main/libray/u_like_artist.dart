@@ -175,7 +175,7 @@ class UserLikeArtistController extends GetxController {
   @override
   onReady() {
     super.onReady();
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.playlist_page, adFunction: AdFunction.detail);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.library, adFunction: AdFunction.detail);
   }
 
   bindData() {

@@ -29,7 +29,8 @@ enum AdSense {
   minibar,
   artist_detail_page,
   playlist_page,
-  set
+  song_list,
+  setting
 }
 
 enum AdFunction { play, download, liked, return_, search, detail, unknown }
@@ -192,7 +193,7 @@ class AdUtils {
         data: {
           "ad_pos_id": adPosId.name,
           "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
-          "ad_format": type,
+          "ad_format": type == "native" ? "fullnative" : type,
           "ad_source_client": source,
           "ad_code_id": ad_id
         },
@@ -586,7 +587,7 @@ class AdUtils {
           "ad_return_sucess",
           data: {
             "ad_pos_id": adPosId.name,
-            "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
+            // "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
             "ad_format": type == "native" ? "fullnative" : type,
             "ad_source_client": source,
             "ad_code_id": ad_id,
@@ -600,7 +601,7 @@ class AdUtils {
           data: {
             "ad_pos_id": adPosId.name,
             "ad_format": type == "native" ? "fullnative" : type,
-            "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
+            // "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
             "ad_source_client": source,
             "ad_code_id": ad_id,
             "ad_request_time": DateTime.now().difference(startTime).inMilliseconds,
@@ -744,7 +745,7 @@ class AdUtils {
     //   isFirstBehaviorAd = false;
     // }
 
-    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key, "ad_sense": adSense.name});
+    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key, "ad_sense": adSense.name, "ad_function": adFunction.name});
     var isShowAd = false;
 
     Completer<bool> isCompleter = Completer();
@@ -1100,6 +1101,21 @@ class AdUtils {
                 FullAdmobNativePage(
                   ad: ad,
                   onClose: () async {
+                    EventUtils.instance.addEvent(
+                      "ad_close",
+                      data: {
+                        "ad_format": "fullnative",
+                        "ad_source_client": source,
+                        "ad_code_id": ad_id,
+                        "ad_pos_id": adPosId.name,
+                        "ad_sense": adSense.name,
+                        "ad_function": adFunction.name,
+                      },
+                    );
+                    if (adSense == AdSense.cold || adSense == AdSense.first) {
+                      EventUtils.instance.addEvent("open_ad_click",
+                          data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
+                    }
                     adIsShowing = false;
                     setShowTime();
                     await ad.dispose();

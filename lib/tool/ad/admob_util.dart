@@ -65,7 +65,7 @@ class AdmobUtils {
       data: {
         "ad_format": "banner",
         "ad_source_client": "admob",
-        "ad_sense": adSense.name,
+        // "ad_sense": adSense.name,
         "ad_pos_id": key,
         "ad_code_id": adId,
         "ad_function": AdFunction.unknown.name,
@@ -87,14 +87,18 @@ class AdmobUtils {
                 "ad_return_sucess",
                 data: {
                   "ad_format": "banner",
-                  "ad_sense": adSense.name,
+                  // "ad_sense": adSense.name,
                   "ad_source_client": "admob",
                   "ad_pos_id": key,
                   "ad_code_id": adId,
                   "ad_function": AdFunction.unknown.name,
                 },
               );
-              EventUtils.instance.addEvent("ad_chance", data: {"ad_sense": adSense.name, "ad_pos_id": key});
+              EventUtils.instance.addEvent("ad_chance", data: {
+                "ad_sense": adSense.name,
+                "ad_pos_id": key,
+                "ad_function": AdFunction.unknown.name,
+              });
             },
             onAdFailedToLoad: (ad, e) {
               AppLog.e("原生广告banner加载失败,${e.message}");
@@ -105,7 +109,7 @@ class AdmobUtils {
                 data: {
                   "ad_format": "banner",
                   "ad_source_client": "admob",
-                  "ad_sense": adSense.name,
+                  // "ad_sense": adSense.name,
                   "ad_pos_id": key,
                   "ad_code_id": adId,
                   "reason": e.message,
@@ -173,7 +177,7 @@ class AdmobUtils {
       data: {
         "ad_format": "native",
         "ad_source_client": "admob",
-        "ad_sense": adSense.name,
+        // "ad_sense": adSense.name,
         "ad_pos_id": key,
         "ad_code_id": adId
       },
@@ -197,7 +201,7 @@ class AdmobUtils {
                 "ad_return_sucess",
                 data: {
                   "ad_format": "banner",
-                  "ad_sense": adSense.name,
+                  // "ad_sense": adSense.name,
                   "ad_source_client": "admob",
                   "ad_pos_id": key,
                   "ad_code_id": adId,
@@ -215,7 +219,7 @@ class AdmobUtils {
                   "ad_format": "native",
                   "ad_source_client": "admob",
                   "ad_pos_id": key,
-                  "ad_sense": adSense.name,
+                  // "ad_sense": adSense.name,
                   "ad_code_id": adId,
                   "reason": e.message,
                   "ad_request_time": DateTime.now().difference(now).inMilliseconds,

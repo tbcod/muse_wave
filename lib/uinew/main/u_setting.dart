@@ -370,7 +370,7 @@ class UserSettingController extends GetxController {
   @override
   onReady() {
     super.onReady();
-    AdUtils.instance.loadAd(AdPosId.muse_local_reward, adSense: AdSense.set);
+    AdUtils.instance.loadAd(AdPosId.muse_local_reward, adSense: AdSense.setting);
   }
 
   changeRemindHour(int hour) {
@@ -396,7 +396,7 @@ class UserSettingController extends GetxController {
           }
           bool isSuccess = await AdUtils.instance.showAd(
             AdPosId.muse_local_reward,
-            adSense: AdSense.set,
+            adSense: AdSense.setting,
             adFunction: AdFunction.unknown,
           );
           if (isSuccess) {
