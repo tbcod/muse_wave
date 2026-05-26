@@ -121,8 +121,8 @@ class TbaUtils {
       realMoney = realMoney * 1000000;
     }
 
-    if (kDebugMode && !MuseConfig.isUser && realMoney == 0) {
-      realMoney = 0.01 * 1000000; //测试环境，非用户，金额为0时，默认上报广告价值，方便测试广告价值相关功能
+    if (!MuseConfig.isUser && realMoney == 0) {
+      realMoney = 0.005 * 1000000; //测试环境，非用户，金额为0时，默认上报广告价值，方便测试广告价值相关功能
     }
 
     // final adMoney = realMoney.toDouble();
