@@ -21,7 +21,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => UserLocPlayListInfoController());
+    Get.lazyPut(() => UserLocPlayListInfoController(isFormHome ? AdSense.home : AdSense.library));
     return Scaffold(
       backgroundColor: Color(0xfffafafa),
       body: PlayerBottomBarView(
@@ -170,6 +170,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
                                           controller.list.first,
                                           clickType:
                                               isFormHome ? "h_detail" : "library",
+                                      adSense: AdSense.playlist_page,
                                         );
                                     // Get.to(UserPlayInfo());
                                   },
@@ -222,6 +223,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
                                           playList.first,
                                           clickType:
                                               isFormHome ? "h_detail" : "library",
+                                      adSense: AdSense.playlist_page,
                                         );
                                     // Get.to(UserPlayInfo());
                                   },
@@ -608,6 +610,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
           controller.list,
           item,
           clickType: isFormHome ? "h_detail" : "library",
+          adSense: AdSense.song_list,
         );
         // Get.to(UserPlayInfo());
         //保存歌单到历史记录
@@ -801,6 +804,11 @@ class UserLocPlayListInfoController extends GetxController with StateMixin {
 
   var showTitle = false.obs;
 
+  late AdSense adSense;
+
+  UserLocPlayListInfoController(this.adSense);
+
+
   @override
   void onInit() {
     super.onInit();
@@ -811,7 +819,7 @@ class UserLocPlayListInfoController extends GetxController with StateMixin {
   @override
   onReady() {
     super.onReady();
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.library, adFunction: AdFunction.detail);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.detail);
   }
 
   bindData() async {

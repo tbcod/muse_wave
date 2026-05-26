@@ -15,7 +15,7 @@ class UserDownloadSong extends GetView<UserDownloadSongController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => UserDownloadSongController());
+    Get.lazyPut(() => UserDownloadSongController(isFormHome ? AdSense.home : AdSense.library));
     return Container(
       decoration: const BoxDecoration(
         color: Color(0xfff1ffff),
@@ -76,6 +76,7 @@ class UserDownloadSong extends GetView<UserDownloadSongController> {
           songList,
           item,
           clickType: "offline",
+          adSense: AdSense.song_list,
         );
         // Get.to(UserPlayInfo());
       },
@@ -239,6 +240,11 @@ class UserDownloadSong extends GetView<UserDownloadSongController> {
 class UserDownloadSongController extends GetxController {
   var list = [].obs;
 
+  late AdSense adSense;
+
+  UserDownloadSongController(this.adSense);
+
+
   @override
   void onInit() {
     super.onInit();
@@ -248,7 +254,7 @@ class UserDownloadSongController extends GetxController {
   @override
   onReady() {
     super.onReady();
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.library, adFunction: AdFunction.detail);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.detail);
   }
 
   bindData() {

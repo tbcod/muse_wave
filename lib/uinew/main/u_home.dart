@@ -249,8 +249,13 @@ class UserHome extends GetView<UserHomeController> {
                           AppLog.e(childItem);
                           EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
 
-                          Get.find<UserPlayInfoController>()
-                              .setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
+                          Get.find<UserPlayInfoController>().setDataAndPlayItem(
+                            [childItem],
+                            childItem,
+                            clickType: "home",
+                            loadNextData: true,
+                            adSense: AdSense.home,
+                          );
                           // Get.to(UserPlayInfo());
                         },
                         child: SizedBox(
@@ -357,13 +362,21 @@ class UserHome extends GetView<UserHomeController> {
                               var plist = List.of(data);
                               var pItem = Map.of(subItem);
 
-                              Get.find<UserPlayInfoController>()
-                                  .setDataAndPlayItem([pItem], pItem, clickType: "home", loadNextData: true);
+                              Get.find<UserPlayInfoController>().setDataAndPlayItem(
+                                [pItem],
+                                pItem,
+                                clickType: "home",
+                                loadNextData: true,
+                                adSense: AdSense.home,
+                              );
 
                               // Get.to(UserPlayInfo());
                             },
                             child: Obx(() {
-                              var isCheck = subItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
+                              final playController = Get.find<UserPlayInfoController>();
+                              final currentVideoId = playController.nowData["videoId"];
+                              final isCheck = subItem["videoId"] == currentVideoId;
+                              // var isCheck = subItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                               return Container(
                                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.w),
                                 decoration: BoxDecoration(
@@ -916,8 +929,8 @@ class UserHome extends GetView<UserHomeController> {
                           // AppLog.e(childItem);
                           EventUtils.instance.addEvent("home_model", data: {"click_type": "play", "title": title});
 
-                          Get.find<UserPlayInfoController>()
-                              .setDataAndPlayItem([childItem], childItem, clickType: "home", loadNextData: true);
+                          Get.find<UserPlayInfoController>().setDataAndPlayItem([childItem], childItem,
+                              clickType: "home", loadNextData: true, adSense: AdSense.home);
                           // Get.to(UserPlayInfo());
                         },
                         child: SizedBox(

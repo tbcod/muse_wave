@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/generated/assets.dart';
@@ -34,7 +33,8 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
   @override
   Widget build(BuildContext context) {
     if (!Get.isRegistered<UserArtistInfoController>(tag: tag)) {
-      Get.lazyPut(() => UserArtistInfoController(), tag: tag);
+      Get.lazyPut(() => UserArtistInfoController(isFormSearch ? AdSense.search_page : AdSense.artist_detail_page),
+          tag: tag);
     }
     return Container(
       decoration: BoxDecoration(
@@ -80,7 +80,8 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                           return IconButton(
                             onPressed: () {
                               if (isLike) {
-                                LikeUtil.instance.unlikeArtist(controller.browseId, adSense: AdSense.artist_detail_page);
+                                LikeUtil.instance
+                                    .unlikeArtist(controller.browseId, adSense: AdSense.artist_detail_page);
                               } else {
                                 EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "collection"});
                                 LikeUtil.instance.likeArtist(controller.browseId, controller.info,
@@ -120,7 +121,10 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                     gradient: LinearGradient(
                                       begin: Alignment.bottomCenter,
                                       end: Alignment.topCenter,
-                                      colors: [Color(0xff0D0D0D).withOpacity(0.69), Color(0xff474747).withOpacity(0)],
+                                      colors: [
+                                        Color(0xff0D0D0D).withValues(alpha: 0.69),
+                                        Color(0xff474747).withValues(alpha: 0)
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -149,11 +153,6 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                               80.w,
                               Container(
                                 color: Color(0xfffafafa),
-                                // color: Colors.green,
-                                // clipBehavior: Clip.hardEdge,
-                                // decoration: BoxDecoration(
-                                //   color: Color(0xfffafafa),
-                                // ),
                                 height: 80.w,
                                 alignment: Alignment.center,
                                 padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -171,10 +170,9 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                               .addEvent("det_artist_click", data: {"detail_click": "play_all"});
 
                                           Get.find<UserPlayInfoController>().setDataAndPlayItem(
-                                            controller.moreList,
-                                            controller.moreList.first,
-                                            clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
-                                          );
+                                              controller.moreList, controller.moreList.first,
+                                              clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
+                                              adSense: AdSense.search_page);
                                           // Get.to(UserPlayInfo());
                                         },
                                         child: Container(
@@ -211,10 +209,9 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                           List playList = List.of(controller.moreList)..shuffle();
 
                                           Get.find<UserPlayInfoController>().setDataAndPlayItem(
-                                            playList,
-                                            playList.first,
-                                            clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
-                                          );
+                                              playList, playList.first,
+                                              clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
+                                              adSense: AdSense.artist_detail_page);
                                           // Get.to(UserPlayInfo());
                                         },
                                         child: Container(
@@ -311,7 +308,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                         // });
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 2,vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
                         child: Row(
                           children: [
                             Text("More".tr, style: TextStyle(fontSize: 12.w, color: Color(0xffa6a6a6))),
@@ -346,6 +343,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                             childItem,
                             clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
                             loadNextData: true,
+                            adSense: AdSense.artist_detail_page,
                           );
                           // Get.to(UserPlayInfo());
                         },
@@ -482,6 +480,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                             item,
                             clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
                             loadNextData: true,
+                            adSense: AdSense.artist_detail_page,
                           );
                           // Get.to(UserPlayInfo());
                         },
@@ -844,6 +843,10 @@ class UserArtistInfoController extends GetxController with StateMixin {
 
   var isHeaderExpanded = true.obs;
 
+  late AdSense adSense;
+
+  UserArtistInfoController(this.adSense);
+
   @override
   void onInit() {
     super.onInit();
@@ -860,7 +863,7 @@ class UserArtistInfoController extends GetxController with StateMixin {
 
   @override
   void onReady() {
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.artist_detail_page, adFunction: AdFunction.detail);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.detail);
     super.onReady();
   }
 

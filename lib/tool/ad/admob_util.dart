@@ -68,7 +68,6 @@ class AdmobUtils {
         // "ad_sense": adSense.name,
         "ad_pos_id": key,
         "ad_code_id": adId,
-        "ad_function": AdFunction.unknown.name,
       },
     );
     DateTime now = DateTime.now();
@@ -91,13 +90,12 @@ class AdmobUtils {
                   "ad_source_client": "admob",
                   "ad_pos_id": key,
                   "ad_code_id": adId,
-                  "ad_function": AdFunction.unknown.name,
                 },
               );
               EventUtils.instance.addEvent("ad_chance", data: {
                 "ad_sense": adSense.name,
                 "ad_pos_id": key,
-                "ad_function": AdFunction.unknown.name,
+                "ad_function": "",
               });
             },
             onAdFailedToLoad: (ad, e) {
@@ -114,7 +112,6 @@ class AdmobUtils {
                   "ad_code_id": adId,
                   "reason": e.message,
                   "ad_request_time": DateTime.now().difference(now).inMilliseconds,
-                  "ad_function": AdFunction.unknown.name,
                 },
               );
             },
@@ -127,7 +124,7 @@ class AdmobUtils {
                   "ad_pos_id": key,
                   "ad_sense": adSense.name,
                   "ad_code_id": adId,
-                  "ad_function": AdFunction.unknown.name,
+                  "ad_function": "",
                 },
               );
             },
@@ -140,7 +137,7 @@ class AdmobUtils {
                   "ad_pos_id": key,
                   "ad_sense": adSense.name,
                   "ad_code_id": adId,
-                  "ad_function": AdFunction.unknown.name,
+                  "ad_function": "",
                 },
               );
             },
@@ -155,7 +152,7 @@ class AdmobUtils {
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
                 adPosName: key,
-                adFunction: AdFunction.unknown.name,
+                adFunction: "",
               );
             },
           ),
@@ -205,7 +202,6 @@ class AdmobUtils {
                   "ad_source_client": "admob",
                   "ad_pos_id": key,
                   "ad_code_id": adId,
-                  "ad_function": AdFunction.unknown.name,
                 },
               );
             },
@@ -223,7 +219,6 @@ class AdmobUtils {
                   "ad_code_id": adId,
                   "reason": e.message,
                   "ad_request_time": DateTime.now().difference(now).inMilliseconds,
-                  "ad_function": AdFunction.unknown.name,
                 },
               );
             },
@@ -236,7 +231,7 @@ class AdmobUtils {
                   "ad_pos_id": key,
                   "ad_sense": adSense.name,
                   "ad_code_id": adId,
-                  "ad_function": AdFunction.unknown.name,
+                  "ad_function": "",
                 },
               );
             },
@@ -249,7 +244,7 @@ class AdmobUtils {
                   "ad_pos_id": key,
                   "ad_sense": adSense.name,
                   "ad_code_id": adId,
-                  "ad_function": AdFunction.unknown.name,
+                  "ad_function": "",
                 },
               );
             },
@@ -263,7 +258,7 @@ class AdmobUtils {
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
                 adPosName: key,
-                adFunction: AdFunction.unknown.name,
+                adFunction: "",
               );
             },
           ),

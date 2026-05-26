@@ -529,8 +529,13 @@ class UserSearch extends GetView<UserSearchController> {
                   Debounce(500).run(() {
                     EventUtils.instance.addEvent("search_result_click",
                         data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                    Get.find<UserPlayInfoController>()
-                        .setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+                    Get.find<UserPlayInfoController>().setDataAndPlayItem(
+                      [item],
+                      item,
+                      clickType: "search",
+                      loadNextData: true,
+                      adSense: AdSense.search_page,
+                    );
                   });
                 },
                 child: Obx(() {
@@ -704,7 +709,7 @@ class UserSearch extends GetView<UserSearchController> {
                   EventUtils.instance.addEvent("det_artist_show", data: {"from": "search"});
                   EventUtils.instance
                       .addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
-                  Get.to(() => UserArtistInfo(), arguments: item);
+                  Get.to(() => UserArtistInfo(isFormSearch: true), arguments: item);
                 } else if (isPlaylist) {
                   EventUtils.instance.addEvent("det_playlist_show", data: {"from": "search"});
                   EventUtils.instance.addEvent("search_result_click",
@@ -713,8 +718,13 @@ class UserSearch extends GetView<UserSearchController> {
                 } else {
                   EventUtils.instance.addEvent("search_result_click",
                       data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                  Get.find<UserPlayInfoController>()
-                      .setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+                  Get.find<UserPlayInfoController>().setDataAndPlayItem(
+                    [item],
+                    item,
+                    clickType: "search",
+                    loadNextData: true,
+                    adSense: AdSense.search_page,
+                  );
                 }
               },
               behavior: HitTestBehavior.opaque,
@@ -827,8 +837,13 @@ class UserSearch extends GetView<UserSearchController> {
                     final item = content.first;
                     EventUtils.instance.addEvent("search_result_click",
                         data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                    Get.find<UserPlayInfoController>()
-                        .setDataAndPlayItem(content, item, clickType: "search", loadNextData: true);
+                    Get.find<UserPlayInfoController>().setDataAndPlayItem(
+                      content,
+                      item,
+                      clickType: "search",
+                      loadNextData: true,
+                      adSense: AdSense.search_page,
+                    );
                   } else {
                     List list = controller.resultList;
                     if (list.isNotEmpty) {
@@ -836,15 +851,25 @@ class UserSearch extends GetView<UserSearchController> {
                       final item = list.first;
                       EventUtils.instance.addEvent("search_result_click",
                           data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                      Get.find<UserPlayInfoController>()
-                          .setDataAndPlayItem(list, item, clickType: "search", loadNextData: true);
+                      Get.find<UserPlayInfoController>().setDataAndPlayItem(
+                        list,
+                        item,
+                        clickType: "search",
+                        loadNextData: true,
+                        adSense: AdSense.search_page,
+                      );
                     }
                   }
                 } else {
                   EventUtils.instance.addEvent("search_result_click",
                       data: {"detail_click": "song", "song_id": item["videoId"] ?? ""});
-                  Get.find<UserPlayInfoController>()
-                      .setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+                  Get.find<UserPlayInfoController>().setDataAndPlayItem(
+                    [item],
+                    item,
+                    clickType: "search",
+                    loadNextData: true,
+                    adSense: AdSense.search_page,
+                  );
                 }
               });
             },
@@ -1051,7 +1076,13 @@ class UserSearch extends GetView<UserSearchController> {
           "station": "search"
         });
 
-        Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+        Get.find<UserPlayInfoController>().setDataAndPlayItem(
+          [item],
+          item,
+          clickType: "search",
+          loadNextData: true,
+          adSense: AdSense.search_page,
+        );
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);
       },
       child: Obx(() {
@@ -1165,7 +1196,13 @@ class UserSearch extends GetView<UserSearchController> {
           "station": "search"
         });
 
-        Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+        Get.find<UserPlayInfoController>().setDataAndPlayItem(
+          [item],
+          item,
+          clickType: "search",
+          loadNextData: true,
+          adSense: AdSense.search_page,
+        );
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);
 
         // var pList = List.of(Get.find<UserPlayInfoController>().playList)
@@ -1354,7 +1391,7 @@ class UserSearch extends GetView<UserSearchController> {
         EventUtils.instance.addEvent("det_artist_show", data: {"from": "search"});
         EventUtils.instance
             .addEvent("search_result_click", data: {"detail_click": "artist", "artist_id": item["browseId"]});
-        Get.to(() => UserArtistInfo(), arguments: item);
+        Get.to(() => UserArtistInfo(isFormSearch: true), arguments: item);
       },
       child: Container(
         height: 70.w,
@@ -1462,7 +1499,13 @@ class UserSearch extends GetView<UserSearchController> {
           "station": "search"
         });
 
-        Get.find<UserPlayInfoController>().setDataAndPlayItem([item], item, clickType: "search", loadNextData: true);
+        Get.find<UserPlayInfoController>().setDataAndPlayItem(
+          [item],
+          item,
+          clickType: "search",
+          loadNextData: true,
+          adSense: AdSense.search_page,
+        );
         // Get.find<UserPlayInfoController>().addToNext(item, isPlayItem: true);
       },
       child: Obx(() {

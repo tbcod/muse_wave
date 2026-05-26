@@ -165,17 +165,13 @@ class LaunchPageController extends GetxController {
     if (isA) {
       //A面不展示冷启动广告
     } else {
-      if (bus.isFirstAppLaunch && !RemoteUtil.shareInstance.isShowOpenAd) {
-        AppLog.i("首次启动不开启开屏广告，启动次数：${bus.getAppLaunchCount}, isShowOpenAd：${RemoteUtil.shareInstance.isShowOpenAd}");
-      } else {
-        AppLog.i("准备展示开屏广告(B展示open)");
-        await AdUtils.instance.showAd(
-          AdPosId.open,
-          adSense: bus.isFirstAppLaunch ? AdSense.first : AdSense.cold,
-          forceLocalJson: bus.isFirstAppLaunch,
-          adFunction: AdFunction.unknown,
-        );
-      }
+      AppLog.i("准备展示开屏广告(B展示open)");
+      await AdUtils.instance.showAd(
+        AdPosId.open,
+        adSense: bus.isFirstAppLaunch ? AdSense.first : AdSense.cold,
+        forceLocalJson: bus.isFirstAppLaunch,
+        adFunction: AdFunction.unknown,
+      );
     }
   }
 

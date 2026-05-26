@@ -2,6 +2,7 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_play.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
@@ -91,6 +92,7 @@ class UserMoreVideo extends GetView<UserMoreVideoController> {
             List.of(controller.list),
             item,
             clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
+            adSense: AdSense.song_list,
           );
           // Get.to(UserPlayInfo());
         },

@@ -68,6 +68,7 @@ class UserChannelMore extends GetView<UserChannelMoreController> {
               controller.list,
               childItem,
               clickType: false ? "s_detail_playlist" : "h_detail_playlist",
+              adSense: AdSense.playlist_page,
             );
             // Get.to(UserPlayInfo());
           },

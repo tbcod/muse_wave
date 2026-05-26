@@ -239,12 +239,12 @@ class RemoteUtil {
 
   //https://stayfoolish.feishu.cn/wiki/BGtgwkElriFX5Jk2w3IcMS7JnYc
   //  1. 本地默认值为close，本地默认不展示
-  bool get isShowOpenAd {
-    if (_openAdStr == "open") {
-      return true;
-    }
-    return false;
-  }
+  // bool get isShowOpenAd {
+  //   if (_openAdStr == "open") {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   Map<String, dynamic> get homeWebParams {
     if (_homeWebParams.isNotEmpty) {

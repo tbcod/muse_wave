@@ -1069,7 +1069,7 @@ class UserPlayInfoController extends GetxController {
 
   ///  loadNextData. 范围：搜索结果、首页单曲推荐（包括MV）、音乐人 video 模块、（音乐人主页热门歌曲，为热门歌曲【更多内容】为歌单）
   setDataAndPlayItem(List list, Map item,
-      {required String clickType, bool loadNextData = false, String pid = ""}) async {
+      {required String clickType, bool loadNextData = false, String pid = "", required AdSense adSense}) async {
     if (player != null) {
       player?.dispose();
       player = null;
@@ -1089,7 +1089,7 @@ class UserPlayInfoController extends GetxController {
     }
 
     if (clickType == "appOpen") {
-      playItemWithIndex(nowIndex, isOpenShowBar: true);
+      playItemWithIndex(nowIndex, isOpenShowBar: true, adSense: adSense);
       return;
     }
 
@@ -1106,7 +1106,7 @@ class UserPlayInfoController extends GetxController {
       },
     );
 
-    playItemWithIndex(nowIndex);
+    playItemWithIndex(nowIndex, adSense: adSense);
 
     //加载相关歌曲
     if (loadNextData) {
@@ -2324,7 +2324,7 @@ class UserPlayInfoController extends GetxController {
   //添加到下一个播放
   bool addToNext(Map item, {bool isPlayItem = false}) {
     if (playList.isEmpty) {
-      setDataAndPlayItem([item], item, clickType: "play_center");
+      setDataAndPlayItem([item], item, clickType: "play_center", adSense: AdSense.play_page);
       return true;
     }
 
@@ -2372,7 +2372,7 @@ class UserPlayInfoController extends GetxController {
   //添加到最后播放
   bool addToQueue(Map item) {
     if (playList.isEmpty) {
-      setDataAndPlayItem([item], item, clickType: "play_center");
+      setDataAndPlayItem([item], item, clickType: "play_center",adSense: AdSense.play_page);
       return true;
     }
 
@@ -2429,12 +2429,12 @@ class UserPlayInfoController extends GetxController {
       await HistoryUtil.instance.initData();
       List dList = List.of(HistoryUtil.instance.songHistoryList);
       AppLog.i("使用默认播放;${dList.length}");
-      setDataAndPlayItem(dList, dList[0], clickType: "appOpen");
+      setDataAndPlayItem(dList, dList[0], clickType: "appOpen", adSense: AdSense.play_page,);
       return;
     }
     var lastIndex = data["index"];
 
-    setDataAndPlayItem(lastList, lastList[lastIndex], clickType: "appOpen");
+    setDataAndPlayItem(lastList, lastList[lastIndex], clickType: "appOpen", adSense: AdSense.play_page);
 
     homeIsShowBar = true;
   }

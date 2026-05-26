@@ -15,7 +15,7 @@ class UserLikeSong extends GetView<UserLikeSongController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => UserLikeSongController());
+    Get.lazyPut(() => UserLikeSongController(isFormHome ? AdSense.home : AdSense.library));
     return Container(
       decoration: const BoxDecoration(
         color: Color(0xfff1ffff),
@@ -75,6 +75,7 @@ class UserLikeSong extends GetView<UserLikeSongController> {
           controller.list,
           item,
           clickType: "liked",
+          adSense: AdSense.song_list,
         );
         // Get.to(UserPlayInfo());
       },
@@ -235,6 +236,9 @@ class UserLikeSong extends GetView<UserLikeSongController> {
 
 class UserLikeSongController extends GetxController {
   var list = [].obs;
+  late AdSense adSense;
+
+  UserLikeSongController(this.adSense);
 
   @override
   void onInit() {
@@ -245,7 +249,7 @@ class UserLikeSongController extends GetxController {
   @override
   onReady() {
     super.onReady();
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.library, adFunction: AdFunction.detail);
+    AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.detail);
   }
 
   bindData() {

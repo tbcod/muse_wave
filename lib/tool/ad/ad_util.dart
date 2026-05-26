@@ -347,9 +347,24 @@ class AdUtils {
                     "ad_function": AdUtils.instance.loadedAdMap[ad_id]["ad_function"] ?? AdFunction.play.name,
                   },
                 );
+                if (adSense == AdSense.cold || adSense == AdSense.first) {
+                  EventUtils.instance.addEvent("open_ad_click",
+                      data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "ad_click"});
+                }
               },
               onAdImpression: (ad) {
                 adIsShowing = true;
+
+                if (adSense == AdSense.cold || adSense == AdSense.first) {
+                  EventUtils.instance.addEvent(
+                    "open_ad_show",
+                    data: {
+                      "en_time": bus.getTimeDiffNow(bus.appLaunchTime),
+                      "appearance": bus.isFirstAppLaunch ? "first" : "cold",
+                      "type": type
+                    },
+                  );
+                }
                 // AppLog.i("原生广告onAdImpression:${ad.adUnitId}");
               },
               onAdClosed: (ad) {
@@ -745,7 +760,11 @@ class AdUtils {
     //   isFirstBehaviorAd = false;
     // }
 
-    EventUtils.instance.addEvent("ad_chance", data: {"ad_pos_id": key, "ad_sense": adSense.name, "ad_function": adFunction.name});
+    EventUtils.instance.addEvent("ad_chance", data: {
+      "ad_pos_id": key,
+      "ad_sense": adSense.name,
+      "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name
+    });
     var isShowAd = false;
 
     Completer<bool> isCompleter = Completer();
@@ -785,7 +804,7 @@ class AdUtils {
                   "ad_code_id": ad_id,
                   "ad_pos_id": adPosId.name,
                   "ad_sense": adSense.name,
-                  "ad_function": adFunction.name,
+                  "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,
                 },
               );
 
@@ -815,7 +834,7 @@ class AdUtils {
                   "ad_code_id": ad_id,
                   "ad_pos_id": adPosId.name,
                   "ad_sense": adSense.name,
-                  "ad_function": adFunction.name,
+                  "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,
                 },
               );
               if (adSense == AdSense.cold || adSense == AdSense.first) {
@@ -892,7 +911,8 @@ class AdUtils {
                   "ad_source_client": source,
                   "ad_code_id": ad_id,
                   "ad_pos_id": adPosId.name,
-                  "ad_sense": adSense.name
+                  "ad_sense": adSense.name,
+                  "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,
                 },
               );
               if (adSense == AdSense.cold || adSense == AdSense.first) {
@@ -920,7 +940,8 @@ class AdUtils {
                   "ad_source_client": source,
                   "ad_code_id": ad_id,
                   "ad_pos_id": adPosId.name,
-                  "ad_sense": adSense.name
+                  "ad_sense": adSense.name,
+                  "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,
                 },
               );
               if (adSense == AdSense.cold || adSense == AdSense.first) {
@@ -995,7 +1016,7 @@ class AdUtils {
                   "ad_code_id": ad_id,
                   "ad_pos_id": adPosId.name,
                   "ad_sense": adSense.name,
-                  "ad_function": adFunction.name,
+                  "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,
                 },
               );
               if (adSense == AdSense.cold || adSense == AdSense.first) {
@@ -1024,7 +1045,7 @@ class AdUtils {
                   "ad_code_id": ad_id,
                   "ad_pos_id": adPosId.name,
                   "ad_sense": adSense.name,
-                  "ad_function": adFunction.name,
+                  "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,
                 },
               );
               if (adSense == AdSense.cold || adSense == AdSense.first) {
@@ -1095,7 +1116,7 @@ class AdUtils {
           if (ad != null) {
             adIsShowing = true;
             if (key == AdPosId.open.name || key == AdPosId.behavior.name || key == AdPosId.level_h.name) {
-              loadedAdMap[ad_id]["ad_function"] = adFunction.name;
+              loadedAdMap[ad_id]["ad_function"] = adFunction == AdFunction.unknown ? "" : adFunction.name;
               loadedAdMap[ad_id]["ad_sense"] = adSense.name;
               await Get.bottomSheet(
                 FullAdmobNativePage(
@@ -1109,7 +1130,7 @@ class AdUtils {
                         "ad_code_id": ad_id,
                         "ad_pos_id": adPosId.name,
                         "ad_sense": adSense.name,
-                        "ad_function": adFunction.name,
+                        "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,
                       },
                     );
                     if (adSense == AdSense.cold || adSense == AdSense.first) {
@@ -1619,7 +1640,7 @@ class AdUtils {
           "ad_pos_id": adPosId.name,
           "ad_sense": adSense.name,
           "reason": reason,
-          "ad_function": adFunction.name,
+          "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,
         },
       );
     }
