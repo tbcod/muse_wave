@@ -350,24 +350,24 @@ class AdUtils {
               },
               onAdImpression: (ad) {
                 adIsShowing = true;
-                AppLog.i("原生广告onAdImpression:${ad.adUnitId}");
+                // AppLog.i("原生广告onAdImpression:${ad.adUnitId}");
               },
               onAdClosed: (ad) {
-                EventUtils.instance.addEvent(
-                  "ad_close",
-                  data: {
-                    "ad_format": "fullnative",
-                    "ad_source_client": source,
-                    "ad_code_id": ad_id,
-                    "ad_pos_id": adPosId.name,
-                    "ad_sense": AdUtils.instance.loadedAdMap[ad_id]["ad_sense"] ?? adSense.name,
-                    "ad_function": AdUtils.instance.loadedAdMap[ad_id]["ad_function"] ?? AdFunction.play.name,
-                  },
-                );
-                if (adSense == AdSense.cold || adSense == AdSense.first) {
-                  EventUtils.instance.addEvent("open_ad_click",
-                      data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
-                }
+                // EventUtils.instance.addEvent(
+                //   "ad_close",
+                //   data: {
+                //     "ad_format": "fullnative",
+                //     "ad_source_client": source,
+                //     "ad_code_id": ad_id,
+                //     "ad_pos_id": adPosId.name,
+                //     "ad_sense": AdUtils.instance.loadedAdMap[ad_id]["ad_sense"] ?? adSense.name,
+                //     "ad_function": AdUtils.instance.loadedAdMap[ad_id]["ad_function"] ?? AdFunction.play.name,
+                //   },
+                // );
+                // if (adSense == AdSense.cold || adSense == AdSense.first) {
+                //   EventUtils.instance.addEvent("open_ad_click",
+                //       data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
+                // }
 
                 //关闭
                 // adIsShowing = false;

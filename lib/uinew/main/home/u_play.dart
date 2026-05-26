@@ -1314,19 +1314,27 @@ class UserPlayInfoController extends GetxController {
     }
   }
 
-  playItemWithIndex(int index, {bool isAutoNext = false, bool isOpenShowBar = false, bool clickNext = false}) async {
+  playItemWithIndex(int index,
+      {bool isAutoNext = false,
+      bool isOpenShowBar = false,
+      bool clickNext = false,
+      AdSense adSense = AdSense.play_page}) async {
     ApiMain.instance.postYoutubePlaybackInfo(isWatchOnly: true);
 
     if (isPlaying.value) {
       await player?.pause();
     }
-    realPlay(index, isAutoNext: isAutoNext, isOpenShowBar: isOpenShowBar, clickNext: clickNext);
+    realPlay(index, isAutoNext: isAutoNext, isOpenShowBar: isOpenShowBar, clickNext: clickNext, adSense: adSense);
   }
 
   int _playNextCount = 0;
-  int _allowMaxNextCount = 5;
+  final int _allowMaxNextCount = 5;
 
-  realPlay(int index, {bool isAutoNext = false, bool isOpenShowBar = false, bool clickNext = false}) async {
+  realPlay(int index,
+      {bool isAutoNext = false,
+      bool isOpenShowBar = false,
+      bool clickNext = false,
+      AdSense adSense = AdSense.play_page}) async {
     //上报上个视频的时长
     if (player != null && player?.value.duration != null && isOpenShowBar == false) {
       var lastp = player?.value.position ?? Duration.zero;
@@ -1352,7 +1360,7 @@ class UserPlayInfoController extends GetxController {
     }
 
     if (!isAutoNext && !isOpenShowBar) {
-      AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.play_page, adFunction: AdFunction.play);
+      AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.play);
       Future.delayed(Duration(milliseconds: 500)).then((_) {
         //延迟后显示好评引导
         MyDialogUtils.instance.showRateDialog();
@@ -1778,7 +1786,12 @@ class UserPlayInfoController extends GetxController {
           );
         }
       }
-      playItemWithIndex(rIndex, isAutoNext: isAutoNext, clickNext: true);
+      playItemWithIndex(
+        rIndex,
+        isAutoNext: isAutoNext,
+        clickNext: true,
+        adSense: isBar ? AdSense.minibar : AdSense.play_page,
+      );
       return;
     }
 
@@ -1809,7 +1822,12 @@ class UserPlayInfoController extends GetxController {
         }
       }
 
-      playItemWithIndex(nowIndex + 1, isAutoNext: isAutoNext, clickNext: true);
+      playItemWithIndex(
+        nowIndex + 1,
+        isAutoNext: isAutoNext,
+        clickNext: true,
+        adSense: isBar ? AdSense.minibar : AdSense.play_page,
+      );
     }
   }
 

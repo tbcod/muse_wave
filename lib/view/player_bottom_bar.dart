@@ -89,7 +89,7 @@ class PlayerBottomBarView extends StatelessWidget {
                                       //判断视频是否加载
                                       if (!(controller.player?.value.isInitialized ?? false) && (!controller.isPlaying.value)) {
                                         //先加载
-                                        controller.realPlay(controller.nowIndex);
+                                        controller.realPlay(controller.nowIndex, adSense: AdSense.minibar);
                                         return;
                                       }
 

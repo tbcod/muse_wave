@@ -122,7 +122,7 @@ class TbaUtils {
     }
 
     if (kDebugMode && !MuseConfig.isUser && realMoney == 0) {
-      realMoney = 0.005 * 1000000; //测试环境，非用户，金额为0时，默认上报0.005美元的广告价值，方便测试广告价值相关功能
+      realMoney = 0.01 * 1000000; //测试环境，非用户，金额为0时，默认上报广告价值，方便测试广告价值相关功能
     }
 
     // final adMoney = realMoney.toDouble();
@@ -164,7 +164,7 @@ class TbaUtils {
     _postAdRevenue005(amount);
 
     AppLog.i(
-      "广告价值 ad_impression:$ad_pre_ecpm, adSource:$ad_source, adFormat:$ad_format, adSense:$adSense, adPosId:$adPosName,  adNetwork:$ad_network, $ad_unit_id",
+      "广告价值 ad_impression:$amount, adPosId:$adPosName, adSense:$adSense,adFunction:$adFunction, adSource:$ad_source, adFormat:$ad_format, adNetwork:$ad_network, $ad_unit_id",
     );
 
     // if (adSense == AdScene.open_cool.name && bus.isFirstAppLaunch) {

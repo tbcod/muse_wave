@@ -156,30 +156,21 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                 return Positioned(
                   left: 24,
                   top: 28,
-                  child: _closeType.value == CloseType.disable
-                      ? IgnorePointer(
-                          ignoring: true,
-                          child: Container(
-                            decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(12)),
-                            child: const Padding(
-                                padding: EdgeInsets.all(2.0),
-                                child: Icon(Icons.close_rounded, size: 20, color: Colors.black38)),
-                          ),
-                        )
-                      : Stack(
-                          alignment: Alignment(0, 0),
-                          children: [
-                            IgnorePointer(
-                              ignoring: true,
-                              child: Container(
-                                decoration:
-                                    BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(12)),
-                                child: Padding(
-                                    padding: EdgeInsets.all(2),
-                                    child: Icon(Icons.close_rounded, size: 20, color: Colors.black54)),
-                              ),
-                            ),
-                            GestureDetector(
+                  child: Stack(
+                    alignment: Alignment(0, 0),
+                    children: [
+                      IgnorePointer(
+                        ignoring: true,
+                        child: Container(
+                          decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(12)),
+                          child: Padding(
+                              padding: EdgeInsets.all(2),
+                              child: Icon(Icons.close_rounded, size: 20, color: Colors.black38)),
+                        ),
+                      ),
+                      _closeType.value == CloseType.disable
+                          ? SizedBox.shrink()
+                          : GestureDetector(
                               onTap: () {
                                 AppLog.i("关闭点击广告");
                                 // AppLog.i("关闭点击广告2 ${Get.currentRoute}, ${Get.previousRoute}, isBottomSheet:${Get.routing.isBottomSheet}, removed:${Get.routing.removed}");
@@ -195,8 +186,8 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                                 color: Colors.transparent,
                               ),
                             ),
-                          ],
-                        ),
+                    ],
+                  ),
                 );
               }),
             ],

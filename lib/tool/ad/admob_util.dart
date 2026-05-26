@@ -200,7 +200,7 @@ class AdmobUtils {
               EventUtils.instance.addEvent(
                 "ad_return_sucess",
                 data: {
-                  "ad_format": "banner",
+                  "ad_format": "native",
                   // "ad_sense": adSense.name,
                   "ad_source_client": "admob",
                   "ad_pos_id": key,
@@ -267,7 +267,7 @@ class AdmobUtils {
               );
             },
           ),
-          request: AdRequest(httpTimeoutMillis: 9000),
+          request: AdRequest(httpTimeoutMillis: 12000),
         )..load(),
       ),
     );
