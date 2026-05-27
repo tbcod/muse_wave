@@ -38,34 +38,37 @@ class CUtil extends BaseApi {
       String advertisingId = "";
       try {
         advertisingId = (await AdvertisingId.id()) ?? "";
-        AppLog.i("cloak 获取gaid成功:$advertisingId");
+        AppLog.i("cloak 获取gaid成功: $advertisingId");
       } catch (e) {
         AppLog.e("获取gaid出错:$e");
       }
+      Map<String,dynamic> data = {
+        //distinct_id
+        "flatbed": userAppUuid,
+        //client_ts
+        "canadian": DateTime.now().millisecondsSinceEpoch,
+        //device_model
+        "conceal": androidInfo.model,
+        //bundle_id
+        "nib": MuseConfig.isUser ? packageInfo.packageName : "com.musewave.player.music",
+        //os_version
+        "helmet": androidInfo.version.sdkInt,
+        //gaid
+        "stark": advertisingId,
+        // //android_id
+        "blow": androidId,
+        //os
+        "chauncey": "titanium",
+        //app_version
+        "crowbar": packageInfo.version,
+      };
+
+      // AppLog.i("cloak请求参数: $data");
 
       return httpRequest(
         "/keyes/han/mullen",
         method: HttpMethod.get,
-        body: {
-          //distinct_id
-          "flatbed": userAppUuid,
-          //client_ts
-          "canadian": DateTime.now().millisecondsSinceEpoch,
-          //device_model
-          "conceal": androidInfo.model,
-          //bundle_id
-          "nib": MuseConfig.isUser ? packageInfo.packageName : "com.musewave.player.music",
-          //os_version
-          "helmet": androidInfo.version.sdkInt,
-          //gaid
-          "stark": advertisingId,
-          // //android_id
-          "blow": androidId,
-          //os
-          "chauncey": "titanium",
-          //app_version
-          "crowbar": packageInfo.version,
-        },
+        body: data,
       );
     } else {
       return BaseModel(code: -1);

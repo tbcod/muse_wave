@@ -39,7 +39,10 @@ class MainPage extends GetView<MainPageController> {
 
         // 返回桌面逻辑
         AppLog.e("back");
-        AndroidIntent intent = const AndroidIntent(action: 'android.intent.action.MAIN', category: "android.intent.category.HOME", flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
+        AndroidIntent intent = const AndroidIntent(
+            action: 'android.intent.action.MAIN',
+            category: "android.intent.category.HOME",
+            flags: [Flag.FLAG_ACTIVITY_NEW_TASK]);
         intent.launch();
         AppLog.e("back1");
 
@@ -62,12 +65,21 @@ class MainPage extends GetView<MainPageController> {
             selectedLabelStyle: TextStyle(color: Color(0xff558CFF), fontSize: 12.w),
             unselectedLabelStyle: TextStyle(color: Color(0xff8B94A7), fontSize: 12.w),
             items: [
-              BottomNavigationBarItem(icon: Image.asset(Assets.imgHomeOff, width: 24.w, height: 24.w), activeIcon: Image.asset(Assets.imgHomeOn, width: 24.w, height: 24.w), label: "Home"),
-              BottomNavigationBarItem(icon: Image.asset(Assets.imgSettingOff, width: 24.w, height: 24.w), activeIcon: Image.asset(Assets.imgSettingOn, width: 24.w, height: 24.w), label: "Setting"),
+              BottomNavigationBarItem(
+                  icon: Image.asset(Assets.imgHomeOff, width: 24.w, height: 24.w),
+                  activeIcon: Image.asset(Assets.imgHomeOn, width: 24.w, height: 24.w),
+                  label: "Home"),
+              BottomNavigationBarItem(
+                  icon: Image.asset(Assets.imgSettingOff, width: 24.w, height: 24.w),
+                  activeIcon: Image.asset(Assets.imgSettingOn, width: 24.w, height: 24.w),
+                  label: "Setting"),
             ],
           );
         }),
-        body: PageView(controller: controller.pageC, physics: NeverScrollableScrollPhysics(), children: [KeepStateView(child: HomePage()), KeepStateView(child: SettingPage())]),
+        body: PageView(
+            controller: controller.pageC,
+            physics: NeverScrollableScrollPhysics(),
+            children: [KeepStateView(child: HomePage()), KeepStateView(child: SettingPage())]),
       ),
     );
   }
@@ -88,35 +100,38 @@ class MainPageController extends GetxController {
 
     UmpUtil.sh.showUMP();
 
-
     //设置网络监听，成功后打开B面
     subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) async {
-
       // if (kDebugMode && !MuseConfig.isUser) {
       //   await Future.delayed(Duration(seconds: 1));
       //   await museSp.setBool("isOpenUser", false);
       //   return;
       // }
-
-
-      var result = await CUtil.instance.checkCloak();
-
-      //监听到网络变化重新请求一次
-      var okStr = GetPlatform.isIOS ? "excerpt" : "diesel";
-
-      if (result.data == okStr) {
-        //缓存
-        var sp = await SharedPreferences.getInstance();
-        await sp.setBool("isOpenUser", true);
-        Get.off(const UserMain());
-      }
+      // _requestCloak();
     });
+    _requestCloak();
+  }
+
+  Future _requestCloak({int retryCount = 0}) async {
+    var result = await CUtil.instance.checkCloak();
+    var okStr = GetPlatform.isIOS ? "excerpt" : "diesel";
+    AppLog.i("user result: ${result.code}, ${result.data}, ok: $okStr");
+    if (result.data == okStr && !bus.isBMode) {
+      //缓存
+      var sp = await SharedPreferences.getInstance();
+      await sp.setBool("isOpenUser", true);
+      Get.offAll(() => const UserMain());
+    } else {
+      await Future.delayed(Duration(seconds: 2 * retryCount));
+      await _requestCloak(retryCount: retryCount + 1);
+    }
   }
 
   @override
   void onReady() {
     //预加载广告
-    AdUtils.instance.loadAd(AdPosId.muse_local_int,adFirstType: AdFirstType.launch_first, adSense: AdSense.hot,forceLocalJson: bus.isFirstAppLaunch);
+    AdUtils.instance.loadAd(AdPosId.muse_local_int,
+        adFirstType: AdFirstType.launch_first, adSense: AdSense.hot, forceLocalJson: bus.isFirstAppLaunch);
     AdUtils.instance.loadAd(AdPosId.muse_local_reward, adSense: AdSense.setting);
     super.onReady();
   }

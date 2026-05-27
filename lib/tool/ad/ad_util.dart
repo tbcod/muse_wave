@@ -143,6 +143,12 @@ class AdUtils {
       );
     }
 
+    EventUtils.instance.addEvent(
+      "ad_request_total",
+      data: {"ad_pos_id": adPosId.name},
+    );
+    DateTime requestStartTime = DateTime.now();
+
     //按照优先级降序排序
     configList.sort((a, b) {
       int al = a["adweight"];
@@ -152,13 +158,16 @@ class AdUtils {
     });
 
     bool isLoadSuc = false;
-
+    String ad_id = "";
+    String type = "";
+    String source = "";
+    int ad_weight = 0;
     //循环加载广告
     for (var item in configList) {
-      String type = item["adtype"];
-      String source = item["adsource"];
-      String ad_id = item["placementid"];
-      int ad_weight = item["adweight"];
+      type = item["adtype"];
+      source = item["adsource"];
+      ad_id = item["placementid"];
+      ad_weight = item["adweight"];
 
       if (loadedAdMap.containsKey(ad_id)) {
         //如果已经加载了并且没有超时就跳过
@@ -632,6 +641,16 @@ class AdUtils {
 
     if (isLoadSuc) {
       AppLog.i("广告瀑布流请求结束，成功：$key");
+      EventUtils.instance.addEvent(
+        "ad_return_succ_toal",
+        data: {
+          "ad_pos_id": adPosId.name,
+          "ad_format": type == "native" ? "fullnative" : type,
+          "ad_source_client": source,
+          "ad_code_id": ad_id,
+          "ad_request_time": DateTime.now().difference(requestStartTime).inMilliseconds,
+        },
+      );
     } else {
       AppLog.e("广告瀑布流请求结束，失败，$key");
     }
@@ -1896,10 +1915,18 @@ class BannerNativeAdViewController extends GetxController {
     });
 
     var isOk = false;
+
+    EventUtils.instance.addEvent("ad_request_total", data: {"ad_pos_id": adPosId.name});
+    DateTime requestStartTime = DateTime.now();
+
+    String type = '';
+    String source = '';
+    String ad_id = '';
+
     for (var item in configList) {
-      String type = item["adtype"];
-      String source = item["adsource"];
-      String ad_id = item["placementid"];
+      type = item["adtype"];
+      source = item["adsource"];
+      ad_id = item["placementid"];
       AppLog.i("开始加载原生广告:$type, $source, ${adSense.name}, $ad_id");
 
       if (source == "admob") {
@@ -1972,6 +1999,17 @@ class BannerNativeAdViewController extends GetxController {
           "ad_sense": adSense.name,
           "reason": "ad_nocache",
           "ad_function": "",
+        },
+      );
+    } else {
+      EventUtils.instance.addEvent(
+        "ad_return_succ_toal",
+        data: {
+          "ad_pos_id": adPosId.name,
+          "ad_format": type,
+          "ad_source_client": source,
+          "ad_code_id": ad_id,
+          "ad_request_time": DateTime.now().difference(requestStartTime).inMilliseconds,
         },
       );
     }
