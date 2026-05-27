@@ -123,6 +123,7 @@ class UserSearch extends GetView<UserSearchController> {
               )),
               TextButton(
                   onPressed: () {
+                    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.search_page, adFunction: AdFunction.return_);
                     Get.back();
                   },
                   child: Text("Cancel".tr))

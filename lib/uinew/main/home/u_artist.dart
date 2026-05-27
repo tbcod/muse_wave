@@ -63,6 +63,8 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                       leading: Obx(
                         () => IconButton(
                           onPressed: () {
+                            AdUtils.instance.showAd(AdPosId.behavior,
+                                adSense: AdSense.artist_detail_page, adFunction: AdFunction.return_);
                             Get.back();
                           },
                           icon: Image.asset(
@@ -172,7 +174,7 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                           Get.find<UserPlayInfoController>().setDataAndPlayItem(
                                               controller.moreList, controller.moreList.first,
                                               clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
-                                              adSense: AdSense.search_page);
+                                              adSense: AdSense.artist_detail_page);
                                           // Get.to(UserPlayInfo());
                                         },
                                         child: Container(

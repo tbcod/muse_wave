@@ -39,6 +39,7 @@ class UserMoreSong extends GetView<UserMoreSongController> {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
+              AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.song_list, adFunction: AdFunction.return_);
               Get.back();
             },
             icon: Image.asset(
@@ -89,7 +90,7 @@ class UserMoreSong extends GetView<UserMoreSongController> {
           controller.list,
           item,
           clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
-          adSense: isFormSearch? AdSense.search_page : AdSense.playlist_page,
+          adSense:  AdSense.song_list,
         );
         // Get.to(UserPlayInfo());
       },

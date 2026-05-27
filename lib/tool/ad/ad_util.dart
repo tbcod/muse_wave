@@ -201,7 +201,7 @@ class AdUtils {
         "ad_request",
         data: {
           "ad_pos_id": adPosId.name,
-          "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
+          // "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
           "ad_format": type == "native" ? "fullnative" : type,
           "ad_source_client": source,
           "ad_code_id": ad_id

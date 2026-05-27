@@ -2507,7 +2507,7 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         "song_id": controller.nowData["videoId"] ?? "",
         "song_name": controller.nowData["title"] ?? "",
         "artist_name": controller.nowData["subtitle"] ?? "",
-        "station": "tab",
+        "station": "background",
       },
     );
   }

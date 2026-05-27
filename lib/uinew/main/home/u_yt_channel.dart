@@ -52,6 +52,7 @@ class UserYoutubeChannel extends GetView<UserYoutubeChannelController> {
                     leading: Obx(
                       () => IconButton(
                         onPressed: () {
+                          AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.search_page, adFunction: AdFunction.return_);
                           Get.back();
                         },
                         icon: Image.asset(

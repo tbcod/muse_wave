@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/ui/main/home/play.dart';
 import 'package:muse_wave/view/base_view.dart';
 

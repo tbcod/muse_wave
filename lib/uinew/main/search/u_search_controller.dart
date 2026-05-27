@@ -50,8 +50,8 @@ class UserSearchController extends GetxController with StateMixin {
 
   @override
   void onReady() {
-    if(!inputFocusNode.hasFocus){
-      Future.delayed(Duration(milliseconds: 600)).then((v){
+    if (!inputFocusNode.hasFocus) {
+      Future.delayed(Duration(milliseconds: 600)).then((v) {
         inputFocusNode.requestFocus();
       });
     }
@@ -72,7 +72,12 @@ class UserSearchController extends GetxController with StateMixin {
         var itemTextView = RichText(
             text: TextSpan(
                 children: childTextList
-                    .map((e) => TextSpan(text: e["text"], style: TextStyle(fontSize: 14.w, color: Colors.black, fontWeight: e["bold"] == true ? FontWeight.bold : FontWeight.normal)))
+                    .map((e) => TextSpan(
+                        text: e["text"],
+                        style: TextStyle(
+                            fontSize: 14.w,
+                            color: Colors.black,
+                            fontWeight: e["bold"] == true ? FontWeight.bold : FontWeight.normal)))
                     .toList()));
         var itemText = item["searchSuggestionRenderer"]["navigationEndpoint"]["searchEndpoint"]["query"];
 
@@ -146,11 +151,14 @@ class UserSearchController extends GetxController with StateMixin {
       }
 
       //解析数据
-      var oldList = result.data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"] ?? [];
+      var oldList = result.data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]
+              ["contents"][0]["itemSectionRenderer"]["contents"] ??
+          [];
       //更多数据token
       try {
-        youtubeMoreToken = result.data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][1]["continuationItemRenderer"]?["continuationEndpoint"]
-        ?["continuationCommand"]?["token"] ??
+        youtubeMoreToken = result.data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]
+                    ["sectionListRenderer"]["contents"][1]["continuationItemRenderer"]?["continuationEndpoint"]
+                ?["continuationCommand"]?["token"] ??
             "";
       } catch (e, s) {
         AppLog.e("$e,$s");
@@ -169,7 +177,14 @@ class UserSearchController extends GetxController with StateMixin {
           var subtitle = item["videoRenderer"]["ownerText"]["runs"][0]["text"];
           var timeStr = item["videoRenderer"]["lengthText"]?["simpleText"] ?? "";
 
-          newList.add({"title": title, "subtitle": subtitle, "cover": cover, "videoId": videoId, "timeStr": timeStr, "type": "Video"});
+          newList.add({
+            "title": title,
+            "subtitle": subtitle,
+            "cover": cover,
+            "videoId": videoId,
+            "timeStr": timeStr,
+            "type": "Video"
+          });
         } else {
           //reelShelfRenderer
           //lockupViewModel
@@ -233,12 +248,15 @@ class UserSearchController extends GetxController with StateMixin {
               List childSubtitleList = item["musicCardShelfRenderer"]["subtitle"]["runs"] ?? [];
               var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-              var cover = musicCardShelfRenderer["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+              var cover =
+                  musicCardShelfRenderer["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
 
-              var type = runs.first["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]?["watchEndpointMusicConfig"]?["musicVideoType"];
+              var type = runs.first["navigationEndpoint"]?["watchEndpoint"]?["watchEndpointMusicSupportedConfigs"]
+                  ?["watchEndpointMusicConfig"]?["musicVideoType"];
               var videoId = runs.first["navigationEndpoint"]?["watchEndpoint"]?["videoId"];
               if (videoId == null || type == null) {
-                type = runs.first["navigationEndpoint"]?["browseEndpoint"]?["browseEndpointContextSupportedConfigs"]?["browseEndpointContextMusicConfig"]?["pageType"];
+                type = runs.first["navigationEndpoint"]?["browseEndpoint"]?["browseEndpointContextSupportedConfigs"]
+                    ?["browseEndpointContextMusicConfig"]?["pageType"];
                 videoId = runs.first["navigationEndpoint"]["browseEndpoint"]["browseId"];
               }
               if (videoId == null) {
@@ -263,12 +281,16 @@ class UserSearchController extends GetxController with StateMixin {
                   final musicResponsiveListItemRenderer = item2["musicResponsiveListItemRenderer"];
                   List flexColumns = musicResponsiveListItemRenderer?["flexColumns"] ?? [];
                   if (flexColumns.isEmpty) continue;
-                  var cover = musicResponsiveListItemRenderer["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
-                  final title = flexColumns.first["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-                  final vid = flexColumns.first["musicResponsiveListItemFlexColumnRenderer"]["te"
-                      "xt"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]["videoId"];
-                  final type = flexColumns.first["musicResponsiveListItemFlexColumnRenderer"]["te"
-                      "xt"]["runs"][0]["navigationEndpoint"]["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+                  var cover = musicResponsiveListItemRenderer["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                          ["thumbnails"]
+                      .last["url"];
+                  List runs = flexColumns.first["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"] ?? [];
+                  if (runs.isEmpty) continue;
+                  final vid = runs[0]?["navigationEndpoint"]?["watchEndpoint"]?["videoId"];
+                  if(vid == null) continue;
+                  final title = runs[0]["text"];
+                  final type = runs[0]["navigationEndpoint"]["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]
+                      ["watchEndpointMusicConfig"]["musicVideoType"];
                   var subTitle = "";
                   if (flexColumns.length > 1) {
                     List runs = flexColumns[1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"] ?? [];
@@ -298,8 +320,8 @@ class UserSearchController extends GetxController with StateMixin {
                 "type": "best",
               };
               resultList.add(bestResultList);
-            } catch (e) {
-              AppLog.e(e);
+            } catch (e, s) {
+              AppLog.e("$e,$s");
               continue;
             }
 
@@ -329,7 +351,9 @@ class UserSearchController extends GetxController with StateMixin {
 
         EventUtils.instance.addEvent("search_result");
 
-        List chips = tabs.firstOrNull?["tabRenderer"]?["content"]?["sectionListRenderer"]?["header"]?["chipCloudRenderer"]?["chips"] ?? [];
+        List chips = tabs.firstOrNull?["tabRenderer"]?["content"]?["sectionListRenderer"]?["header"]
+                ?["chipCloudRenderer"]?["chips"] ??
+            [];
         for (final chip in chips) {
           Map render = chip?["chipCloudChipRenderer"] ?? {};
           String? uniqueId = render["uniqueId"];
@@ -561,11 +585,14 @@ class UserSearchController extends GetxController with StateMixin {
 
     //解析数据
 
-    var oldList = result.data["onResponseReceivedCommands"][0]["appendContinuationItemsAction"]["continuationItems"][0]["itemSectionRenderer"]["contents"] ?? [];
+    var oldList = result.data["onResponseReceivedCommands"][0]["appendContinuationItemsAction"]["continuationItems"][0]
+            ["itemSectionRenderer"]["contents"] ??
+        [];
     //更多数据token
     try {
-      youtubeMoreToken = result.data["onResponseReceivedCommands"][0]["appendContinuationItemsAction"]["continuationItems"][1]["continuationItemRenderer"]?["continuationEndpoint"]
-      ?["continuationCommand"]?["token"] ??
+      youtubeMoreToken = result.data["onResponseReceivedCommands"][0]["appendContinuationItemsAction"]
+                  ["continuationItems"][1]["continuationItemRenderer"]?["continuationEndpoint"]?["continuationCommand"]
+              ?["token"] ??
           "";
     } catch (e) {
       print(e);
@@ -581,7 +608,14 @@ class UserSearchController extends GetxController with StateMixin {
         var title = item["videoRenderer"]["title"]["runs"][0]["text"];
         var subtitle = item["videoRenderer"]["ownerText"]["runs"][0]["text"];
         var timeStr = item["videoRenderer"]["lengthText"]?["simpleText"] ?? "";
-        newList.add({"title": title, "subtitle": subtitle, "cover": cover, "videoId": videoId, "timeStr": timeStr, "type": "Video"});
+        newList.add({
+          "title": title,
+          "subtitle": subtitle,
+          "cover": cover,
+          "videoId": videoId,
+          "timeStr": timeStr,
+          "type": "Video"
+        });
       } else {
         AppLog.e(item.keys);
       }
@@ -615,7 +649,8 @@ class UserSearchController extends GetxController with StateMixin {
   Future searchSong(String str, {String? param}) async {
     //搜索结果
 
-    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIIAWoMEAMQBBAOEAoQCRAF");
+    BaseModel result =
+        await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIIAWoMEAMQBBAOEAoQCRAF");
 
     if (result.code == HttpCode.success) {
       songList.clear();
@@ -625,7 +660,9 @@ class UserSearchController extends GetxController with StateMixin {
         //解析搜索结果
         List oldList = [];
 
-        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
+        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                ["sectionListRenderer"]["contents"] ??
+            [];
         for (Map item in contents) {
           if (item.containsKey("musicShelfRenderer")) {
             oldList = item["musicShelfRenderer"]?["contents"] ?? [];
@@ -635,17 +672,22 @@ class UserSearchController extends GetxController with StateMixin {
 
         var childList = [];
         for (Map item in oldList) {
-          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
           // var childSubtitle =
           //     childSubtitleList.map((e) => e["text"]).toList().join("");
           var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
 
-          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                  ["thumbnails"]
+              .last["url"];
           var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
 
-          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": ""});
+          childList
+              .add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": ""});
         }
         songList.addAll(childList);
       } catch (e) {
@@ -660,7 +702,8 @@ class UserSearchController extends GetxController with StateMixin {
     if (songNextData.isEmpty) {
       return;
     }
-    var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIIAWoMEAMQBBAOEAoQCRAF", nextData: songNextData);
+    var result = await ApiMain.instance
+        .getSearchResult(lastWords, params: param ?? "EgWKAQIIAWoMEAMQBBAOEAoQCRAF", nextData: songNextData);
 
     if (result.code == HttpCode.success) {
       try {
@@ -671,19 +714,26 @@ class UserSearchController extends GetxController with StateMixin {
           return;
         }
 
-        songNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
+        songNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]
+                ["nextContinuationData"] ??
+            {};
 
         var childList = [];
         for (Map item in oldList) {
-          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
           var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                  ["thumbnails"]
+              .last["url"];
           var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
 
-          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": ""});
+          childList
+              .add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "type": ""});
         }
         songList.addAll(childList);
       } catch (e) {
@@ -695,7 +745,8 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   Future searchVideo(String str, {String? param}) async {
-    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIQAWoMEAMQBBAOEAoQCRAF");
+    BaseModel result =
+        await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIQAWoMEAMQBBAOEAoQCRAF");
 
     videoList.clear();
     videoNextData = {};
@@ -705,7 +756,9 @@ class UserSearchController extends GetxController with StateMixin {
         //解析搜索结果
         List oldList = [];
 
-        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
+        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                ["sectionListRenderer"]["contents"] ??
+            [];
         for (Map item in contents) {
           if (item.containsKey("musicShelfRenderer")) {
             oldList = item["musicShelfRenderer"]?["contents"] ?? [];
@@ -719,18 +772,29 @@ class UserSearchController extends GetxController with StateMixin {
 
         var childList = [];
         for (Map item in oldList) {
-          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
           // var childSubtitle =
           //     childSubtitleList.map((e) => e["text"]).toList().join("");
           var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
           var timeStr = childSubtitleList.lastOrNull?["text"] ?? "";
 
-          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                  ["thumbnails"]
+              .last["url"];
           var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
 
-          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "timeStr": timeStr, "videoId": videoId, "type": ""});
+          childList.add({
+            "title": childTitle,
+            "subtitle": childSubtitle,
+            "cover": cover,
+            "timeStr": timeStr,
+            "videoId": videoId,
+            "type": ""
+          });
         }
         videoList.addAll(childList);
       } catch (e) {
@@ -746,7 +810,8 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIQAWoMEAMQBBAOEAoQCRAF", nextData: videoNextData);
+    var result = await ApiMain.instance
+        .getSearchResult(lastWords, params: param ?? "EgWKAQIQAWoMEAMQBBAOEAoQCRAF", nextData: videoNextData);
 
     if (result.code == HttpCode.success) {
       try {
@@ -757,22 +822,35 @@ class UserSearchController extends GetxController with StateMixin {
           return;
         }
 
-        videoNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
+        videoNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]
+                ["nextContinuationData"] ??
+            {};
 
         var childList = [];
         for (Map item in oldList) {
-          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
           // var childSubtitle =
           //     childSubtitleList.map((e) => e["text"]).toList().join("");
           var childSubtitle = childSubtitleList.firstOrNull?["text"] ?? "";
           var timeStr = childSubtitleList.lastOrNull?["text"] ?? "";
 
-          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                  ["thumbnails"]
+              .last["url"];
           var videoId = item["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
 
-          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "videoId": videoId, "timeStr": timeStr, "type": ""});
+          childList.add({
+            "title": childTitle,
+            "subtitle": childSubtitle,
+            "cover": cover,
+            "videoId": videoId,
+            "timeStr": timeStr,
+            "type": ""
+          });
         }
         videoList.addAll(childList);
       } catch (e) {
@@ -784,7 +862,8 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   Future searchArtist(String str, {String? param}) async {
-    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIgAWoMEAMQBBAOEAoQCRAF");
+    BaseModel result =
+        await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIgAWoMEAMQBBAOEAoQCRAF");
 
     artistList.clear();
     artistNextData = {};
@@ -794,7 +873,9 @@ class UserSearchController extends GetxController with StateMixin {
       List oldList = [];
 
       try {
-        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
+        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                ["sectionListRenderer"]["contents"] ??
+            [];
         for (Map item in contents) {
           if (item.containsKey("musicShelfRenderer")) {
             oldList = item["musicShelfRenderer"]?["contents"] ?? [];
@@ -812,19 +893,24 @@ class UserSearchController extends GetxController with StateMixin {
       var childList = [];
       try {
         for (Map item in oldList) {
-          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
           var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                  ["thumbnails"]
+              .last["url"];
 
           // var videoId = item["musicResponsiveListItemRenderer"]
           //     ["playlistItemData"]["videoId"];
 
           var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          childList
+              .add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
         }
       } catch (e) {
         AppLog.e(e);
@@ -840,7 +926,8 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIgAWoMEAMQBBAOEAoQCRAF", nextData: artistNextData);
+    var result = await ApiMain.instance
+        .getSearchResult(lastWords, params: param ?? "EgWKAQIgAWoMEAMQBBAOEAoQCRAF", nextData: artistNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -851,21 +938,28 @@ class UserSearchController extends GetxController with StateMixin {
           return;
         }
 
-        artistNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
+        artistNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]
+                ["nextContinuationData"] ??
+            {};
 
         var childList = [];
         for (Map item in oldList) {
-          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
           var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                  ["thumbnails"]
+              .last["url"];
           // var videoId = item["musicResponsiveListItemRenderer"]
           // ["playlistItemData"]["videoId"];
 
           var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
-          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          childList
+              .add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
         }
         artistList.addAll(childList);
       } catch (e) {
@@ -877,7 +971,8 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   Future searchAlbum(String str, {String? param}) async {
-    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIYAWoMEAMQBBAOEAoQCRAF");
+    BaseModel result =
+        await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIYAWoMEAMQBBAOEAoQCRAF");
 
     albumList.clear();
     albumNextData = {};
@@ -887,7 +982,9 @@ class UserSearchController extends GetxController with StateMixin {
       List oldList = [];
 
       try {
-        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
+        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                ["sectionListRenderer"]["contents"] ??
+            [];
         for (Map item in contents) {
           if (item.containsKey("musicShelfRenderer")) {
             oldList = item["musicShelfRenderer"]?["contents"] ?? [];
@@ -911,19 +1008,24 @@ class UserSearchController extends GetxController with StateMixin {
       var childList = [];
       try {
         for (Map item in oldList) {
-          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
           var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                  ["thumbnails"]
+              .last["url"];
 
           // var videoId = item["musicResponsiveListItemRenderer"]
           //     ["playlistItemData"]["videoId"];
 
           var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          childList
+              .add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
         }
       } catch (e) {
         AppLog.e(e);
@@ -939,7 +1041,8 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgWKAQIYAWoMEAMQBBAOEAoQCRAF", nextData: albumNextData);
+    var result = await ApiMain.instance
+        .getSearchResult(lastWords, params: param ?? "EgWKAQIYAWoMEAMQBBAOEAoQCRAF", nextData: albumNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -950,7 +1053,9 @@ class UserSearchController extends GetxController with StateMixin {
       }
 
       try {
-        albumNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
+        albumNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]
+                ["nextContinuationData"] ??
+            {};
       } catch (e) {
         AppLog.e(e);
       }
@@ -958,17 +1063,22 @@ class UserSearchController extends GetxController with StateMixin {
       var childList = [];
       try {
         for (Map item in oldList) {
-          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
           var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                  ["thumbnails"]
+              .last["url"];
           // var videoId = item["musicResponsiveListItemRenderer"]
           // ["playlistItemData"]["videoId"];
 
           var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
-          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          childList
+              .add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
         }
       } catch (e) {
         AppLog.e(e);
@@ -980,7 +1090,8 @@ class UserSearchController extends GetxController with StateMixin {
   }
 
   Future searchPlaylist(String str, {String? param}) async {
-    BaseModel result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=");
+    BaseModel result =
+        await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=");
 
     playlistList.clear();
     playlistNextData = {};
@@ -990,7 +1101,9 @@ class UserSearchController extends GetxController with StateMixin {
       List oldList = [];
 
       try {
-        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"] ?? [];
+        List contents = result.data["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                ["sectionListRenderer"]["contents"] ??
+            [];
         for (Map item in contents) {
           if (item.containsKey("musicShelfRenderer")) {
             oldList = item["musicShelfRenderer"]?["contents"] ?? [];
@@ -1008,19 +1121,24 @@ class UserSearchController extends GetxController with StateMixin {
       var childList = [];
       try {
         for (Map item in oldList) {
-          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
           var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                  ["thumbnails"]
+              .last["url"];
 
           // var videoId = item["musicResponsiveListItemRenderer"]
           //     ["playlistItemData"]["videoId"];
 
           var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          childList
+              .add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
         }
       } catch (e) {
         AppLog.e(e);
@@ -1036,7 +1154,8 @@ class UserSearchController extends GetxController with StateMixin {
       return;
     }
 
-    var result = await ApiMain.instance.getSearchResult(lastWords, params: param ?? "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=", nextData: playlistNextData);
+    var result = await ApiMain.instance
+        .getSearchResult(lastWords, params: param ?? "EgeKAQQoAEABagwQAxAEEA4QChAJEAU=", nextData: playlistNextData);
 
     if (result.code == HttpCode.success) {
       //解析搜索结果
@@ -1046,22 +1165,29 @@ class UserSearchController extends GetxController with StateMixin {
         return;
       }
 
-      playlistNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]["nextContinuationData"] ?? {};
+      playlistNextData = result.data["continuationContents"]["musicShelfContinuation"]["continuations"]?[0]
+              ["nextContinuationData"] ??
+          {};
 
       var childList = [];
       try {
         for (Map item in oldList) {
-          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+          var childTitle = item["musicResponsiveListItemRenderer"]["flexColumns"][0]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
 
-          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
+          List childSubtitleList = item["musicResponsiveListItemRenderer"]["flexColumns"][1]
+              ["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"];
           var childSubtitle = childSubtitleList.map((e) => e["text"]).toList().join("");
 
-          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"].last["url"];
+          var cover = item["musicResponsiveListItemRenderer"]["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]
+                  ["thumbnails"]
+              .last["url"];
           // var videoId = item["musicResponsiveListItemRenderer"]
           // ["playlistItemData"]["videoId"];
 
           var browseId = item["musicResponsiveListItemRenderer"]["navigationEndpoint"]["browseEndpoint"]["browseId"];
-          childList.add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
+          childList
+              .add({"title": childTitle, "subtitle": childSubtitle, "cover": cover, "browseId": browseId, "type": ""});
         }
       } catch (e) {
         AppLog.e(e);

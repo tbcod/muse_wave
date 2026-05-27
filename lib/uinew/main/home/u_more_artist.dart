@@ -33,6 +33,7 @@ class UserMoreArtist extends GetView<UserMoreArtistController> {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
+              AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.artist_detail_page, adFunction: AdFunction.return_);
               Get.back();
             },
             icon: Image.asset(

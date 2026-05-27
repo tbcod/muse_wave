@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:muse_wave/tool/ad/ad_util.dart';
 import 'package:muse_wave/uinew/main/libray/u_loc_playlist.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
 
@@ -28,6 +29,7 @@ class UserLocAddSong extends GetView<UserLocAddSongController> {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
+              AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.song_list, adFunction: AdFunction.return_);
               Get.back();
             },
             icon: Image.asset(

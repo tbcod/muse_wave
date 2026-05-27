@@ -52,6 +52,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
                   ),
                   leading: IconButton(
                     onPressed: () {
+                      AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.playlist_page, adFunction: AdFunction.return_);
                       Get.back();
                     },
                     icon: Image.asset(
