@@ -28,7 +28,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
         child: Obx(
           () => NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification notification) {
-              AppLog.e(notification.metrics.pixels);
+              // AppLog.e(notification.metrics.pixels);
 
               var offset = notification.metrics.pixels;
               controller.showTitle.value = offset > 100.w;

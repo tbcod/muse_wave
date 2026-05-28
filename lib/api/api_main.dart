@@ -101,7 +101,8 @@ class ApiMain extends BaseApi {
       url += "&continuation=$continuation&type=next&itct=$itct";
     }
 
-    var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: header);
+    var result =
+        await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: header);
     if (result.code == HttpCode.success) {
       //请求成功
       // AppLog.i("请求首页数据成功: $url, header: $header, param：$body");
@@ -142,7 +143,8 @@ class ApiMain extends BaseApi {
     body["videoId"] = videoId;
 
     // AppLog.i("request:$url,$body");
-    BaseModel result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+    BaseModel result =
+        await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
 
     //判断是否有链接
     String videoUrl = result.data?["streamingData"]?["formats"]?.first?["url"] ?? "";
@@ -168,7 +170,8 @@ class ApiMain extends BaseApi {
     // };
 
     AppLog.i("request:$url,$body");
-    BaseModel result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+    BaseModel result =
+        await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
 
     String videoUrl = result.data?["streamingData"]?["formats"]?.first?["url"] ?? "";
 
@@ -222,7 +225,13 @@ class ApiMain extends BaseApi {
 
     Map<String, dynamic> body = {
       "context": {
-        "client": {"hl": _hl, "gl": _gl, "clientName": "WEB", "clientVersion": "2.20250101.07.00", "visitorData": Get.find<Application>().visitorData},
+        "client": {
+          "hl": _hl,
+          "gl": _gl,
+          "clientName": "WEB",
+          "clientVersion": "2.20250101.07.00",
+          "visitorData": Get.find<Application>().visitorData
+        },
       },
       "browseId": browseId,
       "params": params,
@@ -236,7 +245,8 @@ class ApiMain extends BaseApi {
       body["clickTracking"] = {"clickTrackingParams": nextData["clickTrackingParams"] ?? ""};
     }
 
-    var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+    var result =
+        await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
     if (result.code == HttpCode.success) {
       //请求成功
       EventUtils.instance.addEvent("source_get");
@@ -251,7 +261,13 @@ class ApiMain extends BaseApi {
 
     Map<String, dynamic> body = {
       "context": {
-        "client": {"hl": _hl, "gl": _gl, "clientName": "WEB", "clientVersion": "2.20250101.07.00", "visitorData": Get.find<Application>().visitorData},
+        "client": {
+          "hl": _hl,
+          "gl": _gl,
+          "clientName": "WEB",
+          "clientVersion": "2.20250101.07.00",
+          "visitorData": Get.find<Application>().visitorData
+        },
       },
       "videoId": videoId,
       "continuation": continuation,
@@ -261,7 +277,8 @@ class ApiMain extends BaseApi {
 
     var url = "https://www.youtube.com/youtubei/v1/next";
 
-    var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+    var result =
+        await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
     return result;
   }
 
@@ -271,7 +288,13 @@ class ApiMain extends BaseApi {
 
     Map<String, dynamic> body = {
       "context": {
-        "client": {"hl": _hl, "gl": _gl, "clientName": "WEB", "clientVersion": "2.20250101.07.00", "visitorData": Get.find<Application>().visitorData},
+        "client": {
+          "hl": _hl,
+          "gl": _gl,
+          "clientName": "WEB",
+          "clientVersion": "2.20250101.07.00",
+          "visitorData": Get.find<Application>().visitorData
+        },
       },
       "query": word,
       "continuation": continuation,
@@ -283,7 +306,8 @@ class ApiMain extends BaseApi {
 
     var url = "https://www.youtube.com/youtubei/v1/search";
 
-    var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+    var result =
+        await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
     return result;
   }
 
@@ -323,21 +347,31 @@ class ApiMain extends BaseApi {
       Map<String, dynamic> header = _header;
       header["Origin"] = "https://music.youtube.com/watch?v=$videoId&list=$playlistId";
       var url = "https://music.youtube.com/youtubei/v1/player?prettyPrint=false";
-      var result = await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: header);
+      var result =
+          await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: header);
       final data = result.data;
       final playbackUrl = data?["playbackTracking"]?["videostatsPlaybackUrl"]?['baseUrl'];
       final watchTimeUrl = data?["playbackTracking"]?["videostatsWatchtimeUrl"]?['baseUrl'];
       if (playbackUrl == null || watchTimeUrl == null) {
         final playabilityStatus = data?["playabilityStatus"]?["status"];
         final reason = data?["playabilityStatus"]?["reason"];
-        AppLog.e("postYoutube player title:${controller.nowData["title"]},videoId:$videoId, url:$url, body:$body, header:$header");
+        AppLog.e(
+            "postYoutube player title:${controller.nowData["title"]},videoId:$videoId, url:$url, body:$body, header:$header");
         AppLog.e("playabilityStatus:$playabilityStatus,$reason");
-        EventUtils.instance.addEvent("playback_playability", data: {"status": playabilityStatus, "reason": reason});
+        if (playabilityStatus != null && reason != null) {
+          EventUtils.instance
+              .addEvent("playback_playability", data: {"status": playabilityStatus ?? "", "reason": reason ?? ""});
+        }
         return;
       } else {
         // AppLog.i("playabilityStatus:ok");
       }
-      playbackMap[videoId] = {"playlistId": playlistId, "playbackUrl": playbackUrl, "watchTimeUrl": watchTimeUrl, "cpn": cnp};
+      playbackMap[videoId] = {
+        "playlistId": playlistId,
+        "playbackUrl": playbackUrl,
+        "watchTimeUrl": watchTimeUrl,
+        "cpn": cnp
+      };
     }
 
     final info = playbackMap[videoId];
@@ -354,11 +388,24 @@ class ApiMain extends BaseApi {
       st = double.parse(st.toStringAsFixed(3));
       info['positionSec'] = et;
       if (!isWatchOnly) {
-        await _postPlaybackUrl(info['playbackUrl'], vid: videoId, playlistId: info['playlistId'], cmt: et, cpn: info['cpn'] ?? cnp);
+        await _postPlaybackUrl(info['playbackUrl'],
+            vid: videoId, playlistId: info['playlistId'], cmt: et, cpn: info['cpn'] ?? cnp);
         await Future.delayed(Duration(seconds: 1 + Random().nextInt(5)));
-        _postWatchTime(info['watchTimeUrl'], vid: videoId, playlistId: info['playlistId'], isPlaying: controller.isPlaying.isTrue, st: st, et: et, cpn: info['cpn'] ?? cnp);
+        _postWatchTime(info['watchTimeUrl'],
+            vid: videoId,
+            playlistId: info['playlistId'],
+            isPlaying: controller.isPlaying.isTrue,
+            st: st,
+            et: et,
+            cpn: info['cpn'] ?? cnp);
       } else {
-        _postWatchTime(info['watchTimeUrl'], vid: videoId, playlistId: info['playlistId'], isPlaying: controller.isPlaying.isTrue, st: st, et: et, cpn: info['cpn'] ?? cnp);
+        _postWatchTime(info['watchTimeUrl'],
+            vid: videoId,
+            playlistId: info['playlistId'],
+            isPlaying: controller.isPlaying.isTrue,
+            st: st,
+            et: et,
+            cpn: info['cpn'] ?? cnp);
       }
       if (isFirstRequest) {
         isFirstRequest = false;
@@ -372,11 +419,11 @@ class ApiMain extends BaseApi {
     }
   }
 
-  Future _postPlaybackUrl(String? url, {required String cpn, required String vid, String? playlistId, required double cmt}) async {
+  Future _postPlaybackUrl(String? url,
+      {required String cpn, required String vid, String? playlistId, required double cmt}) async {
     if (url == null || !url.contains("http")) return;
     url = url.replaceFirst("s.youtube.com", "music.youtube.com");
-    String path =
-        "&cpn=$cpn"
+    String path = "&cpn=$cpn"
         "&ver=2"
         "&c=WEB_REMIX"
         // "&c=ANDROID_MUSIC"
@@ -397,7 +444,7 @@ class ApiMain extends BaseApi {
       String p = "referrer=${Uri.encodeComponent('https://music.youtube.com/watch?v=$vid&list=$playlistId')}";
       path = path + p;
       header["Referer"] = "https://music.youtube.com/watch?v=$vid&list=$playlistId";
-    }else{
+    } else {
       header["Origin"] = "https://music.youtube.com/watch?v=$vid";
     }
     url = url + path;
@@ -407,11 +454,16 @@ class ApiMain extends BaseApi {
     // AppLog.i("postPlaybackUrl:$url, result:${result.code}");
   }
 
-  _postWatchTime(String? url, {required String cpn, required String vid, String? playlistId, bool isPlaying = true, required double st, required double et}) async {
+  _postWatchTime(String? url,
+      {required String cpn,
+      required String vid,
+      String? playlistId,
+      bool isPlaying = true,
+      required double st,
+      required double et}) async {
     if (url == null || !url.contains("http")) return;
     url = url.replaceFirst("s.youtube.com", "music.youtube.com");
-    var path =
-        "&cpn=$cpn"
+    var path = "&cpn=$cpn"
         "&ver=2"
         "&cver=$_webRemixVersion"
         "&c=WEB_REMIX"
@@ -431,7 +483,8 @@ class ApiMain extends BaseApi {
       if (playlistId.startsWith("VL")) {
         playlistId = playlistId.replaceAll("VL", "");
       }
-      String p = "&list=$playlistId&referrer=${Uri.encodeComponent('https://music.youtube.com/playlist?list=$playlistId')}";
+      String p =
+          "&list=$playlistId&referrer=${Uri.encodeComponent('https://music.youtube.com/playlist?list=$playlistId')}";
       path = path + p;
       header["Referer"] = "https://music.youtube.com/watch?v=$vid&list=$playlistId";
       // header["Origin"] = "https://music.youtube.com/watch?v=$vid&list=$playlistId";
@@ -443,13 +496,18 @@ class ApiMain extends BaseApi {
     BaseModel result = await httpRequest(url, method: HttpMethod.get, contentType: "application/json", headers: header);
     if (result.code != HttpCode.success) {
       AppLog.e("postWatchTime:$url, result:${result.code}");
-    }else{
+    } else {
       // AppLog.i("postWatchTime result:${result.code}");
     }
   }
 
   Map<String, dynamic> get _header {
-    Map<String, dynamic> header = {"X-Youtube-Client-Name": 67, "X-Youtube-Client-Version": _webRemixVersion, "Referer": "https://music.youtube.com/", "Origin": "https://music.youtube.com"};
+    Map<String, dynamic> header = {
+      "X-Youtube-Client-Name": 67,
+      "X-Youtube-Client-Version": _webRemixVersion,
+      "Referer": "https://music.youtube.com/",
+      "Origin": "https://music.youtube.com"
+    };
     if (Get.find<Application>().visitorData.isNotEmpty) {
       header["X-Goog-Visitor-Id"] = Get.find<Application>().visitorData;
     }
@@ -472,7 +530,14 @@ class ApiMain extends BaseApi {
 
   Map<String, dynamic> get _webRemixContext {
     Map<String, dynamic> content = {
-      "client": {"hl": _hl, "gl": _gl, "clientName": "WEB_REMIX", "clientVersion": _webRemixVersion, "platform": "DESKTOP", "originalUrl": "https://music.youtube.com/"},
+      "client": {
+        "hl": _hl,
+        "gl": _gl,
+        "clientName": "WEB_REMIX",
+        "clientVersion": _webRemixVersion,
+        "platform": "DESKTOP",
+        "originalUrl": "https://music.youtube.com/"
+      },
     };
     if (Get.find<Application>().visitorData.isNotEmpty) {
       content["client"]["visitorData"] = Get.find<Application>().visitorData;

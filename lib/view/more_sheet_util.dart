@@ -328,7 +328,7 @@ class MoreSheetUtil {
                   EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "add_playlist"});
                 }
 
-                showAddList(item);
+                showAddList(Map.from(item));
               },
               child: Container(
                 height: 40.w,
@@ -659,7 +659,7 @@ class MoreSheetUtil {
     oldList.removeWhere((e) => e["type"] == 1);
 
     var list = [].obs;
-    list.value = oldList;
+    list.value = List.from(oldList);
 
     Get.bottomSheet(
       Container(

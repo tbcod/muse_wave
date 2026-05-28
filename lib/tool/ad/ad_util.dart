@@ -326,8 +326,6 @@ class AdUtils {
                 AdUtils.instance.loadedAdMap[ad_id] = {
                   "data": item,
                   "admob_ad": ad,
-                  // "ad_sense": adSense.name,
-                  // "ad_function": adFunction.name,
                   "timeMs": DateTime.now().millisecondsSinceEpoch,
                   "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
                 };
@@ -907,7 +905,7 @@ class AdUtils {
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
                 adPosName: key,
-                adFunction: adFunction.name
+                adFunction: adFunction == AdFunction.unknown ? "" :  adFunction.name
                 // precision_type: precision.name,
                 // positionKey: loadedItem["load_pos"],
                 );
@@ -1011,7 +1009,7 @@ class AdUtils {
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
                 adPosName: key,
-                adFunction: adFunction.name
+                adFunction: adFunction == AdFunction.unknown ? "" : adFunction.name
                 // precision_type: precision.name,
                 // positionKey: loadedItem["load_pos"],
                 );
@@ -1118,7 +1116,7 @@ class AdUtils {
                 ad_pre_ecpm: valueMicros.toString(),
                 currency: currencyCode,
                 adPosName: key,
-                adFunction: adFunction.name
+                adFunction: adFunction == AdFunction.unknown ? "" : adFunction.name
                 // precision_type: precision.name,
                 // positionKey: loadedItem["load_pos"],
                 );

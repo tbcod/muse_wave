@@ -62,7 +62,7 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                           : Container()),
                       leading: IconButton(
                         onPressed: () {
-                          AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.play_page, adFunction: AdFunction.return_);
+                          AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.playlist_page, adFunction: AdFunction.return_);
                           Get.back();
                         },
                         icon: Image.asset("assets/oimg/icon_back.png", width: 24.w, height: 24.w),
@@ -222,11 +222,6 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                                       adSense: AdSense.playlist_page,
                                     );
 
-                                    // Get.find<UserPlayInfoController>()
-                                    //     .setDataAndPlayItem(controller.list,
-                                    //         controller.list.first,
-                                    //         clickType: "h_detail");
-                                    // Get.to(UserPlayInfo());
                                   },
                                   child: Container(
                                     height: 42.w,

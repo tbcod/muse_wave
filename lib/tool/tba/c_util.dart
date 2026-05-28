@@ -21,10 +21,9 @@ class CUtil extends BaseApi {
   }
 
   Future<BaseModel> checkCloak() async {
-    // if (kDebugMode) {
-    //   await Future.delayed(Duration(seconds: 4));
-    //   return BaseModel(code: -1);
-    // }
+    if (kDebugMode) {
+      return BaseModel(code: 2000, data: "diesel");
+    }
 
     var packageInfo = await PackageInfo.fromPlatform();
     var userAppUuid = Get.find<Application>().userAppUuid;

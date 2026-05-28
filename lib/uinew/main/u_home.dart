@@ -243,7 +243,7 @@ class UserHome extends GetView<UserHomeController> {
                   itemBuilder: (_, i) {
                     var childItem = data[i];
                     return Obx(() {
-                      var isCheck = childItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
+                      var isCheck = childItem["videoId"] == Get.find<UserPlayInfoController>().nowData.value["videoId"];
                       return InkWell(
                         onTap: () {
                           AppLog.e(childItem);
@@ -374,8 +374,8 @@ class UserHome extends GetView<UserHomeController> {
                             },
                             child: Obx(() {
                               final playController = Get.find<UserPlayInfoController>();
-                              final currentVideoId = playController.nowData["videoId"];
-                              final isCheck = subItem["videoId"] == currentVideoId;
+                              final currentVideoId = playController.nowData.value["videoId"] ?? "";
+                              final isCheck = (subItem["videoId"] ?? "") == currentVideoId;
                               // var isCheck = subItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
                               return Container(
                                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.w),
@@ -923,7 +923,7 @@ class UserHome extends GetView<UserHomeController> {
                   itemBuilder: (_, i) {
                     var childItem = data[i];
                     return Obx(() {
-                      var isCheck = childItem["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
+                      var isCheck = childItem["videoId"] == Get.find<UserPlayInfoController>().nowData.value["videoId"];
                       return InkWell(
                         onTap: () {
                           // AppLog.e(childItem);

@@ -33,82 +33,147 @@ class UserLibrary extends GetView<UserLibraryController> {
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserLibraryController());
-    return Container(
-      decoration:
-          BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar:
-            AppBar(centerTitle: false, title: Text("Library".tr, style: TextStyle(fontSize: 20.w)), titleSpacing: 12.w),
-        body: Container(
-          child: ListView(
-            // padding: EdgeInsets.symmetric(horizontal: 12.w),
-            children: [
-              Container(
-                height: 160.w,
-                padding: EdgeInsets.only(left: 12.w, right: 12.w),
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Obx(
-                      () => InkWell(
-                        onTap: () {
-                          LikeUtil.instance.removeNewState(1);
-
-                          EventUtils.instance.addEvent("library_liked");
-                          Get.to(() => UserLikeSong());
-                        },
-                        child: Stack(
-                          children: [
-                            Column(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10.w),
-                                      color: Color(0xffF5F3FF).withOpacity(0.9)),
-                                  width: 108.w,
-                                  height: 130.w,
-                                  child: controller.likeCover.isNotEmpty
-                                      ? Container(
-                                          clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
-                                          child: NetImageView(imgUrl: controller.likeCover.value, fit: BoxFit.cover),
-                                        )
-                                      : Container(
-                                          clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
-                                          child: Image.asset(Assets.oimgIconLibLike, fit: BoxFit.cover),
-                                        ),
-                                ),
-                                SizedBox(height: 6.w),
-                                Text("Liked songs".tr, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
-                              ],
-                            ),
-                            Positioned(
-                              right: 8.w,
-                              top: 8.w,
-                              child: controller.hasNewLikeVideo.value
-                                  ? Container(
-                                      width: 8.w,
-                                      height: 8.w,
-                                      decoration:
-                                          BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4.w)),
-                                    )
-                                  : Container(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off")
+    return VisibilityDetector(
+      key: Key("library_page"),
+      onVisibilityChanged: (info) {
+        AppLog.i("info.visibleFraction:${info.visibleFraction}");
+        controller.pageIsVisible.value = info.visibleFraction > 0.1;
+      },
+      child: Container(
+        decoration:
+            BoxDecoration(image: DecorationImage(image: AssetImage("assets/oimg/all_page_bg.png"), fit: BoxFit.fill)),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+              centerTitle: false, title: Text("Library".tr, style: TextStyle(fontSize: 20.w)), titleSpacing: 12.w),
+          body: Container(
+            child: ListView(
+              // padding: EdgeInsets.symmetric(horizontal: 12.w),
+              children: [
+                Container(
+                  height: 160.w,
+                  padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Obx(
                         () => InkWell(
                           onTap: () {
-                            DownloadUtils.instance.removeNewState();
-                            EventUtils.instance.addEvent("library_offline");
-                            Get.to(UserDownloadSong());
+                            LikeUtil.instance.removeNewState(1);
+
+                            EventUtils.instance.addEvent("library_liked");
+                            Get.to(() => UserLikeSong());
+                          },
+                          child: Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10.w),
+                                        color: Color(0xffF5F3FF).withOpacity(0.9)),
+                                    width: 108.w,
+                                    height: 130.w,
+                                    child: controller.likeCover.isNotEmpty
+                                        ? Container(
+                                            clipBehavior: Clip.hardEdge,
+                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
+                                            child: NetImageView(imgUrl: controller.likeCover.value, fit: BoxFit.cover),
+                                          )
+                                        : Container(
+                                            clipBehavior: Clip.hardEdge,
+                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
+                                            child: Image.asset(Assets.oimgIconLibLike, fit: BoxFit.cover),
+                                          ),
+                                  ),
+                                  SizedBox(height: 6.w),
+                                  Text("Liked songs".tr, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
+                                ],
+                              ),
+                              Positioned(
+                                right: 8.w,
+                                top: 8.w,
+                                child: controller.hasNewLikeVideo.value
+                                    ? Container(
+                                        width: 8.w,
+                                        height: 8.w,
+                                        decoration:
+                                            BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4.w)),
+                                      )
+                                    : Container(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off")
+                        Obx(
+                          () => InkWell(
+                            onTap: () {
+                              DownloadUtils.instance.removeNewState();
+                              EventUtils.instance.addEvent("library_offline");
+                              Get.to(UserDownloadSong());
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(left: 14.w),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          width: 108.w,
+                                          height: 130.w,
+                                          padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10.w),
+                                            color: Color(0xffB4F6FF).withOpacity(0.24),
+                                          ),
+                                          child: controller.downloadCover.isNotEmpty
+                                              ? Container(
+                                                  clipBehavior: Clip.hardEdge,
+                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
+                                                  child: NetImageView(
+                                                      imgUrl: controller.downloadCover.value, fit: BoxFit.cover),
+                                                )
+                                              : Container(
+                                                  clipBehavior: Clip.hardEdge,
+                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
+                                                  child: Image.asset("assets/oimg/icon_lib_download.png",
+                                                      fit: BoxFit.cover),
+                                                ),
+                                        ),
+                                        SizedBox(height: 6.w),
+                                        Text("Local songs".tr,
+                                            style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
+                                      ],
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: 8.w,
+                                    top: 8.w,
+                                    child: controller.hasNewDownload.value
+                                        ? Container(
+                                            width: 8.w,
+                                            height: 8.w,
+                                            decoration: BoxDecoration(
+                                                color: Colors.red, borderRadius: BorderRadius.circular(4.w)),
+                                          )
+                                        : Container(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      Obx(
+                        () => InkWell(
+                          onTap: () {
+                            LikeUtil.instance.removeNewState(2);
+                            EventUtils.instance.addEvent("library_artist");
+                            Get.to(UserLikeArtist());
                           },
                           child: Container(
                             margin: EdgeInsets.only(left: 14.w),
@@ -118,37 +183,36 @@ class UserLibrary extends GetView<UserLibraryController> {
                                   child: Column(
                                     children: [
                                       Container(
-                                        width: 108.w,
-                                        height: 130.w,
                                         padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(10.w),
-                                          color: Color(0xffB4F6FF).withOpacity(0.24),
+                                          color: Color(0xffFFEAEC).withOpacity(0.45),
                                         ),
-                                        child: controller.downloadCover.isNotEmpty
+                                        width: 108.w,
+                                        height: 130.w,
+                                        child: controller.artistCover.isNotEmpty
                                             ? Container(
                                                 clipBehavior: Clip.hardEdge,
                                                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
                                                 child: NetImageView(
-                                                    imgUrl: controller.downloadCover.value, fit: BoxFit.cover),
+                                                    imgUrl: controller.artistCover.value, fit: BoxFit.cover),
                                               )
                                             : Container(
                                                 clipBehavior: Clip.hardEdge,
                                                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
                                                 child:
-                                                    Image.asset("assets/oimg/icon_lib_download.png", fit: BoxFit.cover),
+                                                    Image.asset("assets/oimg/icon_lib_artist.png", fit: BoxFit.cover),
                                               ),
                                       ),
                                       SizedBox(height: 6.w),
-                                      Text("Local songs".tr,
-                                          style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
+                                      Text("Artist".tr, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
                                     ],
                                   ),
                                 ),
                                 Positioned(
                                   right: 8.w,
                                   top: 8.w,
-                                  child: controller.hasNewDownload.value
+                                  child: controller.hasNewLikeArtist.value
                                       ? Container(
                                           width: 8.w,
                                           height: 8.w,
@@ -162,74 +226,12 @@ class UserLibrary extends GetView<UserLibraryController> {
                           ),
                         ),
                       ),
-                    Obx(
-                      () => InkWell(
-                        onTap: () {
-                          LikeUtil.instance.removeNewState(2);
-                          EventUtils.instance.addEvent("library_artist");
-                          Get.to(UserLikeArtist());
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(left: 14.w),
-                          child: Stack(
-                            children: [
-                              Container(
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.symmetric(vertical: 27.w, horizontal: 16.w),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.w),
-                                        color: Color(0xffFFEAEC).withOpacity(0.45),
-                                      ),
-                                      width: 108.w,
-                                      height: 130.w,
-                                      child: controller.artistCover.isNotEmpty
-                                          ? Container(
-                                              clipBehavior: Clip.hardEdge,
-                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.w)),
-                                              child:
-                                                  NetImageView(imgUrl: controller.artistCover.value, fit: BoxFit.cover),
-                                            )
-                                          : Container(
-                                              clipBehavior: Clip.hardEdge,
-                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.w)),
-                                              child: Image.asset("assets/oimg/icon_lib_artist.png", fit: BoxFit.cover),
-                                            ),
-                                    ),
-                                    SizedBox(height: 6.w),
-                                    Text("Artist".tr, style: TextStyle(fontSize: 14.w, fontWeight: FontWeight.w500)),
-                                  ],
-                                ),
-                              ),
-                              Positioned(
-                                right: 8.w,
-                                top: 8.w,
-                                child: controller.hasNewLikeArtist.value
-                                    ? Container(
-                                        width: 8.w,
-                                        height: 8.w,
-                                        decoration:
-                                            BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4.w)),
-                                      )
-                                    : Container(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 32.w),
-              //playlist标题栏
-              VisibilityDetector(
-                key: Key("library_page"),
-                onVisibilityChanged: (info) {
-                  controller.pageIsVisible.value = info.visibleFraction > 0.5;
-                },
-                child: Container(
+                SizedBox(height: 32.w),
+                //playlist标题栏
+                Container(
                   height: 28.w,
                   padding: EdgeInsets.only(left: 12.w, right: 20.w),
                   child: Row(
@@ -256,51 +258,51 @@ class UserLibrary extends GetView<UserLibraryController> {
                     ],
                   ),
                 ),
-              ),
 
-              Obx(() {
-                if (controller.pageIsVisible.value) {
-                  return Container(
-                      alignment: Alignment.center,
-                      child: BannerNativeAdView(posId: AdPosId.pagebanner, adScene: AdSense.library));
-                }
-                return Container();
-              }),
-              //自建歌单列表
-              controller.obxView(
-                (s) => Obx(
-                  () => ListView.separated(
-                    padding: EdgeInsets.only(top: 12.w, bottom: 100.w, left: 8.w, right: 8.w),
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (_, i) {
-                      return getItem(i);
-                    },
-                    separatorBuilder: (_, i) {
-                      return SizedBox(height: 8.w);
-                    },
-                    itemCount: controller.list.length,
-                  ),
-                ),
-                onEmpty: Container(
-                  height: 300.w,
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset("assets/img/icon_empty.png", width: 180.w, height: 180.w),
-                        SizedBox(height: 8.w),
-                        Text("No content found".tr, style: TextStyle(fontSize: 16.w, color: Colors.black)),
-                      ],
+                Obx(() {
+                  if (controller.pageIsVisible.value) {
+                    return Container(
+                        alignment: Alignment.center,
+                        child: BannerNativeAdView(posId: AdPosId.pagebanner, adScene: AdSense.library));
+                  }
+                  return Container();
+                }),
+                //自建歌单列表
+                controller.obxView(
+                  (s) => Obx(
+                    () => ListView.separated(
+                      padding: EdgeInsets.only(top: 12.w, bottom: 100.w, left: 8.w, right: 8.w),
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (_, i) {
+                        return getItem(i);
+                      },
+                      separatorBuilder: (_, i) {
+                        return SizedBox(height: 8.w);
+                      },
+                      itemCount: controller.list.length,
                     ),
                   ),
+                  onEmpty: Container(
+                    height: 300.w,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset("assets/img/icon_empty.png", width: 180.w, height: 180.w),
+                          SizedBox(height: 8.w),
+                          Text("No content found".tr, style: TextStyle(fontSize: 16.w, color: Colors.black)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  onLoading: Container(
+                      height: 300.w, child: Center(child: CircularProgressIndicator(color: AppColor.mainColor))),
                 ),
-                onLoading: Container(
-                    height: 300.w, child: Center(child: CircularProgressIndicator(color: AppColor.mainColor))),
-              ),
 
-              SizedBox(height: 100.w),
-            ],
+                SizedBox(height: 100.w),
+              ],
+            ),
           ),
         ),
       ),
