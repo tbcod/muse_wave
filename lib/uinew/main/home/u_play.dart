@@ -765,7 +765,6 @@ class UserPlayInfoController extends GetxController {
   var singleLoop = false.obs;
   Timer? timer;
 
-  bool _isTimerPaused = false;
 
   @override
   void dispose() {

@@ -331,8 +331,11 @@ class UserSearchController extends GetxController with StateMixin {
             }
           }
 
-          if (item.containsKey("musicShelfRenderer")) {
-            List childList = item["musicShelfRenderer"]?["contents"] ?? [];
+          final itemJson = item['musicShelfRenderer'] ?? item["itemSectionRenderer"];
+
+          // if (item.containsKey("musicShelfRenderer")) {
+          if (itemJson != null) {
+            List childList = itemJson?["contents"] ?? [];
 
             //解析childList
             var newChildList = FormatMyData.instance.getAllSearchList(childList);

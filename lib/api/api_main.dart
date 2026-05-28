@@ -169,14 +169,14 @@ class ApiMain extends BaseApi {
     //   "videoId": videoId
     // };
 
-    AppLog.i("request:$url,$body");
+    AppLog.i("request:$url");
     BaseModel result =
         await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
 
     String videoUrl = result.data?["streamingData"]?["formats"]?.first?["url"] ?? "";
 
     if (videoUrl.isEmpty && retryCount < 1) {
-      AppLog.e("获取url失败:$url,$body，重试：$retryCount");
+      AppLog.e("获取url失败:$url,重试：$retryCount");
       await Future.delayed(Duration(seconds: retryCount + 1));
       return getVideoInfoYoutube(videoId, retryCount: retryCount + 1);
     }
@@ -201,6 +201,7 @@ class ApiMain extends BaseApi {
     // String date = "${nowTime.year}${nowTime.month.toString().padLeft(2, "0")}${nowTime.day.toString().padLeft(2, "0")}";
 
     Map<String, dynamic> body = {"context": _webRemixContext, "query": input, "params": params};
+    // AppLog.i("search request:$url, body:$body");
     return httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
   }
 
