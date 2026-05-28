@@ -812,7 +812,7 @@ class UserHome extends GetView<UserHomeController> {
                             // Get.to(UserPlayListInfo(),
                             //     arguments: {"browseId": childItem["id"]});
                           } else {
-                            Get.to(const UserLocPlayListInfo(), arguments: childItem);
+                            Get.to(const UserLocPlayListInfo(isFormHome: true), arguments: childItem);
                           }
                         }
                       },
