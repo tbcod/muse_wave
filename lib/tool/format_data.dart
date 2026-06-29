@@ -292,7 +292,9 @@ class FormatMyData {
 
     for (Map item in oldList) {
       //大标题
-      var bigTitle = item["richSectionRenderer"]?["content"]["richShelfRenderer"]["title"]["runs"][0]["text"] ?? "";
+      List runs = item["richSectionRenderer"]?["content"]?["richShelfRenderer"]?["title"]?["runs"] ?? [];
+      if(runs.isEmpty) continue;
+      var bigTitle = runs[0]["text"] ?? "";
 
       // moreId = item["musicCarouselShelfRenderer"]?["header"]
       //                     ?["musicCarouselShelfBasicHeaderRenderer"]
@@ -306,7 +308,7 @@ class FormatMyData {
       List realChildList = [];
 
       //判断类型
-      var type = "";
+      String? type;
 
       // AppLog.e(childList.first);
 
@@ -352,7 +354,11 @@ class FormatMyData {
         }
 
         //LOCKUP_CONTENT_TYPE_ALBUM
-        type = childItem["lockupViewModel"]["contentType"];
+        type = childItem["lockupViewModel"]?["contentType"];
+        if (type == null) {
+          AppLog.e("类型为空");
+          continue;
+        }
 
         var childItemTitle =
             childItem["lockupViewModel"]["metadata"]["lockupMetadataViewModel"]["title"]["content"] ?? "";
@@ -363,8 +369,12 @@ class FormatMyData {
         //     "";
         var childItemSubTitle = "";
 
-        var childItemCover = childItem["lockupViewModel"]["contentImage"]["collectionThumbnailViewModel"]
-            ["primaryThumbnail"]["thumbnailViewModel"]["image"]["sources"][0]["url"];
+        List sources = childItem["lockupViewModel"]["contentImage"]["collectionThumbnailViewModel"]["primaryThumbnail"]["thumbnailViewModel"]["image"]["sources"] ?? [];
+        if (sources.isEmpty) {
+          AppLog.e("图片数据结构发生了变化：$childItem");
+          continue;
+        }
+        var childItemCover = sources[0]["url"];
 
         var playlistId = childItem["lockupViewModel"]?["contentId"] ?? "";
 

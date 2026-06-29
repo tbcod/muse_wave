@@ -27,4 +27,8 @@ abstract class DBKey {
   static const keyAdImpression003 = "keyAdImpression003";
   static const keyAdImpression005 = "keyAdImpression005";
 
+  static const keyAdImpression01 = "keyAdImpression01";
+  static const keyAdImpression02 = "keyAdImpression02";
+  static const keyAdImpression03 = "keyAdImpression03";
+
 }

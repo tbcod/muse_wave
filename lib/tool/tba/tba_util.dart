@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:android_play_install_referrer/android_play_install_referrer.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -28,6 +30,10 @@ class TbaUtils {
   double _accumulateAdRevenue002 = 0; //累计的广告价值
   double _accumulateAdRevenue003 = 0; //累计的广告价值
   double _accumulateAdRevenue005 = 0; //累计的广告价值
+
+  double _accumulateAdRevenue01 = 0; //累计的广告价值
+  double _accumulateAdRevenue02 = 0; //累计的广告价值
+  double _accumulateAdRevenue03 = 0; //累计的广告价值
 
   Future checkUnFinishedEvent() async {
     await TbaAnd.instance.postTbaErrorData();
@@ -122,7 +128,9 @@ class TbaUtils {
     }
 
     if (!MuseConfig.isUser && realMoney == 0) {
-      realMoney = 0.005 * 1000000; //测试环境，非用户，金额为0时，默认上报广告价值，方便测试广告价值相关功能
+      double random = 0.005 + Random().nextDouble();
+      AppLog.i("测试环境 默认上报广告价值 随机金额：$random");
+      realMoney = random * 1000000; //测试环境，非用户，金额为0时，默认上报广告价值，方便测试广告价值相关功能
     }
 
     // final adMoney = realMoney.toDouble();
@@ -162,6 +170,10 @@ class TbaUtils {
     _postAdRevenue002(amount);
     _postAdRevenue003(amount);
     _postAdRevenue005(amount);
+
+    _postAdRevenue01(amount);
+    _postAdRevenue02(amount);
+    _postAdRevenue03(amount);
 
     AppLog.i(
       "广告价值 ad_impression:$amount, adPosId:$adPosName, adSense:$adSense,adFunction:$adFunction, adSource:$ad_source, adFormat:$ad_format, adNetwork:$ad_network, $ad_unit_id",
@@ -228,6 +240,30 @@ class TbaUtils {
       current: _accumulateAdRevenue005,
       setCurrent: (value) => _accumulateAdRevenue005 = value);
 
+  void _postAdRevenue01(double revenue) => _postAdRevenue(
+      revenue: revenue,
+      threshold: 0.1,
+      eventName: "ads_revenue_01",
+      dbKey: DBKey.keyAdImpression01,
+      current: _accumulateAdRevenue01,
+      setCurrent: (value) => _accumulateAdRevenue01 = value);
+
+  void _postAdRevenue02(double revenue) => _postAdRevenue(
+      revenue: revenue,
+      threshold: 0.2,
+      eventName: "ads_revenue_02",
+      dbKey: DBKey.keyAdImpression02,
+      current: _accumulateAdRevenue02,
+      setCurrent: (value) => _accumulateAdRevenue02 = value);
+
+  void _postAdRevenue03(double revenue) => _postAdRevenue(
+      revenue: revenue,
+      threshold: 0.3,
+      eventName: "ads_revenue_03",
+      dbKey: DBKey.keyAdImpression03,
+      current: _accumulateAdRevenue03,
+      setCurrent: (value) => _accumulateAdRevenue03 = value);
+
   void _postAdRevenue({
     required double revenue,
     required double threshold,
@@ -243,14 +279,16 @@ class TbaUtils {
     accumulate = accumulate + revenue;
 
     if (accumulate >= threshold) {
-      AppLog.i("累计广告价值达到$threshold美元，触发事件$eventName, 累计价值：$accumulate");
+      AppLog.i("累计广告价值达到$threshold，触发事件$eventName, 累计价值：$accumulate");
       try {
-        if (eventName == "ads_revenue_001") {
-          EventUtils.instance.addEvent(eventName, data: {"value": accumulate, "currency": "USD"}, hasPrefix: true);
+        if (eventName == "ads_revenue_01" || eventName == "ads_revenue_02" || eventName == "ads_revenue_03") {
+          ///  1. 仅上报firebase
+          EventUtils.instance.addEvent(eventName, data: {"value": accumulate, "currency": "USD"}, hasPrefix: false);
+        } else {
+          EventUtils.instance.addEvent(eventName, data: {"value": accumulate, "currency": "USD"}, hasPrefix: false);
+          AdjustUtil.instance.addPurchaseEvent(amount: accumulate, name: eventName);
+          NativeUtils.instance.logEventFB(name: eventName, valueToSum: accumulate, parameters: {"currency": "USD"});
         }
-        EventUtils.instance.addEvent(eventName, data: {"value": accumulate, "currency": "USD"}, hasPrefix: false);
-        AdjustUtil.instance.addPurchaseEvent(amount: accumulate, name: eventName);
-        NativeUtils.instance.logEventFB(name: eventName, valueToSum: accumulate, parameters: {"currency": "USD"});
       } catch (_) {}
       setCurrent(0);
       museSp.setDouble(dbKey, 0);

@@ -170,7 +170,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
                                           controller.list,
                                           controller.list.first,
                                           clickType:
-                                              isFormHome ? "h_detail" : "library",
+                                              isFormHome ? "h_detail_playlist" : "library",
                                       adSense: AdSense.playlist_page,
                                         );
                                     // Get.to(UserPlayInfo());
@@ -223,7 +223,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
                                           playList,
                                           playList.first,
                                           clickType:
-                                              isFormHome ? "h_detail" : "library",
+                                              isFormHome ? "h_detail_playlist" : "library",
                                       adSense: AdSense.playlist_page,
                                         );
                                     // Get.to(UserPlayInfo());
@@ -610,7 +610,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
         Get.find<UserPlayInfoController>().setDataAndPlayItem(
           controller.list,
           item,
-          clickType: isFormHome ? "h_detail" : "library",
+          clickType: isFormHome ? "h_detail_playlist" : "library",
           adSense: AdSense.song_list,
         );
         // Get.to(UserPlayInfo());

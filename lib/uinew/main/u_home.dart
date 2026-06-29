@@ -1056,7 +1056,7 @@ class UserHomeController extends GetxController with StateMixin {
   var nextData = {};
 
   //第一次接口
-  Future bindYoutubeMusicData({required String source}) async {
+  Future bindYoutubeMusicData({required String source, int retry = 0}) async {
     //TODO 测试youtube数据
     // await bindYoutubeData();
     // return;
@@ -1073,13 +1073,17 @@ class UserHomeController extends GetxController with StateMixin {
     BaseModel result = await ApiMain.instance.getData("FEmusic_home");
 
     if (result.code != HttpCode.success) {
-      EventUtils.instance.addEvent("refresh_result_and",
-          data: {"source": source, "value": "fail", "reason": result.message ?? "No data"});
-      if (netList.length < 5) {
-        change("", status: RxStatus.error());
-        // TbaUtils.instance.postUserData({"mm_type_so": "no"});
+      if (retry < 3) {
+        AppLog.e("music请求出错, 重试${retry + 1}次");
+        await bindYoutubeMusicData(source: source, retry: retry + 1);
+      } else {
+        EventUtils.instance.addEvent("refresh_result_and",
+            data: {"source": source, "value": "fail", "reason": result.message ?? "No data"});
+        if (netList.length < 5) {
+          change("", status: RxStatus.error());
+        }
+        ToastUtil.showToast(msg: "Network issue,Please try again later.");
       }
-      ToastUtil.showToast(msg: "Network issue,Please try again later.");
       return;
     }
 
@@ -1239,25 +1243,16 @@ class UserHomeController extends GetxController with StateMixin {
     // netList.value = realList;
 
     if (realList.isEmpty) {
-      // var errorText = result.data["contents"]
-      //                     ["singleColumnBrowseResultsRenderer"]["tabs"][0]
-      //                 ["tabRenderer"]?["content"]["sectionListRenderer"]
-      //             ["contents"]?[0]?["itemSectionRenderer"]["contents"][0]
-      //         ["messageRenderer"]["text"]["runs"][0]["text"] ??
-      //     "";
-
-      // var errorText = "App isn't available in your country";
-      // ToastUtil.showToast(msg: errorText);
-
-      //不支持music的地区，使用youtube
-      AppLog.e("music列表空");
-      await bindYoutubeData();
-
-      // if (netList.length < 5) {
-      //   change("", status: RxStatus.error());
-      //   // TbaUtils.instance.postUserData({"mm_type_so": "no"});
-      // }
+      if (retry < 3) {
+        AppLog.e("music请求列表空, 重试${retry + 1}次");
+        await bindYoutubeMusicData(source: source, retry: retry + 1);
+      } else {
+        AppLog.e("music请求列表空");
+        await bindYoutubeData();
+      }
       return;
+    }else{
+      AppLog.i("music请求列表:${realList.length}");
     }
 
     if (netList.length > 5) {
@@ -1685,8 +1680,8 @@ class UserHomeController extends GetxController with StateMixin {
       saveLocList();
 
       Get.find<Application>().changeTypeSo("yt");
-    } catch (e) {
-      AppLog.e(e);
+    } catch (e, s) {
+      AppLog.e("解析Youtube数据出错了:${e.toString()},$s");
     }
 
     // Get.find<UserPlayInfoController>().showLastPlayBar();

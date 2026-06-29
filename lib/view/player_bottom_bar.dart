@@ -94,17 +94,17 @@ class PlayerBottomBarView extends StatelessWidget {
                                       }
 
                                       //判断是否首次
-                                      var isInitBar = controller.player?.value.position.inMilliseconds.isLowerThan(500) ?? false;
-
-                                      if (isInitBar) {
-                                        EventUtils.instance.addEvent("play_click", data: {
-                                          "song_id": controller.playList[controller.nowIndex]["videoId"],
-                                          "song_name": controller.playList[controller.nowIndex]["title"],
-                                          "artist_name": controller.playList[controller.nowIndex]["subtitle"],
-                                          "playlist_id": controller.playlistId,
-                                          "station": "tab"
-                                        });
-                                      }
+                                      // var isInitBar = controller.player?.value.position.inMilliseconds.isLowerThan(500) ?? false;
+                                      //
+                                      // if (isInitBar) {
+                                      //   EventUtils.instance.addEvent("play_click", data: {
+                                      //     "song_id": controller.playList[controller.nowIndex]["videoId"],
+                                      //     "song_name": controller.playList[controller.nowIndex]["title"],
+                                      //     "artist_name": controller.playList[controller.nowIndex]["subtitle"],
+                                      //     "playlist_id": controller.playlistId,
+                                      //     "station": "tab"
+                                      //   });
+                                      // }
 
                                       if (controller.isPlaying.value) {
                                         await controller.player?.pause();
