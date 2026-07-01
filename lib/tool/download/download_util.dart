@@ -45,9 +45,14 @@ class DownloadUtils {
 
   DownloadStation _curClickType = DownloadStation.unknown;
 
+  // state:0未下载1下载中2完成4下载错误3下载暂停
+  var allDownLoadingData = {}.obs;
+
   Future initData() async {
     var box = await Hive.openBox(DBKey.myDownloadMusicData);
     allDownLoadingData.value = box.toMap();
+
+    AppLog.i("初始化download:${allDownLoadingData.length}条");
 
     var box1 = await Hive.openBox(DBKey.myCacheMusicData);
     allCacheData.value = box1.toMap();
@@ -63,6 +68,8 @@ class DownloadUtils {
     //获取所有正在下载的
     var needDownloadData = allDownLoadingData.values.where((e) => e["state"] == 1 || e["state"] == 3).toList();
 
+    AppLog.i("未下载完成：${needDownloadData.length}");
+
     needDownloadData
         .map((e) {
           return e["videoId"];
@@ -70,20 +77,11 @@ class DownloadUtils {
         .toList()
         .toString();
 
-    // AppLog.e("需要重新下载的数据${needDownloadData.length}");
-    // AppLog.e(needDownloadData
-    //     .map((e) {
-    //       return e["videoId"];
-    //     })
-    //     .toList()
-    //     .toString());
     for (var item in needDownloadData) {
-      download(item["videoId"], item["infoData"], station: DownloadStation.unknown, showAd: false, adSense: AdSense.play_page);
+      download(item["videoId"], item["infoData"],
+          station: DownloadStation.unknown, showAd: false, adSense: AdSense.play_page);
     }
   }
-
-  // state:0未下载1下载中2完成4下载错误3下载暂停
-  var allDownLoadingData = {}.obs;
 
   //获取Url
   Future<String> getDownloadUrl(String videoId, bool isCache) async {
@@ -121,12 +119,15 @@ class DownloadUtils {
     return result.data["streamingData"]?["formats"]?.first ?? {};
   }
 
-  Future saveVideoInfo() async {
-    var box = await Hive.openBox(DBKey.myDownloadMusicData);
-    await box.clear();
-    await box.putAll(Map.of(allDownLoadingData));
+  var _box;
+  Future saveVideoInfo({bool updateHomeUI = true}) async {
+    _box ??= await Hive.openBox(DBKey.myDownloadMusicData);
+    // await box.clear();
 
-    if (Get.isRegistered<UserHomeController>()) {
+    Map map = Map.of(allDownLoadingData);
+    await _box.putAll(map);
+
+    if (Get.isRegistered<UserHomeController>() && updateHomeUI) {
       Get.find<UserHomeController>().reloadHistory();
     }
   }
@@ -136,42 +137,23 @@ class DownloadUtils {
   var hasNewDownload = false.obs;
 
   //添加下载
-  download(String videoId, Map infoData,
+  download(String videoId, Map data,
       {required DownloadStation station, required AdSense adSense, bool showAd = true, bool isRetry = false}) async {
-    if (infoData.isEmpty) {
+    if (data.isEmpty) {
       return;
     }
-    infoData = Map.of(infoData);
-
-    // final List<ConnectivityResult> connectivityResult =
-    //     await (Connectivity().checkConnectivity());
-    //
-    // AppLog.e("下载网络：$connectivityResult");
-    // if (!connectivityResult.contains(ConnectivityResult.wifi) &&
-    //     !connectivityResult.contains(ConnectivityResult.mobile)) {
-    //   //没有网络
-    //   ToastUtil.showToast(msg: "There is no internet connection".tr);
-    //
-    //   return;
-    // }
+    Map infoData = Map.of(data);
 
     if (videoId != infoData["videoId"]) {
       videoId = infoData["videoId"];
     }
 
     if (station != DownloadStation.unknown) {
-      // type分类
-      //loc_playlist
-      //net_playlist
-      //search
-      //liked
-      //download
-      //artist_more_song
-      //artist
-      // EventUtils.instance.addEvent("save_click", data: {"station": clickType, "song_id": videoId});
       _curClickType = station;
+      EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
       ToastUtil.showToast(msg: "addedDownloadQueue".tr);
     }
+
     if (showAd) {
       AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.download);
       //好评引导
@@ -208,7 +190,7 @@ class DownloadUtils {
             "path": fileName,
             "adSense": adSense.name,
           };
-          await saveVideoInfo();
+          await saveVideoInfo(updateHomeUI: true);
 
           hasNewDownload.value = true;
 
@@ -217,7 +199,7 @@ class DownloadUtils {
           HistoryUtil.instance.addHistorySong(infoData);
 
           ToastUtil.showToast(msg: "downloadCompleted".tr);
-          EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
+          // EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
           EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
           return;
         }
@@ -247,7 +229,7 @@ class DownloadUtils {
         if (station != DownloadStation.unknown) {
           ToastUtil.showToast(msg: "Get url error".tr);
         }
-        EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
+        // EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
         EventUtils.instance.addEvent("save_fail", data: {"reason": "Get url fail"});
         return;
       }
@@ -269,8 +251,10 @@ class DownloadUtils {
 
     String url = allDownLoadingData[videoId]["url"] ?? "";
     if (url.isEmpty) {
-      allDownLoadingData[videoId]["state"] = 0;
+      allDownLoadingData.remove(videoId);
+      // allDownLoadingData[videoId]["state"] = 0;
       allDownLoadingData.refresh();
+      // await saveVideoInfo(updateHomeUI: true);
       return;
     }
 
@@ -310,10 +294,10 @@ class DownloadUtils {
             allDownLoadingData[videoId]["oktime"] = DateTime.now();
             allDownLoadingData[videoId]["path"] = fileName;
             allDownLoadingData.refresh();
-            saveVideoInfo();
+            saveVideoInfo(updateHomeUI: true);
 
             ToastUtil.showToast(msg: "downloadCompleted".tr);
-            EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
+            // EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
             EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
             hasNewDownload.value = true;
             saveNewState();
@@ -322,7 +306,8 @@ class DownloadUtils {
             allDownLoadingData[videoId]["progress"] = count / total;
             allDownLoadingData.refresh();
             //存本地
-            saveVideoInfo();
+            // print("下载中,${allDownLoadingData[videoId]["progress"]}, ${count / total}");
+            saveVideoInfo(updateHomeUI: false);
           }
         },
         // options: Options(headers: {"Range": "bytes=$downloadedLength-"})
@@ -331,7 +316,7 @@ class DownloadUtils {
       if (isRetry) {
         AppLog.e("下载失败Dio：${e.toString()}");
         ToastUtil.showToast(msg: "downloadFailed".tr);
-        EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
+        // EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
         EventUtils.instance.addEvent("save_fail",
             data: {"song_id": videoId, "reason": "Http Exception", "message": "1.${e.toString()}"});
       } else {
@@ -362,7 +347,7 @@ class DownloadUtils {
       // //存本地
       // saveVideoInfo();
       ToastUtil.showToast(msg: "downloadFailed".tr);
-      EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
+      // EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
       EventUtils.instance
           .addEvent("save_fail", data: {"song_id": videoId, "reason": "network error", "message": "2.${e.toString()}"});
     }
@@ -445,12 +430,12 @@ class DownloadUtils {
 
         allDownLoadingData.remove(videoId);
         allDownLoadingData.refresh();
-        await saveVideoInfo();
+        await saveVideoInfo(updateHomeUI: true);
 
         ToastUtil.showToast(msg: "Delete ok".tr);
         if (state == 1) {
           if (_curClickType != DownloadStation.unknown) {
-            EventUtils.instance.addEvent("save_click", data: {"station": _curClickType.name, "song_id": videoId});
+            // EventUtils.instance.addEvent("save_click", data: {"station": _curClickType.name, "song_id": videoId});
             EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "User Cancel!"});
           } else {
             EventUtils.instance

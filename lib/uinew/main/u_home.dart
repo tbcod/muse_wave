@@ -1033,6 +1033,7 @@ class UserHomeController extends GetxController with StateMixin {
   void onInit() async {
     super.onInit();
     // await DownloadUtils.instance.initData();
+    await HistoryUtil.instance.initData();
 
     if (museSp.getString("visitorDataKey") != null) {
       Get.find<Application>().visitorData = museSp.getString("visitorDataKey")!;
@@ -1504,15 +1505,12 @@ class UserHomeController extends GetxController with StateMixin {
     }
 
     //获取所有下载完成歌曲
-    var allDList = DownloadUtils.instance.allDownLoadingData.values;
+    var allDList = Map.of(DownloadUtils.instance.allDownLoadingData).values;
     var downloadedList = allDList.where((e) {
       return e["state"] == 2;
     }).toList();
+    // AppLog.i("allDList:${allDList.length}");
     var hasDownloadList = downloadedList.isNotEmpty;
-    // if (FirebaseRemoteConfig.instance
-    //     .getString(
-    //     "musicmuse_off_switch") ==
-    //     "on")
     if (hasDownloadList && FirebaseRemoteConfig.instance.getString("musicmuse_off_switch") != "off") {
       myPlaylist.add({"title": "Local songs".tr, "icon": "assets/oimg/icon_local.png", "type": -2});
     }
@@ -1608,9 +1606,6 @@ class UserHomeController extends GetxController with StateMixin {
   }
 
   saveLocList() async {
-    // var sp = await SharedPreferences.getInstance();
-    // await sp.setString("LastHomeDataStr", jsonEncode(netList));
-
     var box = await Hive.openBox(DBKey.myLastHomeDataStr);
     box.clear();
     box.put(0, List.of(netList));

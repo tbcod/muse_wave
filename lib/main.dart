@@ -222,7 +222,7 @@ class Application extends GetxService {
   }
 
   pushLocNotification(tz.TZDateTime tzDate, int nId) async {
-    await HistoryUtil.instance.initData();
+    // await HistoryUtil.instance.initData();
 
     List historySongList = List.of(HistoryUtil.instance.songHistoryList);
     if (historySongList.isEmpty) {

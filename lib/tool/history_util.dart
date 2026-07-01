@@ -18,6 +18,20 @@ class HistoryUtil {
 
   var songHistoryList = [].obs;
 
+  Future initData() async {
+    var box = await Hive.openBox(DBKey.myHistoryMusicData);
+    songHistoryList.value = box.values.toList();
+
+    bool isChanged = museSp.getBool("isSongHistoryChanged");
+    if (songHistoryList.isEmpty || !isChanged) {
+      songHistoryList.value = listenNowListData();
+      saveData();
+    }
+
+    // var box1 = await Hive.openBox(DBKey.myHistoryPlaylist);
+    // playlistHistoryList.value = box1.values.toList();
+  }
+
   // var playlistHistoryList = [].obs;
 
   addHistorySong(Map item) {
@@ -70,28 +84,7 @@ class HistoryUtil {
     Get.find<UserHomeController>().reloadHistory();
   }
 
-  Future initData() async {
-    var box = await Hive.openBox(DBKey.myHistoryMusicData);
-    songHistoryList.value = box.values.toList();
 
-    // if (songHistoryList.isEmpty) {
-    //   //添加默认的12首歌
-    //   songHistoryList.value = decodeList(locSong);
-    //   saveData();
-    // }
-
-    bool isChanged = museSp.getBool("isSongHistoryChanged");
-    if (songHistoryList.isEmpty || !isChanged) {
-      //添加默认的12首歌
-      // songHistoryList.value = decodeList(locSong);
-      songHistoryList.value = listenNowListData();
-
-      saveData();
-    }
-
-    // var box1 = await Hive.openBox(DBKey.myHistoryPlaylist);
-    // playlistHistoryList.value = box1.values.toList();
-  }
 
   Future<List> getDData(List listId) async {
     var list = [];
