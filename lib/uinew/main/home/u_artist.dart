@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/generated/assets.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/download/download_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_more_album.dart';
 import 'package:muse_wave/uinew/main/home/u_more_song.dart';
@@ -562,7 +563,11 @@ class UserArtistInfo extends GetView<UserArtistInfoController> {
                                   ),
                                 ),
                                 SizedBox(width: 12.w),
-                                getDownloadAndMoreBtn(item, "artist", isSearch: isFormSearch),
+                                getDownloadAndMoreBtn(item, "artist",
+                                    station: isFormSearch
+                                        ? DownloadStation.s_detail_playlist
+                                        : DownloadStation.h_detail_playlist,
+                                    isSearch: isFormSearch),
 
                                 // Obx(() {
                                 //   //获取下载状态

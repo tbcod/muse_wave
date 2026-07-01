@@ -75,7 +75,7 @@ class MuseSearchBar {
             .setCustomBigContentView(remoteViews)
             .setContentIntent(pendingIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setSmallIcon(R.drawable.ic_launcher)
+            .setSmallIcon(R.drawable.ic_launcher2)
             .setOngoing(true)
             .setSilent(true)
             .setShowWhen(false)

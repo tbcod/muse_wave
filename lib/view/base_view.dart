@@ -333,7 +333,7 @@ class _LinePainter extends BoxPainter {
   }
 }
 
-getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsHome = false, double iconHeight = 50}) {
+getDownloadAndMoreBtn(Map item, String type, {required DownloadStation station, bool isSearch = false, bool locIsHome = false, double iconHeight = 50}) {
   // type分类
   //loc_playlist
   //net_playlist
@@ -408,24 +408,27 @@ getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsH
               } else if (type == "artist") {
                 EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "dl"});
                 adSense = AdSense.artist_detail_page;
-              }  else if (type == "artist_more_song") {
+                station = DownloadStation.s_detail_artist;
+              } else if (type == "artist_more_song") {
                 EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "dl"});
+                station = DownloadStation.s_detail_artist;
                 adSense = AdSense.song_list;
-              }else if (type == "search") {
+              } else if (type == "search") {
                 adSense = AdSense.search_page;
               }
 
-              if (type == "net_playlist" || type == "artist_more_song" || type == "artist") {
-                DownloadUtils.instance
-                    .download(videoId, item, clickType: isSearch ? "s_detail" : "h_detail", adSense: adSense);
-                return;
-              } else if (type == "loc_playlist" || type == "liked" || type == "download") {
-                DownloadUtils.instance
-                    .download(videoId, item, clickType: locIsHome ? "h_detail" : "library", adSense: adSense);
-                return;
-              }
+              // if (type == "net_playlist" || type == "artist_more_song" || type == "artist") {
+              //   DownloadUtils.instance.download(videoId, item,
+              //       station: isSearch ? DownloadStation.s_detail_playlist : DownloadStation.h_detail_playlist,
+              //       adSense: adSense);
+              //   return;
+              // } else if (type == "loc_playlist" || type == "liked" || type == "download") {
+              //   DownloadUtils.instance.download(videoId, item,
+              //       station: locIsHome ? DownloadStation.h_detail_playlist : DownloadStation.library, adSense: adSense);
+              //   return;
+              // }
 
-              DownloadUtils.instance.download(videoId, item, clickType: type, adSense: adSense);
+              DownloadUtils.instance.download(videoId, item, station: station, adSense: adSense);
             },
             child: Container(
               height: iconHeight,
@@ -440,6 +443,7 @@ getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsH
       // ),
       InkWell(
         onTap: () {
+
           if (type == "net_playlist" || type == "loc_playlist") {
             EventUtils.instance.addEvent("det_playlist_click", data: {"detail_click": "more"});
           }
@@ -447,7 +451,7 @@ getDownloadAndMoreBtn(Map item, String type, {bool isSearch = false, bool locIsH
             EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "more"});
           }
 
-          MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: type);
+          MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: type, station: station);
         },
         child: Container(
             height: iconHeight,

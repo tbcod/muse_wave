@@ -102,8 +102,6 @@ class AdUtils {
   //已加载的广告，key为广告id，显示后移除对应广告
   var loadedAdMap = {};
 
-  //
-  //       required AdFunction adFunction,
   loadAd(AdPosId adPosId,
       {required AdSense adSense, bool forceLocalJson = false, AdFirstType? adFirstType, LoadCallback? onLoad}) async {
     String key = adPosId.name;

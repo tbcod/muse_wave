@@ -507,8 +507,8 @@ class UserHome extends GetView<UserHomeController> {
                                                   data: {"click_type": "offline", "title": title});
                                             }
 
-                                            DownloadUtils.instance
-                                                .download(videoId, subItem, clickType: "home", adSense: AdSense.home);
+                                            DownloadUtils.instance.download(videoId, subItem,
+                                                station: DownloadStation.home, adSense: AdSense.home);
                                           },
                                           child: Container(
                                             height: 50.w,
@@ -523,7 +523,8 @@ class UserHome extends GetView<UserHomeController> {
                                     // ),
                                     InkWell(
                                       onTap: () {
-                                        MoreSheetUtil.instance.showVideoMoreSheet(subItem, clickType: "home");
+                                        MoreSheetUtil.instance.showVideoMoreSheet(subItem,
+                                            clickType: "home", station: DownloadStation.home);
                                       },
                                       child: Container(
                                         height: 50.w,
@@ -1251,7 +1252,7 @@ class UserHomeController extends GetxController with StateMixin {
         await bindYoutubeData();
       }
       return;
-    }else{
+    } else {
       AppLog.i("music请求列表:${realList.length}");
     }
 

@@ -27,6 +27,7 @@ class LikeUtil {
 
   var hasNewLikeVideo = false.obs;
   var hasNewLikeArtist = false.obs;
+
   likeVideo(String videoId, Map infoData, {required AdSense adSense}) {
     //好评引导
     MyDialogUtils.instance.showRateDialog();

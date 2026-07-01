@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/download/download_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
-import 'package:muse_wave/tool/log.dart';
 import 'package:muse_wave/uinew/main/home/u_play.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
 
@@ -17,6 +17,7 @@ import '../../../view/base_view.dart';
 class UserMoreSong extends GetView<UserMoreSongController> {
   final String barTitle;
   final bool isFormSearch;
+
   const UserMoreSong({
     super.key,
     required this.barTitle,
@@ -57,9 +58,7 @@ class UserMoreSong extends GetView<UserMoreSongController> {
                 return EasyRefresh(
                   onLoad: () async {
                     await controller.bindMoreData();
-                    return controller.nextData.isEmpty
-                        ? IndicatorResult.noMore
-                        : IndicatorResult.success;
+                    return controller.nextData.isEmpty ? IndicatorResult.noMore : IndicatorResult.success;
                   },
                   child: ListView.separated(
                     padding: EdgeInsets.only(
@@ -90,14 +89,12 @@ class UserMoreSong extends GetView<UserMoreSongController> {
           controller.list,
           item,
           clickType: isFormSearch ? "s_detail_artist" : "h_detail_artist",
-          adSense:  AdSense.song_list,
+          adSense: AdSense.song_list,
         );
         // Get.to(UserPlayInfo());
       },
       child: Obx(() {
-        var isCheck =
-            item["videoId"] ==
-            Get.find<UserPlayInfoController>().nowData["videoId"];
+        var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
 
         return Container(
           // color: Colors.red,
@@ -138,8 +135,7 @@ class UserMoreSong extends GetView<UserMoreSongController> {
                     Row(
                       children: [
                         Obx(() {
-                          var isLike = LikeUtil.instance.allVideoMap
-                              .containsKey(item["videoId"]);
+                          var isLike = LikeUtil.instance.allVideoMap.containsKey(item["videoId"]);
                           if (isLike) {
                             return Container(
                               width: 16.w,
@@ -169,10 +165,7 @@ class UserMoreSong extends GetView<UserMoreSongController> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 12.w,
-                              color:
-                                  isCheck
-                                      ? Color(0xff8569FF)
-                                      : Colors.black.withOpacity(0.75),
+                              color: isCheck ? Color(0xff8569FF) : Colors.black.withOpacity(0.75),
                             ),
                           ),
                         ),
@@ -182,7 +175,8 @@ class UserMoreSong extends GetView<UserMoreSongController> {
                 ),
               ),
               SizedBox(width: 12.w),
-              getDownloadAndMoreBtn(item, "artist_more_song"),
+              getDownloadAndMoreBtn(item, "artist_more_song",
+                  station: isFormSearch ? DownloadStation.s_detail_playlist : DownloadStation.h_detail_playlist),
 
               // Obx(() {
               //   //获取下载状态
@@ -296,14 +290,13 @@ class UserMoreSongController extends GetxController with StateMixin {
     }
 
     //解析
-    List oldList =
-        result
-            .data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"] ??
+    List oldList = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+            ["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"] ??
         [];
 
-    nextData =
-        result
-            .data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]?["continuations"]?[0]?["nextContinuationData"] ??
+    nextData = result.data["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                ["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]?["continuations"]?[0]
+            ?["nextContinuationData"] ??
         {};
 
     var newMusicData = FormatMyData.instance.getMusicList(oldList);
@@ -348,20 +341,14 @@ class UserMoreSongController extends GetxController with StateMixin {
     }
 
     //解析
-    List oldList =
-        result
-            .data["continuationContents"]["musicPlaylistShelfContinuation"]["contents"] ??
-        [];
+    List oldList = result.data["continuationContents"]["musicPlaylistShelfContinuation"]["contents"] ?? [];
 
-    nextData =
-        result
-            .data["continuationContents"]["musicPlaylistShelfContinuation"]["continuations"]?[0]?["nextContinuationData"] ??
+    nextData = result.data["continuationContents"]["musicPlaylistShelfContinuation"]["continuations"]?[0]
+            ?["nextContinuationData"] ??
         {};
 
     var newMusicData = FormatMyData.instance.getMusicList(oldList);
 
     list.addAll(newMusicData);
   }
-
-
 }

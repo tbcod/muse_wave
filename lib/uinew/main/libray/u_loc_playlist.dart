@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/download/download_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/libray/u_loc_all_choose.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
@@ -711,6 +712,7 @@ class UserLocPlayListInfo extends GetView<UserLocPlayListInfoController> {
               getDownloadAndMoreBtn(
                 item,
                 "loc_playlist",
+                station: isFormHome ? DownloadStation.h_detail_playlist : DownloadStation.library,
                 locIsHome: isFormHome,
               ),
 

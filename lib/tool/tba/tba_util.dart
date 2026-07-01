@@ -128,7 +128,7 @@ class TbaUtils {
     }
 
     if (!MuseConfig.isUser && realMoney == 0) {
-      double random = 0.005 + Random().nextDouble();
+      double random = 0.005 + Random().nextDouble() / 100; //随机金额，0.005~0.105
       AppLog.i("测试环境 默认上报广告价值 随机金额：$random");
       realMoney = random * 1000000; //测试环境，非用户，金额为0时，默认上报广告价值，方便测试广告价值相关功能
     }

@@ -14,6 +14,13 @@ import 'package:muse_wave/tool/toast.dart';
 import '../../../api/base_dio_api.dart';
 import '../../../tool/log.dart';
 
+enum SearchContentFrom{
+  history,
+  input,
+  association,
+  hot,
+}
+
 class UserSearchController extends GetxController with StateMixin {
   var list = [].obs;
   var historyList = [].obs;
@@ -34,6 +41,9 @@ class UserSearchController extends GetxController with StateMixin {
   // Map<String, dynamic> bestResultList = {};
 
   var isLoading = false.obs;
+
+  SearchContentFrom searchContentFrom = SearchContentFrom.input;
+
 
   @override
   void onInit() {
@@ -122,13 +132,13 @@ class UserSearchController extends GetxController with StateMixin {
 
   String youtubeMoreToken = "";
 
-  void toSearch(String str) async {
+  void toSearch(String str,{required SearchContentFrom from}) async {
     //收起键盘
     Get.focusScope?.unfocus();
 
     await Future.delayed(const Duration(milliseconds: 500));
 
-    EventUtils.instance.addEvent("search_content", data: {"content": str});
+    EventUtils.instance.addEvent("search_content", data: {"content": str, "from": from.name});
 
     //保存搜索历史记录
     saveHistory(str);

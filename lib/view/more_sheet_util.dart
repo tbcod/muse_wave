@@ -36,7 +36,7 @@ class MoreSheetUtil {
     return _instance;
   }
 
-  showVideoMoreSheet(Map item, {bool isPlayPage = false, required String clickType}) async {
+  showVideoMoreSheet(Map item, {bool isPlayPage = false, required String clickType,required DownloadStation station}) async {
     //不显示播放控件
     Get.find<UserPlayInfoController>().hideFloatingWidget();
 
@@ -173,11 +173,10 @@ class MoreSheetUtil {
                       );
                     } else {
                       //未下载
-
                       return InkWell(
                         onTap: () {
                           DownloadUtils.instance.download(item["videoId"], item,
-                              clickType: clickType,
+                              station: station,
                               adSense: clickType == "artist_more_song" || clickType == "artist"
                                   ? AdSense.artist_detail_page
                                   : AdSense.playlist_page);

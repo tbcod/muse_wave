@@ -11,6 +11,7 @@ import '../home/u_play.dart';
 
 class UserDownloadSong extends GetView<UserDownloadSongController> {
   final bool isFormHome;
+
   const UserDownloadSong({super.key, this.isFormHome = false});
 
   @override
@@ -158,7 +159,9 @@ class UserDownloadSong extends GetView<UserDownloadSongController> {
               ),
             ),
             SizedBox(width: 12.w),
-            getDownloadAndMoreBtn(item, "download", locIsHome: isFormHome),
+            getDownloadAndMoreBtn(item, "download",
+                station: isFormHome ? DownloadStation.h_detail_playlist : DownloadStation.library,
+                locIsHome: isFormHome),
             // Obx(() {
             //   //获取下载状态
             //   var videoId = item["videoId"];
@@ -245,7 +248,6 @@ class UserDownloadSongController extends GetxController {
 
   UserDownloadSongController(this.adSense);
 
-
   @override
   void onInit() {
     super.onInit();
@@ -268,9 +270,8 @@ class UserDownloadSongController extends GetxController {
       return bl.compareTo(al);
     });
 
-    list.value =
-        oldList.where((e) {
-          return e["state"] == 2 && e["infoData"]["videoId"] == e["videoId"];
-        }).toList();
+    list.value = oldList.where((e) {
+      return e["state"] == 2 && e["infoData"]["videoId"] == e["videoId"];
+    }).toList();
   }
 }

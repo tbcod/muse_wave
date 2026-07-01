@@ -60,7 +60,7 @@ class UserSearch extends GetView<UserSearchController> {
                     controller.getSearchList(str);
                   },
                   onSubmitted: (str) {
-                    controller.toSearch(str);
+                    controller.toSearch(str,from: SearchContentFrom.input);
                   },
                   // autofocus: true,
                   style: TextStyle(fontSize: 12.w),
@@ -123,7 +123,8 @@ class UserSearch extends GetView<UserSearchController> {
               )),
               TextButton(
                   onPressed: () {
-                    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.search_page, adFunction: AdFunction.return_);
+                    AdUtils.instance
+                        .showAd(AdPosId.behavior, adSense: AdSense.search_page, adFunction: AdFunction.return_);
                     Get.back();
                   },
                   child: Text("Cancel".tr))
@@ -318,7 +319,7 @@ class UserSearch extends GetView<UserSearchController> {
                                         controller.inputC.text = str;
 
                                         controller.showClearBtn.value = true;
-                                        controller.toSearch(str);
+                                        controller.toSearch(str,from: SearchContentFrom.association);
                                       },
                                     );
                                   },
@@ -606,7 +607,11 @@ class UserSearch extends GetView<UserSearchController> {
                         const SizedBox(
                           width: 12,
                         ),
-                        getDownloadAndMoreBtn(item, "search")
+                        getDownloadAndMoreBtn(
+                          item,
+                          "search",
+                          station: DownloadStation.search,
+                        )
                       ],
                     ),
                   );
@@ -799,7 +804,8 @@ class UserSearch extends GetView<UserSearchController> {
                               EventUtils.instance.addEvent("det_artist_click", data: {"detail_click": "more"});
                             }
 
-                            MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: type);
+                            MoreSheetUtil.instance
+                                .showVideoMoreSheet(item, clickType: type, station: DownloadStation.search);
                           },
                           child: Container(
                             padding: const EdgeInsets.all(6),
@@ -962,7 +968,7 @@ class UserSearch extends GetView<UserSearchController> {
                         DownloadUtils.instance.remove(videoId, state: state);
                       } else {
                         DownloadUtils.instance
-                            .download(videoId, item, clickType: "search", adSense: AdSense.search_page);
+                            .download(videoId, item, station: DownloadStation.search, adSense: AdSense.search_page);
                       }
                     });
                   },
@@ -1171,7 +1177,7 @@ class UserSearch extends GetView<UserSearchController> {
                       const SizedBox(
                         width: 12,
                       ),
-                      getDownloadAndMoreBtn(item, "search", iconHeight: 30)
+                      getDownloadAndMoreBtn(item, "search", station: DownloadStation.search, iconHeight: 30)
                     ],
                   )
                 ],
@@ -1295,7 +1301,7 @@ class UserSearch extends GetView<UserSearchController> {
                 ],
               )),
               const SizedBox(width: 12),
-              getDownloadAndMoreBtn(item, "search")
+              getDownloadAndMoreBtn(item, "search", station: DownloadStation.search)
             ],
           ),
         );
@@ -1478,7 +1484,7 @@ class UserSearch extends GetView<UserSearchController> {
       onTap: () {
         controller.inputC.text = item["str"];
         controller.showClearBtn.value = true;
-        controller.toSearch(item["str"]);
+        controller.toSearch(item["str"],from: SearchContentFrom.history);
       },
     );
   }
@@ -1594,7 +1600,7 @@ class UserSearch extends GetView<UserSearchController> {
                       SizedBox(
                         width: 12.w,
                       ),
-                      getDownloadAndMoreBtn(item, "search", iconHeight: 30.w)
+                      getDownloadAndMoreBtn(item, "search", station: DownloadStation.search, iconHeight: 30.w)
                     ],
                   )
                 ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/download/download_util.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
 
 import '../../../tool/like/like_util.dart';
@@ -154,7 +155,7 @@ class UserLikeSong extends GetView<UserLikeSongController> {
               ),
             ),
             SizedBox(width: 12.w),
-            getDownloadAndMoreBtn(item, "liked", locIsHome: isFormHome),
+            getDownloadAndMoreBtn(item, "liked",station: isFormHome? DownloadStation.h_detail_playlist : DownloadStation.library, locIsHome: isFormHome),
             //
             // Obx(() {
             //   //获取下载状态

@@ -93,8 +93,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                     actions: [
                       IconButton(
                         onPressed: () {
-                          MoreSheetUtil.instance
-                              .showVideoMoreSheet(controller.nowData, isPlayPage: true, clickType: "play");
+                          MoreSheetUtil.instance.showVideoMoreSheet(Map.from(controller.nowData),
+                              isPlayPage: true, clickType: "play", station: DownloadStation.playpage);
                         },
                         icon: Image.asset("assets/oimg/icon_play_more.png", width: 24.w, height: 24.w),
                       ),
@@ -375,12 +375,16 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                           onTap: () {
                             //TODO 乱序
                             controller.shuffle();
+                            if(controller.isShuffle.isTrue){
+                              EventUtils.instance.addEvent("play_page_click", data: {"click": "normal"});
+                            }else{
+                              EventUtils.instance.addEvent("play_page_click", data: {"click": "shuffle"});
+                            }
 
                             //已经重新设置播放列表
                             // ToastUtil.showToast(msg: "The playlist has been reset");
                             AdUtils.instance
                                 .showAd(AdPosId.behavior, adSense: AdSense.play_page, adFunction: AdFunction.play);
-                            EventUtils.instance.addEvent("play_page_click", data: {"click": "shuffle"});
                           },
                         ),
                       ],
@@ -546,7 +550,8 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                               if (isLike) {
                                 LikeUtil.instance.unlikeVideo(videoId, adSense: AdSense.play_page);
                               } else {
-                                LikeUtil.instance.likeVideo(videoId, controller.nowData, adSense: AdSense.play_page);
+                                Map infoData = Map.from(controller.nowData);
+                                LikeUtil.instance.likeVideo(videoId, infoData, adSense: AdSense.play_page);
                               }
                             },
                             child: Image.asset(
@@ -764,7 +769,6 @@ class UserPlayInfoController extends GetxController {
 
   var singleLoop = false.obs;
   Timer? timer;
-
 
   @override
   void dispose() {
@@ -2300,7 +2304,8 @@ class UserPlayInfoController extends GetxController {
                 InkWell(
                   onTap: () {
                     // showMoreView(item);
-                    MoreSheetUtil.instance.showVideoMoreSheet(item, clickType: "play_playlist", isPlayPage: true);
+                    MoreSheetUtil.instance.showVideoMoreSheet(item,
+                        clickType: "play_playlist", isPlayPage: true, station: DownloadStation.playpage);
                   },
                   child: Image.asset("assets/img/icon_music_more.png", width: 24.w, height: 24.w),
                 ),
@@ -2313,7 +2318,8 @@ class UserPlayInfoController extends GetxController {
   }
 
   downloadFile() async {
-    DownloadUtils.instance.download(nowData["videoId"], nowData, clickType: "play", adSense: AdSense.play_page);
+    DownloadUtils.instance
+        .download(nowData["videoId"], nowData, station: DownloadStation.playpage, adSense: AdSense.play_page);
   }
 
   removeDownload(int state) async {
@@ -2371,7 +2377,7 @@ class UserPlayInfoController extends GetxController {
   //添加到最后播放
   bool addToQueue(Map item) {
     if (playList.isEmpty) {
-      setDataAndPlayItem([item], item, clickType: "play_center",adSense: AdSense.play_page);
+      setDataAndPlayItem([item], item, clickType: "play_center", adSense: AdSense.play_page);
       return true;
     }
 
@@ -2428,7 +2434,12 @@ class UserPlayInfoController extends GetxController {
       await HistoryUtil.instance.initData();
       List dList = List.of(HistoryUtil.instance.songHistoryList);
       AppLog.i("使用默认播放;${dList.length}");
-      setDataAndPlayItem(dList, dList[0], clickType: "appOpen", adSense: AdSense.play_page,);
+      setDataAndPlayItem(
+        dList,
+        dList[0],
+        clickType: "appOpen",
+        adSense: AdSense.play_page,
+      );
       return;
     }
     var lastIndex = data["index"];

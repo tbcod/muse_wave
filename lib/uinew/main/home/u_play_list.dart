@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:muse_wave/tool/ad/ad_util.dart';
+import 'package:muse_wave/tool/download/download_util.dart';
 import 'package:muse_wave/tool/ext/state_ext.dart';
 import 'package:muse_wave/uinew/main/home/u_play.dart';
 import 'package:muse_wave/view/player_bottom_bar.dart';
@@ -552,6 +553,12 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
       },
       child: Obx(() {
         var isCheck = item["videoId"] == Get.find<UserPlayInfoController>().nowData["videoId"];
+        DownloadStation downloadStation = DownloadStation.s_detail_playlist;
+        if (controller.isAlbum) {
+          downloadStation = isFormSearch ? DownloadStation.s_detail_album : DownloadStation.h_detail_album;
+        } else {
+          downloadStation = isFormSearch ? DownloadStation.s_detail_playlist : DownloadStation.h_detail_playlist;
+        }
 
         return Container(
           height: 70.w,
@@ -615,7 +622,8 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                 ),
               ),
               SizedBox(width: 12.w),
-              getDownloadAndMoreBtn(item, "net_playlist", isSearch: isFormSearch),
+
+              getDownloadAndMoreBtn(item, "net_playlist", station: downloadStation, isSearch: isFormSearch),
 
               // Obx(() {
               //   //获取下载状态
