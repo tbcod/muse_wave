@@ -375,9 +375,9 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                           onTap: () {
                             //TODO 乱序
                             controller.shuffle();
-                            if(controller.isShuffle.isTrue){
+                            if (controller.isShuffle.isTrue) {
                               EventUtils.instance.addEvent("play_page_click", data: {"click": "normal"});
-                            }else{
+                            } else {
                               EventUtils.instance.addEvent("play_page_click", data: {"click": "shuffle"});
                             }
 
@@ -785,6 +785,7 @@ class UserPlayInfoController extends GetxController {
     await session.configure(AudioSessionConfiguration.music());
     await session.setActive(true);
 
+
     session.interruptionEventStream.listen((event) async {
       AppLog.i("interruptionEventStream begin:${event.begin}, type:${event.type.name}");
 
@@ -863,6 +864,13 @@ class UserPlayInfoController extends GetxController {
     } catch (e) {
       AppLog.e("AudioService init error:$e");
     }
+
+    AppLifecycleListener(
+      onDetach: () async {
+        await myHandler?.pause();
+      },
+    );
+
 
     checkShowDownloadGuide();
 
@@ -2485,11 +2493,11 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     // playMediaItem(item);
   }
 
-  @override
-  Future<void> onTaskRemoved() async {
-    await stop();
-    if (Platform.isAndroid) exit(0);
-  }
+  // @override
+  // Future<void> onTaskRemoved() async {
+  //   await stop();
+  //   if (Platform.isAndroid) exit(0);
+  // }
 
   @override
   Future<void> play() async {
