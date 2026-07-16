@@ -106,9 +106,9 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
         isFBInitFinished = FacebookSdk.isInitialized()
         if (isFBInitFinished) {
             fbAppEventsLogger = AppEventsLogger.newLogger(applicationContext)
-            Log.i("MuseAndroid", "initFacebookSdk res：$isFBInitFinished, $appId, $token")
+            Log.i("MuseAndroid", "Facebook initFacebookSdk res：$isFBInitFinished, $appId, $token")
         }else{
-            Log.e("MuseAndroid", "initFacebookSdk res：$isFBInitFinished, $appId, $token")
+            Log.e("MuseAndroid", "Facebook initFacebookSdk res：$isFBInitFinished, $appId, $token")
         }
     }
 
@@ -129,9 +129,9 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
             } else {
                 fbAppEventsLogger.logEvent(eventName)
             }
-            Log.i("MuseAndroid", "logEventForFacebook：$$eventName, $isFBInitFinished")
+            Log.i("MuseAndroid", "Facebook logEventForFacebook：$$eventName, $isFBInitFinished")
         }else{
-            Log.e("MuseAndroid", "logEventForFacebook isFBInitFinished: $isFBInitFinished")
+            Log.e("MuseAndroid", "Facebook logEventForFacebook isFBInitFinished: $isFBInitFinished")
         }
         result.success(isFBInitFinished)
     }
@@ -143,9 +143,9 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
             var amount = (call.argument("amount") as? Double)?.toBigDecimal()
             var currency = Currency.getInstance(call.argument("currency") as? String)
             fbAppEventsLogger.logPurchase(amount, currency, parameterBundle)
-            Log.i("MuseAndroid", "logPurchaseEventForFacebook：$amount,$currency, $isFBInitFinished")
+            Log.i("MuseAndroid", "Facebook Purchase amount：$amount, $currency")
         }else{
-            Log.e("MuseAndroid", "logPurchaseEventForFacebook isFBInitFinished:$isFBInitFinished")
+            Log.e("MuseAndroid", "Facebook Purchase isFBInitFinished:$isFBInitFinished")
         }
 
         result.success(isFBInitFinished)

@@ -435,8 +435,8 @@ class MyApp extends GetView {
           fallbackLocale: MyTranslations.fallbackLocale,
           translations: MyTranslations(),
           supportedLocales: const [
-            // Locale('cn', 'US'),
-            Locale('zh', 'CN'),
+            Locale('en', 'US'),
+            // Locale('zh', 'CN'),
           ],
 
           routingCallback: (Routing? routing) async {
