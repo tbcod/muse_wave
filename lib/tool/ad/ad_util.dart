@@ -45,7 +45,7 @@ enum AdPosId {
   muse_local_reward
 } //homenative, nvpage_full
 
-enum AdFirstType { launch_first, launch_other, int_main_first, int_main_other, banner_other }
+// enum AdFirstType { launch_first, launch_other, int_main_first, int_main_other, banner_other }
 
 class AdUtils {
   AdUtils._internal();
@@ -102,11 +102,12 @@ class AdUtils {
   //已加载的广告，key为广告id，显示后移除对应广告
   var loadedAdMap = {};
 
+  //AdFirstType? adFirstType,
   loadAd(AdPosId adPosId,
-      {required AdSense adSense, bool forceLocalJson = false, AdFirstType? adFirstType, LoadCallback? onLoad}) async {
+      {required AdSense adSense, bool forceLocalJson = false,  LoadCallback? onLoad}) async {
     String key = adPosId.name;
 
-    adFirstType ??= adPosId == AdPosId.open ? AdFirstType.launch_other : AdFirstType.int_main_other;
+    // adFirstType ??= adPosId == AdPosId.open ? AdFirstType.launch_other : AdFirstType.int_main_other;
 
     // if (!Get.isRegistered<LaunchPageController>()) {
     if (bus.isAppLaunchFinish) {
@@ -117,7 +118,7 @@ class AdUtils {
       }
     }
 
-    AppLog.i("开始加载广告位:$key, 场景：${adSense.name}，本地：$forceLocalJson, ${adFirstType.name}");
+    AppLog.i("开始加载广告位:$key, 场景：${adSense.name}，本地：$forceLocalJson");
     Map adJson = this.adJson;
     if (forceLocalJson) {
       adJson = MuseConfig.adJsonAnd;

@@ -58,10 +58,6 @@ class LaunchPageController extends GetxController {
       AppLog.e("加载广告失败: $e");
     }
 
-    //预加载广告
-    AdUtils.instance.loadAd(AdPosId.behavior,
-        adFirstType: AdFirstType.int_main_first, adSense: AdSense.play_page, forceLocalJson: bus.isFirstAppLaunch);
-
     toMainPage();
 
     super.onReady();
@@ -122,38 +118,9 @@ class LaunchPageController extends GetxController {
   Future loadAd() async {
     await AdUtils.instance.loadAd(
       AdPosId.open,
-      adFirstType: AdFirstType.launch_first,
       adSense: bus.isFirstAppLaunch ? AdSense.first : AdSense.cold,
       forceLocalJson: bus.isFirstAppLaunch,
     );
-
-    // bool isBShowOpenAd = RemoteUtil.shareInstance.isShowOpenAd;
-    // AppLog.i("启动页加载广告 isB：$isB，首次启动:${bus.isFirstAppLaunch}, first open:$isBShowOpenAd");
-    //
-    // if (isA) {
-    //   if (bus.isFirstAppLaunch) {
-    //     AdUtils.instance.loadAd(AdPosId.muse_local_int, forceLocalJson: true, adSense: AdScene.open_cool).then((v) {
-    //       AdUtils.instance.loadAd(AdPosId.open, forceLocalJson: true, adSense: AdScene.open_cool);
-    //     });
-    //   } else {
-    //     await AdUtils.instance.loadAd(AdPosId.muse_local_int, adSense: AdScene.open_cool);
-    //     AdUtils.instance.loadAd(AdPosId.open, adSense: AdScene.open_cool);
-    //   }
-    //   return;
-    // }
-    //
-    // if (isB) {
-    //   if (bus.isFirstAppLaunch) {
-    //     if (isBShowOpenAd) {
-    //       await AdUtils.instance.loadAd(AdPosId.open, forceLocalJson: true, adSense: AdScene.open_cool);
-    //     } else {
-    //       AdUtils.instance.loadAd(AdPosId.open, forceLocalJson: true, adSense: AdScene.open_cool);
-    //     }
-    //   } else {
-    //     await AdUtils.instance.loadAd(AdPosId.open, adSense: AdScene.open_cool);
-    //   }
-    //   return;
-    // }
   }
 
   Future showAd() async {
@@ -196,6 +163,8 @@ class LaunchPageController extends GetxController {
     progress.value = 1;
     if (isB) {
       Get.off(const UserMain(), routeName: "/UserMain");
+      //预加载广告
+      AdUtils.instance.loadAd(AdPosId.behavior, adSense: AdSense.play_page, forceLocalJson: bus.isFirstAppLaunch);
     } else {
       Get.off(const MainPage(), routeName: "/MainPage");
     }

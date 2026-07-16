@@ -785,7 +785,6 @@ class UserPlayInfoController extends GetxController {
     await session.configure(AudioSessionConfiguration.music());
     await session.setActive(true);
 
-
     session.interruptionEventStream.listen((event) async {
       AppLog.i("interruptionEventStream begin:${event.begin}, type:${event.type.name}");
 
@@ -870,7 +869,6 @@ class UserPlayInfoController extends GetxController {
         await myHandler?.pause();
       },
     );
-
 
     checkShowDownloadGuide();
 
@@ -2559,6 +2557,25 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     if (Get.find<UserPlayInfoController>().canLast.value) {
       Get.find<UserPlayInfoController>().playLast(isNotif: true);
     }
+  }
+
+  @override
+  Future<void> onTaskRemoved() async {
+    if (await _isXiaomiDevice()) {
+      exit(0);
+    }
+  }
+
+  Future<bool> _isXiaomiDevice() async {
+    if (Platform.isIOS) return false;
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    final manufacturer = androidInfo.manufacturer.toLowerCase();
+    final brand = androidInfo.brand.toLowerCase();
+    AppLog.i("manufacturer: $manufacturer, brand: $brand");
+    return manufacturer.contains('xiaomi') ||
+        brand.contains('xiaomi') ||
+        brand.contains('redmi') ||
+        brand.contains('poco');
   }
 
   _updateState({bool isLoading = false}) async {

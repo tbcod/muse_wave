@@ -506,20 +506,6 @@ class PlayPageController extends GetxController {
       await player.pause();
     }
     realPlay(index);
-
-
-    // AdUtils.instance.showAd("behavior",
-    //     onShow: ShowCallback(onShowFail: (adId, e) {
-    //       AppLog.e(e);
-    //       realPlay(index);
-    //     }, onClose: (adId) {
-    //       AppLog.e("广告关闭$adId");
-    //       realPlay(index);
-    //     }, onShow: (adId) {
-    //       AppLog.e("广告显示$adId");
-    //     }, onClick: (adId) {
-    //       AppLog.e("广告点击$adId");
-    //     }));
   }
 
   realPlay(int index) {
@@ -534,7 +520,7 @@ class PlayPageController extends GetxController {
 
     isPlaying.value = true;
 
-    AdUtils.instance.showAd(AdPosId.behavior, adSense: AdSense.play_page, adFunction: AdFunction.play);
+    AdUtils.instance.showAd(AdPosId.muse_local_int, adSense: AdSense.play_page, adFunction: AdFunction.play);
 
     if (_playerCompleteSubscription != null) {
       return;

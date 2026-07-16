@@ -3,14 +3,10 @@ import 'dart:async';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:android_intent_plus/flag.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:muse_wave/generated/assets.dart';
-import 'package:muse_wave/muse_config.dart';
 import 'package:muse_wave/tool/ad/ump_util.dart';
 import 'package:muse_wave/tool/bus.dart';
 import 'package:muse_wave/tool/tba/event_util.dart';
@@ -130,8 +126,7 @@ class MainPageController extends GetxController {
   @override
   void onReady() {
     //预加载广告
-    AdUtils.instance.loadAd(AdPosId.muse_local_int,
-        adFirstType: AdFirstType.launch_first, adSense: AdSense.hot, forceLocalJson: bus.isFirstAppLaunch);
+    AdUtils.instance.loadAd(AdPosId.muse_local_int, adSense: AdSense.hot, forceLocalJson: bus.isFirstAppLaunch);
     AdUtils.instance.loadAd(AdPosId.muse_local_reward, adSense: AdSense.setting);
     super.onReady();
   }
