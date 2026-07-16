@@ -842,14 +842,14 @@ class MediaControl {
 
   /// A default control for [MediaAction.pause].
   static const pause = MediaControl(
-    androidIcon: 'drawable/audio_service_pause',
+    androidIcon: 'drawable/audio_pause', //audio_service_pause
     label: 'Pause',
     action: MediaAction.pause,
   );
 
   /// A default control for [MediaAction.play].
   static const play = MediaControl(
-    androidIcon: 'drawable/audio_service_play_arrow',
+    androidIcon: 'drawable/audio_play', //audio_service_play_arrow
     label: 'Play',
     action: MediaAction.play,
   );
@@ -863,14 +863,14 @@ class MediaControl {
 
   /// A default control for [MediaAction.skipToNext].
   static const skipToNext = MediaControl(
-    androidIcon: 'drawable/audio_service_skip_next',
+    androidIcon: 'drawable/audio_next', //audio_service_skip_next
     label: 'Next',
     action: MediaAction.skipToNext,
   );
 
   /// A default control for [MediaAction.skipToPrevious].
   static const skipToPrevious = MediaControl(
-    androidIcon: 'drawable/audio_service_skip_previous',
+    androidIcon: 'drawable/audio_pre', //audio_service_skip_previous
     label: 'Previous',
     action: MediaAction.skipToPrevious,
   );

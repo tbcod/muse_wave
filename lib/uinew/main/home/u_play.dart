@@ -2562,6 +2562,7 @@ class MyVideoHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   @override
   Future<void> onTaskRemoved() async {
     if (await _isXiaomiDevice()) {
+      await stop();
       exit(0);
     }
   }

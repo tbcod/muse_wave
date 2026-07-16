@@ -70,7 +70,10 @@ class PlayPage extends GetView<PlayPageController> {
                             child: Obx(
                               () => Text(
                                 "Song",
-                                style: TextStyle(color: controller.tabIndex.value == 0 ? Color(0xff141414) : Color(0xff141414).withOpacity(0.5)),
+                                style: TextStyle(
+                                    color: controller.tabIndex.value == 0
+                                        ? Color(0xff141414)
+                                        : Color(0xff141414).withOpacity(0.5)),
                               ),
                             ),
                           ),
@@ -85,7 +88,10 @@ class PlayPage extends GetView<PlayPageController> {
                             child: Obx(
                               () => Text(
                                 "Lyrics",
-                                style: TextStyle(color: controller.tabIndex.value == 1 ? Color(0xff141414) : Color(0xff141414).withOpacity(0.5)),
+                                style: TextStyle(
+                                    color: controller.tabIndex.value == 1
+                                        ? Color(0xff141414)
+                                        : Color(0xff141414).withOpacity(0.5)),
                               ),
                             ),
                           ),
@@ -94,41 +100,94 @@ class PlayPage extends GetView<PlayPageController> {
                     ),
                     Expanded(
                       child: Obx(
-                        () =>
-                            controller.tabIndex.value == 0
-                                ? Container(
+                        () => controller.tabIndex.value == 0
+                            ? Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Container(
+                                    //   width: 327.w,
+                                    //   height: 327.w,
+                                    //   color: Colors.grey,
+                                    // ),
+                                    Obx(() {
+                                      Uint8List? cover = controller.nowData["cover"];
+
+                                      return Container(
+                                        height: 327.w,
+                                        width: 327.w,
+                                        clipBehavior: Clip.hardEdge,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.w)),
+                                        child: cover == null
+                                            ? Image.asset(Assets.imgIconPcover, fit: BoxFit.cover)
+                                            : Image.memory(cover, fit: BoxFit.cover),
+                                      );
+                                    }),
+
+                                    SizedBox(height: 24.w),
+
+                                    Container(
+                                      width: 327.w,
+                                      child: Obx(() {
+                                        return TextScroll(
+                                          (controller.nowData["title"]?.toString() ?? "").replaceAll("\n", ""),
+                                          // maxLines: 2,
+                                          // overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 22.w),
+                                        );
+                                      }),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Obx(() {
+                                return Container(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      // Container(
-                                      //   width: 327.w,
-                                      //   height: 327.w,
-                                      //   color: Colors.grey,
-                                      // ),
-                                      Obx(() {
-                                        Uint8List? cover = controller.nowData["cover"];
+                                      Container(
+                                        height: 327.w,
+                                        width: 327.w,
+                                        padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.w),
+                                        alignment: Alignment.center,
+                                        clipBehavior: Clip.hardEdge,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(15.w), color: Color(0xffF3F3F3)),
+                                        child: SingleChildScrollView(
+                                          child: Container(
+                                            width: double.infinity,
 
-                                        return Container(
-                                          height: 327.w,
-                                          width: 327.w,
-                                          clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.w)),
-                                          child:
-                                              cover == null
-                                                  ? Image.asset(Assets.imgIconPcover, fit: BoxFit.cover)
-                                                  : Image.memory(cover, fit: BoxFit.cover),
-                                        );
-                                      }),
-
+                                            // height: 300.w,
+                                            // color: Colors.green,
+                                            // margin:
+                                            //     EdgeInsets.symmetric(horizontal: 30.w),
+                                            // constraints:
+                                            //     BoxConstraints(maxHeight: 300.w),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              controller.nowData["lyrics"] ?? "No lyrics",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontSize: 14.w, color: Colors.black.withOpacity(0.5)),
+                                            ),
+                                          ),
+                                        ),
+                                        // Text(
+                                        //   "No lyrics",
+                                        //   style: TextStyle(
+                                        //       fontSize: 14.w,
+                                        //       color: Color(0xff141414)
+                                        //           .withOpacity(0.5)),
+                                        // ),
+                                      ),
                                       SizedBox(height: 24.w),
-
                                       Container(
                                         width: 327.w,
                                         child: Obx(() {
                                           return TextScroll(
                                             (controller.nowData["title"]?.toString() ?? "").replaceAll("\n", ""),
-                                            // maxLines: 2,
+                                            // maxLines: 1,
                                             // overflow: TextOverflow.ellipsis,
                                             style: TextStyle(fontSize: 22.w),
                                           );
@@ -136,164 +195,110 @@ class PlayPage extends GetView<PlayPageController> {
                                       ),
                                     ],
                                   ),
-                                )
-                                : Obx(() {
-                                  return Container(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: 327.w,
-                                          width: 327.w,
-                                          padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.w),
-                                          alignment: Alignment.center,
-                                          clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.w), color: Color(0xffF3F3F3)),
-                                          child: SingleChildScrollView(
-                                            child: Container(
-                                              width: double.infinity,
+                                );
 
-                                              // height: 300.w,
-                                              // color: Colors.green,
-                                              // margin:
-                                              //     EdgeInsets.symmetric(horizontal: 30.w),
-                                              // constraints:
-                                              //     BoxConstraints(maxHeight: 300.w),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                controller.nowData["lyrics"] ?? "No lyrics",
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(fontSize: 14.w, color: Colors.black.withOpacity(0.5)),
-                                              ),
-                                            ),
-                                          ),
-                                          // Text(
-                                          //   "No lyrics",
-                                          //   style: TextStyle(
-                                          //       fontSize: 14.w,
-                                          //       color: Color(0xff141414)
-                                          //           .withOpacity(0.5)),
-                                          // ),
-                                        ),
-                                        SizedBox(height: 24.w),
-                                        Container(
-                                          width: 327.w,
-                                          child: Obx(() {
-                                            return TextScroll(
-                                              (controller.nowData["title"]?.toString() ?? "").replaceAll("\n", ""),
-                                              // maxLines: 1,
-                                              // overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(fontSize: 22.w),
-                                            );
-                                          }),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-
-                                  // if ((controller.nowData["lyrics"]
-                                  //             ?.toString() ??
-                                  //         "")
-                                  //     .isEmpty) {
-                                  //   return Container(
-                                  //     child: Column(
-                                  //       crossAxisAlignment:
-                                  //           CrossAxisAlignment.start,
-                                  //       mainAxisAlignment:
-                                  //           MainAxisAlignment.center,
-                                  //       children: [
-                                  //         Container(
-                                  //             height: 327.w,
-                                  //             width: 327.w,
-                                  //             alignment: Alignment.center,
-                                  //             clipBehavior: Clip.hardEdge,
-                                  //             decoration: BoxDecoration(
-                                  //                 borderRadius:
-                                  //                     BorderRadius.circular(
-                                  //                         15.w),
-                                  //                 color: Color(0xffF3F3F3)),
-                                  //             child: SingleChildScrollView(
-                                  //               child: Container(
-                                  //                 width: double.infinity,
-                                  //
-                                  //                 // height: 300.w,
-                                  //                 // color: Colors.green,
-                                  //                 // margin:
-                                  //                 //     EdgeInsets.symmetric(horizontal: 30.w),
-                                  //                 // constraints:
-                                  //                 //     BoxConstraints(maxHeight: 300.w),
-                                  //                 alignment: Alignment.center,
-                                  //                 child: Text(
-                                  //                   controller.nowData[
-                                  //                           "lyrics"] ??
-                                  //                       "No lyrics",
-                                  //                   textAlign: TextAlign.center,
-                                  //                   style: TextStyle(
-                                  //                       fontSize: 14.w,
-                                  //                       color: Colors.black
-                                  //                           .withOpacity(0.5)),
-                                  //                 ),
-                                  //               ),
-                                  //             )
-                                  //             // Text(
-                                  //             //   "No lyrics",
-                                  //             //   style: TextStyle(
-                                  //             //       fontSize: 14.w,
-                                  //             //       color: Color(0xff141414)
-                                  //             //           .withOpacity(0.5)),
-                                  //             // ),
-                                  //             ),
-                                  //         SizedBox(
-                                  //           height: 24.w,
-                                  //         ),
-                                  //         Container(
-                                  //           width: 327.w,
-                                  //           child: Obx(() {
-                                  //             return TextScroll(
-                                  //               (controller.nowData["title"]
-                                  //                           ?.toString() ??
-                                  //                       "")
-                                  //                   .replaceAll("\n", ""),
-                                  //               // maxLines: 1,
-                                  //               // overflow: TextOverflow.ellipsis,
-                                  //               style:
-                                  //                   TextStyle(fontSize: 22.w),
-                                  //             );
-                                  //           }),
-                                  //         )
-                                  //       ],
-                                  //     ),
-                                  //   );
-                                  // }
-                                  //
-                                  // return Container(
-                                  //   alignment: Alignment.center,
-                                  //   // margin: EdgeInsets.symmetric(vertical: 50.w),
-                                  //   constraints:
-                                  //       BoxConstraints(maxHeight: 300.w),
-                                  //   padding: EdgeInsets.symmetric(
-                                  //       horizontal: 30.w, vertical: 30.w),
-                                  //   child: SingleChildScrollView(
-                                  //     child: Container(
-                                  //       width: double.infinity,
-                                  //
-                                  //       // height: 300.w,
-                                  //       // color: Colors.green,
-                                  //       // margin:
-                                  //       //     EdgeInsets.symmetric(horizontal: 30.w),
-                                  //       // constraints:
-                                  //       //     BoxConstraints(maxHeight: 300.w),
-                                  //       alignment: Alignment.center,
-                                  //       child: Text(
-                                  //         controller.nowData["lyrics"] ?? "",
-                                  //         textAlign: TextAlign.center,
-                                  //         style: TextStyle(fontSize: 14.w),
-                                  //       ),
-                                  //     ),
-                                  //   ),
-                                  // );
-                                }),
+                                // if ((controller.nowData["lyrics"]
+                                //             ?.toString() ??
+                                //         "")
+                                //     .isEmpty) {
+                                //   return Container(
+                                //     child: Column(
+                                //       crossAxisAlignment:
+                                //           CrossAxisAlignment.start,
+                                //       mainAxisAlignment:
+                                //           MainAxisAlignment.center,
+                                //       children: [
+                                //         Container(
+                                //             height: 327.w,
+                                //             width: 327.w,
+                                //             alignment: Alignment.center,
+                                //             clipBehavior: Clip.hardEdge,
+                                //             decoration: BoxDecoration(
+                                //                 borderRadius:
+                                //                     BorderRadius.circular(
+                                //                         15.w),
+                                //                 color: Color(0xffF3F3F3)),
+                                //             child: SingleChildScrollView(
+                                //               child: Container(
+                                //                 width: double.infinity,
+                                //
+                                //                 // height: 300.w,
+                                //                 // color: Colors.green,
+                                //                 // margin:
+                                //                 //     EdgeInsets.symmetric(horizontal: 30.w),
+                                //                 // constraints:
+                                //                 //     BoxConstraints(maxHeight: 300.w),
+                                //                 alignment: Alignment.center,
+                                //                 child: Text(
+                                //                   controller.nowData[
+                                //                           "lyrics"] ??
+                                //                       "No lyrics",
+                                //                   textAlign: TextAlign.center,
+                                //                   style: TextStyle(
+                                //                       fontSize: 14.w,
+                                //                       color: Colors.black
+                                //                           .withOpacity(0.5)),
+                                //                 ),
+                                //               ),
+                                //             )
+                                //             // Text(
+                                //             //   "No lyrics",
+                                //             //   style: TextStyle(
+                                //             //       fontSize: 14.w,
+                                //             //       color: Color(0xff141414)
+                                //             //           .withOpacity(0.5)),
+                                //             // ),
+                                //             ),
+                                //         SizedBox(
+                                //           height: 24.w,
+                                //         ),
+                                //         Container(
+                                //           width: 327.w,
+                                //           child: Obx(() {
+                                //             return TextScroll(
+                                //               (controller.nowData["title"]
+                                //                           ?.toString() ??
+                                //                       "")
+                                //                   .replaceAll("\n", ""),
+                                //               // maxLines: 1,
+                                //               // overflow: TextOverflow.ellipsis,
+                                //               style:
+                                //                   TextStyle(fontSize: 22.w),
+                                //             );
+                                //           }),
+                                //         )
+                                //       ],
+                                //     ),
+                                //   );
+                                // }
+                                //
+                                // return Container(
+                                //   alignment: Alignment.center,
+                                //   // margin: EdgeInsets.symmetric(vertical: 50.w),
+                                //   constraints:
+                                //       BoxConstraints(maxHeight: 300.w),
+                                //   padding: EdgeInsets.symmetric(
+                                //       horizontal: 30.w, vertical: 30.w),
+                                //   child: SingleChildScrollView(
+                                //     child: Container(
+                                //       width: double.infinity,
+                                //
+                                //       // height: 300.w,
+                                //       // color: Colors.green,
+                                //       // margin:
+                                //       //     EdgeInsets.symmetric(horizontal: 30.w),
+                                //       // constraints:
+                                //       //     BoxConstraints(maxHeight: 300.w),
+                                //       alignment: Alignment.center,
+                                //       child: Text(
+                                //         controller.nowData["lyrics"] ?? "",
+                                //         textAlign: TextAlign.center,
+                                //         style: TextStyle(fontSize: 14.w),
+                                //       ),
+                                //     ),
+                                //   ),
+                                // );
+                              }),
                       ),
                     ),
 
@@ -349,9 +354,11 @@ class PlayPage extends GetView<PlayPageController> {
                               padding: EdgeInsets.symmetric(horizontal: 5.w),
                               child: Row(
                                 children: [
-                                  Text(controller.playTime.value, style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
+                                  Text(controller.playTime.value,
+                                      style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
                                   Spacer(),
-                                  Text(controller.maxTime.value, style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
+                                  Text(controller.maxTime.value,
+                                      style: TextStyle(fontSize: 10.w, color: Color(0xff141414).withOpacity(0.75))),
                                 ],
                               ),
                             ),
@@ -367,7 +374,8 @@ class PlayPage extends GetView<PlayPageController> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           InkWell(
-                            child: Container(width: 32.w, height: 32.w, child: Image.asset("assets/img/icon_p_add.png")),
+                            child:
+                                Container(width: 32.w, height: 32.w, child: Image.asset("assets/img/icon_p_add.png")),
                             onTap: () {
                               controller.showAddList();
                             },
@@ -378,7 +386,8 @@ class PlayPage extends GetView<PlayPageController> {
                               child: Container(
                                 width: 32.w,
                                 height: 32.w,
-                                child: Image.asset(Assets.imgIconPL, color: controller.canLast.value ? Colors.black : Colors.grey),
+                                child: Image.asset(Assets.imgIconPL,
+                                    color: controller.canLast.value ? Colors.black : Colors.grey),
                               ),
                               onTap: () {
                                 if (!controller.canLast.value) {
@@ -394,7 +403,9 @@ class PlayPage extends GetView<PlayPageController> {
                               child: Container(
                                 width: 48.w,
                                 height: 48.w,
-                                child: Image.asset(controller.isPlaying.value ? "assets/img/icon_p_pause.png" : "assets/img/icon_p_play.png"),
+                                child: Image.asset(controller.isPlaying.value
+                                    ? "assets/img/icon_p_pause.png"
+                                    : "assets/img/icon_p_play.png"),
                               ),
                               onTap: () async {
                                 if (controller.isPlaying.value) {
@@ -412,7 +423,8 @@ class PlayPage extends GetView<PlayPageController> {
                               child: Container(
                                 width: 32.w,
                                 height: 32.w,
-                                child: Image.asset(Assets.imgIconPN, color: controller.canNext.value ? Colors.black : Colors.grey),
+                                child: Image.asset(Assets.imgIconPN,
+                                    color: controller.canNext.value ? Colors.black : Colors.grey),
                               ),
                               onTap: () {
                                 if (!controller.canNext.value) {
@@ -424,7 +436,8 @@ class PlayPage extends GetView<PlayPageController> {
                           }),
                           SizedBox(width: 35.w),
                           InkWell(
-                            child: Container(width: 32.w, height: 32.w, child: Image.asset("assets/img/icon_p_playlist.png")),
+                            child: Container(
+                                width: 32.w, height: 32.w, child: Image.asset("assets/img/icon_p_playlist.png")),
                             onTap: () {
                               controller.showPlaylist();
                             },
@@ -508,15 +521,17 @@ class PlayPageController extends GetxController {
     realPlay(index);
   }
 
-  realPlay(int index) {
+  realPlay(int index) async {
     nowIndex = index;
     nowData.value = playList[nowIndex];
 
     canLast.value = canPlayLast();
     canNext.value = canPlayNext();
 
-    player.setReleaseMode(ReleaseMode.stop);
-    player.play(BytesSource(playList[index]["fileData"], mimeType: playList[index]["mimeType"] ?? "audio/mp3"));
+    await player.setReleaseMode(ReleaseMode.stop);
+    Uint8List source = playList[index]["fileData"];
+    String? mimeType = playList[index]["mimeType"] ?? "audio/mp3";
+    player.play(BytesSource(source, mimeType: mimeType));
 
     isPlaying.value = true;
 
@@ -546,11 +561,17 @@ class PlayPageController extends GetxController {
         await file.writeAsBytes(nowData["cover"]);
         coverPath = file.path;
       }
-      var item = MediaItem(id: nowData["id"], title: nowData["title"], duration: maxD, artUri: coverPath.isEmpty ? null : Uri.file(coverPath));
+      var item = MediaItem(
+          id: nowData["id"],
+          title: nowData["title"],
+          duration: maxD,
+          artUri: coverPath.isEmpty ? null : Uri.file(coverPath));
       myHandler?.showItem(item);
     });
     _positionSubscription = player.onPositionChanged.listen((p) {
-      sliderValue.value = maxD.inMilliseconds > 0 ? (p.inMilliseconds.toDouble() / maxD.inMilliseconds.toDouble()).clamp(0.0, 1.0) : 0.0;
+      sliderValue.value = maxD.inMilliseconds > 0
+          ? (p.inMilliseconds.toDouble() / maxD.inMilliseconds.toDouble()).clamp(0.0, 1.0)
+          : 0.0;
 
       playTime.value = formatDuration(p);
 
@@ -606,7 +627,9 @@ class PlayPageController extends GetxController {
       builder: (c) {
         return Obx(() {
           return Positioned(
-            bottom: (Get.find<Application>().isMainPage.value ? kBottomNavigationBarHeight : 0) + Get.mediaQuery.padding.bottom + 8.w,
+            bottom: (Get.find<Application>().isMainPage.value ? kBottomNavigationBarHeight : 0) +
+                Get.mediaQuery.padding.bottom +
+                8.w,
             left: 0,
             right: 0,
             child: Material(
@@ -623,7 +646,9 @@ class PlayPageController extends GetxController {
                       margin: EdgeInsets.symmetric(horizontal: 8.w),
                       decoration: BoxDecoration(
                         color: Color(0xffE8EFFD),
-                        boxShadow: [BoxShadow(color: Color(0xff474747).withOpacity(0.06), blurRadius: 5.w, spreadRadius: 2.w)],
+                        boxShadow: [
+                          BoxShadow(color: Color(0xff474747).withOpacity(0.06), blurRadius: 5.w, spreadRadius: 2.w)
+                        ],
                         borderRadius: BorderRadius.circular(27.w),
                       ),
                       child: Row(
@@ -637,13 +662,16 @@ class PlayPageController extends GetxController {
                               width: 36.w,
                               clipBehavior: Clip.hardEdge,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(2.w)),
-                              child: cover == null ? Image.asset(Assets.imgIconDef, fit: BoxFit.cover) : Image.memory(cover, fit: BoxFit.cover),
+                              child: cover == null
+                                  ? Image.asset(Assets.imgIconDef, fit: BoxFit.cover)
+                                  : Image.memory(cover, fit: BoxFit.cover),
                             );
                           }),
 
                           SizedBox(width: 12.w),
                           //标题
-                          Expanded(child: Obx(() => Text(nowData["title"], maxLines: 1, overflow: TextOverflow.ellipsis))),
+                          Expanded(
+                              child: Obx(() => Text(nowData["title"], maxLines: 1, overflow: TextOverflow.ellipsis))),
 
                           //按钮
                           Obx(
@@ -687,7 +715,8 @@ class PlayPageController extends GetxController {
                               child: Container(
                                 width: 32.w,
                                 height: 32.w,
-                                child: Image.asset(Assets.imgIconBarN, color: canNext.value ? Colors.black : Colors.grey),
+                                child:
+                                    Image.asset(Assets.imgIconBarN, color: canNext.value ? Colors.black : Colors.grey),
                               ),
                               onTap: () {
                                 if (!canNext.value) {
@@ -741,7 +770,8 @@ class PlayPageController extends GetxController {
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffE9F0FC), Color(0xfffafafa)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffE9F0FC), Color(0xfffafafa)]),
         ),
         child: Column(
           children: [
@@ -787,18 +817,18 @@ class PlayPageController extends GetxController {
   void showAddList() async {
     //所有歌曲歌单
     var box = await Hive.openBox(DBKey.listData);
-    var mList =
-        box.values.where((e) {
-          //筛选出歌曲歌单，不要歌词歌单
-          return e["type"] == 1;
-        }).toList();
+    var mList = box.values.where((e) {
+      //筛选出歌曲歌单，不要歌词歌单
+      return e["type"] == 1;
+    }).toList();
 
     Get.bottomSheet(
       Container(
         padding: EdgeInsets.only(top: 24.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffE9F0FC), Color(0xfffafafa)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xffE9F0FC), Color(0xfffafafa)]),
         ),
         child: Column(
           children: [
@@ -821,7 +851,11 @@ class PlayPageController extends GetxController {
                       width: 72.w,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [Icon(Icons.add, size: 14.w), SizedBox(width: 6.w), Text("New", style: TextStyle(fontSize: 12.w))],
+                        children: [
+                          Icon(Icons.add, size: 14.w),
+                          SizedBox(width: 6.w),
+                          Text("New", style: TextStyle(fontSize: 12.w))
+                        ],
                       ),
                     ),
                   ),
@@ -986,19 +1020,20 @@ class PlayPageController extends GetxController {
                   //底部view
                   Align(
                     alignment: Alignment.centerRight,
-                    child:
-                        isMusic
-                            ? Container(
-                              width: 50.w,
-                              height: 50.w,
-                              decoration: BoxDecoration(color: Color(0xff191919), borderRadius: BorderRadius.circular(25.w)),
-                            )
-                            : Container(
-                              width: 46.w,
-                              height: 46.w,
-                              margin: EdgeInsets.only(right: 6.w),
-                              decoration: BoxDecoration(color: Color(0xff141414).withOpacity(0.2), borderRadius: BorderRadius.circular(4.w)),
-                            ),
+                    child: isMusic
+                        ? Container(
+                            width: 50.w,
+                            height: 50.w,
+                            decoration:
+                                BoxDecoration(color: Color(0xff191919), borderRadius: BorderRadius.circular(25.w)),
+                          )
+                        : Container(
+                            width: 46.w,
+                            height: 46.w,
+                            margin: EdgeInsets.only(right: 6.w),
+                            decoration: BoxDecoration(
+                                color: Color(0xff141414).withOpacity(0.2), borderRadius: BorderRadius.circular(4.w)),
+                          ),
                   ),
 
                   Container(
@@ -1020,7 +1055,8 @@ class PlayPageController extends GetxController {
                 children: [
                   Text(item["title"], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.w)),
                   SizedBox(height: 12.w),
-                  Text("${childList.length} songs", style: TextStyle(fontSize: 12.w, color: Color(0xff141414).withOpacity(0.75))),
+                  Text("${childList.length} songs",
+                      style: TextStyle(fontSize: 12.w, color: Color(0xff141414).withOpacity(0.75))),
                 ],
               ),
             ),
@@ -1056,10 +1092,9 @@ class PlayPageController extends GetxController {
       newList.add(box.get(item["id"]));
     }
 
-    Map newItemData =
-        newList.where((e) {
-          return nowData["id"] == e["id"];
-        }).first;
+    Map newItemData = newList.where((e) {
+      return nowData["id"] == e["id"];
+    }).first;
     playList = newList;
     nowData.value = newItemData;
   }
