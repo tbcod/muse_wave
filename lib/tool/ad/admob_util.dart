@@ -28,12 +28,12 @@ class AdmobUtils {
 
     await MobileAds.instance.initialize();
 
-    await MobileAds.instance.setAppMuted(true);
-
     EventUtils.instance.addEvent("ad_initsuc", data: {
       "ad_source_client": "admob",
       "ad_init_time": DateTime.now().difference(bus.appLaunchTime).inMilliseconds
     });
+
+    await MobileAds.instance.setAppMuted(true);
 
     AppLog.i("admob sdk 初始化 success");
 

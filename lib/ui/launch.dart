@@ -45,10 +45,9 @@ class LaunchPageController extends GetxController {
   @override
   void onReady() async {
     AppLog.i("App开始加载");
-    bus.appLaunchTime = DateTime.now();
+    bus.appAdStartLoadTime = DateTime.now();
     countdown();
     try {
-      AdmobUtils.instance.init();
       await loadAd().timeout(Duration(seconds: _maxAppLaunchTime));
       await _userCheck();
       await showAd();
@@ -71,7 +70,7 @@ class LaunchPageController extends GetxController {
 
   Future _userCheck() async {
     if (isA && !_isCloakComplete) {
-      double diff = (DateTime.now().difference(bus.appLaunchTime)).inMilliseconds / 1000;
+      double diff = (DateTime.now().difference(bus.appAdStartLoadTime)).inMilliseconds / 1000;
       if (diff < _maxAppLaunchTime) {
         AppLog.i("等待user请求完成，已等待${diff}s");
         await Future.delayed(const Duration(milliseconds: 500));
@@ -124,10 +123,10 @@ class LaunchPageController extends GetxController {
   }
 
   Future showAd() async {
-    if (isToMain) {
-      AppLog.i("已经跳转到首页, 不显示广告");
-      return;
-    }
+    // if (isToMain) {
+    //   AppLog.i("已经跳转到首页, 不显示广告");
+    //   return;
+    // }
 
     if (isA) {
       //A面不展示冷启动广告
@@ -169,7 +168,7 @@ class LaunchPageController extends GetxController {
       Get.off(const MainPage(), routeName: "/MainPage");
     }
     EventUtils.instance
-        .addEvent("home_sh", data: {"en_time": bus.getTimeDiffNow(bus.appLaunchTime), "mode": isB ? "B" : "A"});
+        .addEvent("home_sh", data: {"en_time": bus.getTimeDiffNow(bus.appAdStartLoadTime), "mode": isB ? "B" : "A"});
     EventUtils.instance.addEvent("open_click");
   }
 }

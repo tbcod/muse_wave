@@ -7,8 +7,9 @@ class Bus {
 
   Bus._();
 
-  late DateTime appLaunchTime;
+  late DateTime appAdStartLoadTime;
 
+  late DateTime appLaunchTime;
 
   bool isAppLaunchFinish = false;
 

@@ -120,6 +120,7 @@ class DownloadUtils {
   }
 
   var _box;
+
   Future saveVideoInfo({bool updateHomeUI = true}) async {
     _box ??= await Hive.openBox(DBKey.myDownloadMusicData);
     // await box.clear();
@@ -148,7 +149,7 @@ class DownloadUtils {
       videoId = infoData["videoId"];
     }
 
-    if (station != DownloadStation.unknown) {
+    if (station != DownloadStation.unknown && !isRetry) {
       _curClickType = station;
       EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
       ToastUtil.showToast(msg: "addedDownloadQueue".tr);
@@ -255,6 +256,8 @@ class DownloadUtils {
       // allDownLoadingData[videoId]["state"] = 0;
       allDownLoadingData.refresh();
       // await saveVideoInfo(updateHomeUI: true);
+      await saveVideoInfo();
+      EventUtils.instance.addEvent("save_fail", data: {"song_id": videoId, "reason": "url is null", "message": "2"});
       return;
     }
 
@@ -281,7 +284,7 @@ class DownloadUtils {
     }
     allCancelToken[videoId] = CancelToken();
     try {
-      Dio().download(
+      await Dio().download(
         url, filePath, cancelToken: allCancelToken[videoId],
         onReceiveProgress: (int count, int total) {
           // AppLog.e("缓存$count/$total");
@@ -313,31 +316,41 @@ class DownloadUtils {
         // options: Options(headers: {"Range": "bytes=$downloadedLength-"})
       );
     } on DioException catch (e) {
+      if (CancelToken.isCancel(e)) {
+        EventUtils.instance.addEvent("download_exc",
+            data: {"song_id": videoId, "reason": "Token Cancelled", "message": "1.${e.toString()}"});
+        return;
+      }
+
       if (isRetry) {
+        EventUtils.instance.addEvent("download_exc",
+            data: {"song_id": videoId, "reason": "Http Exception, Retry finish!", "message": "1.${e.toString()}"});
+
         AppLog.e("下载失败Dio：${e.toString()}");
         ToastUtil.showToast(msg: "downloadFailed".tr);
         // EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
         EventUtils.instance.addEvent("save_fail",
             data: {"song_id": videoId, "reason": "Http Exception", "message": "1.${e.toString()}"});
-      } else {
-        AppLog.e("下载失败：${e.toString()}，开始重试");
         //删除下载文件
-        // try {
-        //   var fileName = allDownLoadingData[videoId]?["path"] ?? "";
-        //   var dic = await getApplicationDocumentsDirectory();
-        //   var path = "${dic.path}/$fileName";
-        //   if (await File(path).exists()) {
-        //     await File(path).delete();
-        //   }
-        // } catch (e) {
-        //   print(e);
-        // }
-        // allDownLoadingData.remove(videoId);
-        // allDownLoadingData.refresh();
-        // await saveVideoInfo();
+        try {
+          var fileName = allDownLoadingData[videoId]?["path"] ?? "";
+          var dic = await getApplicationDocumentsDirectory();
+          var path = "${dic.path}/$fileName";
+          if (await File(path).exists()) {
+            await File(path).delete();
+          }
+        } catch (e) {
+          print(e);
+        }
+        allDownLoadingData.remove(videoId);
+        allDownLoadingData.refresh();
+        await saveVideoInfo();
+      } else {
+        AppLog.e("下载失败，开始重试：${e.toString()}");
         EventUtils.instance.addEvent("download_exc",
             data: {"song_id": videoId, "reason": "Http Exception, Retry!", "message": "1.${e.toString()}"});
-        return download(videoId, infoData, station: station, isRetry: true, adSense: adSense, showAd: false);
+        await Future.delayed(Duration(seconds: 2));
+        return download(videoId, data, station: station, isRetry: true, adSense: adSense, showAd: false);
       }
     } catch (e) {
       AppLog.e("下载失败：${e.toString()}");
@@ -350,42 +363,11 @@ class DownloadUtils {
       // EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
       EventUtils.instance
           .addEvent("save_fail", data: {"song_id": videoId, "reason": "network error", "message": "2.${e.toString()}"});
+      // allDownLoadingData[videoId]["state"] = 0;
+      allDownLoadingData.remove(videoId);
+      allDownLoadingData.refresh();
+      saveVideoInfo();
     }
-
-    // ALDownloader.download(url,
-    //     directoryPath: dic.path,
-    //     fileName: "${Uuid().v8()}.mp4",
-    //     handlerInterface: ALDownloaderHandlerInterface(progressHandler: (p) {
-    //       AppLog.e("下载中$p");
-    //
-    //       allDownLoadingData[videoId]["progress"] = p;
-    //       allDownLoadingData.refresh();
-    //       //存本地
-    //       saveVideoInfo();
-    //     }, succeededHandler: () {
-    //       AppLog.e("下载成功");
-    //       allDownLoadingData[videoId]["state"] = 2;
-    //       allDownLoadingData.refresh();
-    //       //存本地
-    //       HistoryUtil.instance.addHistorySong(infoData);
-    //       saveVideoInfo();
-    //       EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
-    //     }, failedHandler: () {
-    //       AppLog.e("下载失败");
-    //       allDownLoadingData[videoId]["state"] = 4;
-    //       allDownLoadingData.refresh();
-    //       //存本地
-    //       saveVideoInfo();
-    //
-    //       EventUtils.instance.addEvent("save_fail",
-    //           data: {"song_id": videoId, "reason": "network error"});
-    //     }, pausedHandler: () {
-    //       AppLog.e("下载暂停");
-    //       allDownLoadingData[videoId]["state"] = 3;
-    //       allDownLoadingData.refresh();
-    //       //存本地
-    //       saveVideoInfo();
-    //     }));
   }
 
   saveNewState() async {

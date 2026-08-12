@@ -87,6 +87,8 @@ class Application extends GetxService {
       await museSp.setString("userAppUuid", userAppUuid);
     }
 
+    bus.appLaunchTime = DateTime.now();
+
     //设置语言
     var lastLangCode = museSp.getString("lastLangCode") ?? "";
     var lastLangCountryCode = museSp.getString("lastLangCountryCode") ?? "";
@@ -254,6 +256,8 @@ class Application extends GetxService {
     RemoteUtil.shareInstance.init();
 
     await Firebase.initializeApp();
+
+    AdmobUtils.instance.init();
 
     RemoteUtil.shareInstance.initFirebaseRemoteSdk();
 

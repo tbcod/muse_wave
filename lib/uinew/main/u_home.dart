@@ -992,29 +992,7 @@ class UserHome extends GetView<UserHomeController> {
                 ),
               );
             }
-
-            return Container(height: 0, color: Colors.red);
-            return SizedBox(
-              height: 200.w,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (_, i) {
-                  var childItem = data[i];
-
-                  return Column(
-                    children: [
-                      SizedBox(width: 100.w, height: 100.w, child: NetImageView(imgUrl: childItem["cover"] ?? "")),
-                      // Text(childItem["title"]),
-                      Text(childItem["subtitle"]),
-                    ],
-                  );
-                },
-                separatorBuilder: (_, i) {
-                  return SizedBox(width: 10.w);
-                },
-                itemCount: data.length,
-              ),
-            );
+            return SizedBox();
           },
         ),
       ],
