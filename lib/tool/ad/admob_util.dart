@@ -26,8 +26,21 @@ class AdmobUtils {
     EventUtils.instance.addEvent("ad_init",
         data: {"ad_source_client": "admob", "start_time": DateTime.now().difference(bus.appLaunchTime).inMilliseconds});
 
-    await MobileAds.instance.initialize();
-
+    // MobileAds.instance.disableMediationInitialization;
+    final status = await MobileAds.instance.initialize();
+//     for (final entry in status.adapterStatuses.entries) {
+//       final adapter = entry.value;
+//       debugPrint(
+//         '''
+// ========================
+// Adapter: ${entry.key}
+// State: ${adapter.state}
+// Description: ${adapter.description}
+// Latency: ${adapter.latency}
+// ========================
+// ''',
+//       );
+//     }
     EventUtils.instance.addEvent("ad_initsuc", data: {
       "ad_source_client": "admob",
       "ad_init_time": DateTime.now().difference(bus.appLaunchTime).inMilliseconds

@@ -611,7 +611,7 @@ class AdUtils {
     }
 
     if (isLoadSuc) {
-      AppLog.i("广告瀑布流请求结束，成功：$key");
+      // AppLog.i("广告瀑布流请求结束，成功：$key");
       EventUtils.instance.addEvent(
         "ad_return_succ_toal",
         data: {
@@ -639,7 +639,6 @@ class AdUtils {
 
     return isLoadSuc;
   }
-
 
   Future<bool> showAd(AdPosId adPosId,
       {required AdSense adSense,
@@ -754,6 +753,7 @@ class AdUtils {
     String source = "";
     String ad_id = "";
 
+    adIsShowing = true;
     for (var item in configList) {
       type = item["adtype"];
       source = item["adsource"];
@@ -803,6 +803,7 @@ class AdUtils {
                 onShow.onShowFail!(ad.adUnitId, e);
               }
               reason = e.message;
+              adIsShowing = false;
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             },
             onAdDismissedFullScreenContent: (ad) {
@@ -874,7 +875,11 @@ class AdUtils {
                 );
           };
           isShowAd = true;
-          await openAd?.show();
+          try {
+            await openAd?.show();
+          } catch (_) {
+            if (!isCompleter.isCompleted) isCompleter.complete(false);
+          }
           break;
         } else if (type == "interstitial") {
           InterstitialAd? interstitialAd = loadedItem["admob_ad"];
@@ -910,6 +915,7 @@ class AdUtils {
                 onShow.onShowFail!(ad.adUnitId, e);
               }
               reason = e.message;
+              adIsShowing = false;
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             },
             onAdDismissedFullScreenContent: (ad) {
@@ -978,7 +984,11 @@ class AdUtils {
                 );
           };
           isShowAd = true;
-          await interstitialAd?.show();
+          try {
+            await interstitialAd?.show();
+          } catch (_) {
+            if (!isCompleter.isCompleted) isCompleter.complete(false);
+          }
           break;
         } else if (type == "rewarded") {
           RewardedAd? rewardedAd = loadedItem["admob_ad"];
@@ -1014,6 +1024,7 @@ class AdUtils {
                 onShow.onShowFail!(ad.adUnitId, e);
               }
               reason = e.message;
+              adIsShowing = false;
               if (!isCompleter.isCompleted) isCompleter.complete(false);
             },
             onAdDismissedFullScreenContent: (ad) {
@@ -1085,11 +1096,15 @@ class AdUtils {
                 );
           };
           isShowAd = true;
-          await rewardedAd?.show(
-            onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
-              //用户看完激励广告
-            },
-          );
+          try {
+            await rewardedAd?.show(
+              onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+                //用户看完激励广告
+              },
+            );
+          } catch (_) {
+            if (!isCompleter.isCompleted) isCompleter.complete(false);
+          }
           break;
         } else if (type == 'native') {
           NativeAd? ad = loadedItem["admob_ad"];
@@ -1099,43 +1114,46 @@ class AdUtils {
               loadedAdMap[ad_id]["ad_sense"] = adSense.name;
               adIsShowing = true;
               isShowAd = true;
-              await Get.to(
-                () => FullAdmobNativePage(
-                  ad: ad,
-                  onClose: () async {
-                    EventUtils.instance.addEvent(
-                      "ad_close",
-                      data: {
-                        "ad_format": "fullnative",
-                        "ad_source_client": source,
-                        "ad_code_id": ad_id,
-                        "ad_pos_id": adPosId.name,
-                        "ad_sense": adSense.name,
-                        "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,
-                      },
-                    );
-                    if (adSense == AdSense.cold || adSense == AdSense.first) {
-                      EventUtils.instance.addEvent("open_ad_click",
-                          data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
-                    }
-                    adIsShowing = false;
-                    setShowTime();
-                    await ad.dispose();
-                    loadedAdMap.remove(ad.adUnitId);
-                    // loadAd(adPosId,
-                    //     adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
-                    if (onShow != null) {
-                      onShow.onClose!(ad.adUnitId);
-                    }
-                  },
-                ),
-                duration: Duration.zero,
-                // isScrollControlled: true,
-                // enableDrag: false,
-                // isDismissible: false,
-                // backgroundColor: Colors.black,
-                // useRootNavigator: true,
-              );
+              try {
+                await Get.to(
+                  () => FullAdmobNativePage(
+                    ad: ad,
+                    onClose: () async {
+                      EventUtils.instance.addEvent(
+                        "ad_close",
+                        data: {
+                          "ad_format": "fullnative",
+                          "ad_source_client": source,
+                          "ad_code_id": ad_id,
+                          "ad_pos_id": adPosId.name,
+                          "ad_sense": adSense.name,
+                          "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,
+                        },
+                      );
+                      if (adSense == AdSense.cold || adSense == AdSense.first) {
+                        EventUtils.instance.addEvent("open_ad_click",
+                            data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
+                      }
+                      adIsShowing = false;
+                      setShowTime();
+                      await ad.dispose();
+                      loadedAdMap.remove(ad.adUnitId);
+                      // loadAd(adPosId,
+                      //     adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
+                      if (onShow != null) {
+                        onShow.onClose!(ad.adUnitId);
+                      }
+                    },
+                  ),
+                  duration: Duration.zero,
+                  // isScrollControlled: true,
+                  // enableDrag: false,
+                  // isDismissible: false,
+                  // backgroundColor: Colors.black,
+                  // useRootNavigator: true,
+                );
+              } catch (_) {}
+              adIsShowing = false;
               if (!isCompleter.isCompleted) isCompleter.complete(true);
             }
             break;
@@ -1599,8 +1617,7 @@ class AdUtils {
       // }
     }
 
-    //没有显示广告
-    //重新加载
+    AppLog.i("showAd完成，isShowAd:$isShowAd");
     if (!isShowAd) {
       if (onShow != null) {
         onShow.onShowFail!("", AdError(-1, "", "no ad show"));
@@ -1610,7 +1627,6 @@ class AdUtils {
     }
     bool isSuc = await isCompleter.future;
     if (!isSuc) {
-      loadAd(adPosId, adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
       AppLog.e("广告显示失败:$key, reason: $reason");
       EventUtils.instance.addEvent(
         "ad_impression_fail",
@@ -1625,7 +1641,8 @@ class AdUtils {
         },
       );
     }
-
+    adIsShowing = false;
+    loadAd(adPosId, adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
     return isSuc;
   }
 }
