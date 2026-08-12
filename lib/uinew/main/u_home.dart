@@ -104,7 +104,7 @@ class UserHome extends GetView<UserHomeController> {
                   itemBuilder: (_, i) {
                     Map item = controller.netList[i];
                     List childList = item["list"] ?? [];
-
+                    // AppLog.i("home view item type:${item["type"]}, ${item["title"]}, ${childList.length}");
                     if (item.isEmpty || childList.isEmpty) {
                       return Container();
                     }
@@ -188,6 +188,7 @@ class UserHome extends GetView<UserHomeController> {
       "My_Playlist",
       "LOCKUP_CONTENT_TYPE_ALBUM",
       "LOCKUP_CONTENT_TYPE_PLAYLIST",
+      "LOCKUP_CONTENT_TYPE_VIDEO",
       "Video",
     ];
     if (!types.contains(type)) return Container();
@@ -598,7 +599,7 @@ class UserHome extends GetView<UserHomeController> {
                   itemCount: data.length,
                 ),
               );
-            } else if (type == "MUSIC_PAGE_TYPE_ALBUM") {
+            } else if (type == "MUSIC_PAGE_TYPE_ALBUM" ) {
               //专辑
               return SizedBox(
                 height: 185.w,
@@ -914,7 +915,7 @@ class UserHome extends GetView<UserHomeController> {
                   itemCount: data.length,
                 ),
               );
-            } else if (type == "Video") {
+            } else if (type == "Video" || type == "LOCKUP_CONTENT_TYPE_VIDEO") {
               //youtube的视频列表
               return SizedBox(
                 height: 185.w,
@@ -1085,7 +1086,6 @@ class UserHomeController extends GetxController with StateMixin {
     String visitorData = result.data["responseContext"]?["visitorData"] ?? "";
     if (visitorData.isNotEmpty && Get.find<Application>().visitorData.isEmpty) {
       Get.find<Application>().visitorData = visitorData;
-      // SharedPreferences sp = await SharedPreferences.getInstance();
       museSp.setString("visitorDataKey", visitorData);
     }
 
@@ -1101,8 +1101,7 @@ class UserHomeController extends GetxController with StateMixin {
 
     try {
       List bigList = result.data["contents"]?["singleColumnBrowseResultsRenderer"]["tabs"][0]?["tabRenderer"]
-              ?["content"]?["sectionListRenderer"]?["contents"] ??
-          [];
+              ?["content"]?["sectionListRenderer"]?["contents"] ?? [];
 
       var moreId = "";
       for (Map item in bigList) {
@@ -1224,10 +1223,10 @@ class UserHomeController extends GetxController with StateMixin {
 
     if (realList.isEmpty) {
       if (retry < 3) {
-        AppLog.e("music请求列表空, 重试${retry + 1}次");
+        AppLog.e("music请求列表空, 重试第${retry + 1}次");
         await bindYoutubeMusicData(source: source, retry: retry + 1);
       } else {
-        AppLog.e("music请求列表空");
+        AppLog.e("music请求列表空，请求yt");
         await bindYoutubeData();
       }
       return;

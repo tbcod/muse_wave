@@ -88,9 +88,10 @@ class FormatMyData {
             "browseId": browseId,
             "type": type,
           });
-        }else if (navigationEndpoint?["watchEndpoint"] != null) {
+        } else if (navigationEndpoint?["watchEndpoint"] != null) {
           var videoId = navigationEndpoint["watchEndpoint"]["videoId"];
-          var type = navigationEndpoint["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+          var type = navigationEndpoint["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]
+              ["watchEndpointMusicConfig"]["musicVideoType"];
           list.add({
             "title": title,
             "subtitle": subtitle,
@@ -99,7 +100,7 @@ class FormatMyData {
             "type": type,
           });
         }
-      } catch (e,s) {
+      } catch (e, s) {
         AppLog.e("解析 musicTwoRowItemRenderer 失败：${e.toString()}\n$s");
         //视频结构不一样
         // var type = item["musicTwoRowItemRenderer"]["navigationEndpoint"]["watchEndpoint"]
@@ -293,9 +294,8 @@ class FormatMyData {
     for (Map item in oldList) {
       //大标题
       List runs = item["richSectionRenderer"]?["content"]?["richShelfRenderer"]?["title"]?["runs"] ?? [];
-      if(runs.isEmpty) continue;
+      if (runs.isEmpty) continue;
       var bigTitle = runs[0]["text"] ?? "";
-
       // moreId = item["musicCarouselShelfRenderer"]?["header"]
       //                     ?["musicCarouselShelfBasicHeaderRenderer"]
       //                 ?["moreContentButton"]?["buttonRenderer"]
@@ -304,6 +304,8 @@ class FormatMyData {
       //     "";
 
       List childList = item["richSectionRenderer"]?["content"]["richShelfRenderer"]["contents"] ?? [];
+
+      AppLog.i("bigTitle:$bigTitle");
 
       List realChildList = [];
 
@@ -317,6 +319,7 @@ class FormatMyData {
         Map childItem = ci["richItemRenderer"]["content"] ?? {};
 
         if (childItem.containsKey("gridVideoRenderer")) {
+          AppLog.i("gridVideoRenderer");
           //多个视频
           //LOCKUP_CONTENT_TYPE_ALBUM
           type = "Video";
@@ -349,7 +352,7 @@ class FormatMyData {
         }
 
         if (!childItem.containsKey("lockupViewModel")) {
-          AppLog.e(childItem);
+          AppLog.e("childItem不包含lockupViewModel");
           continue;
         }
 
@@ -369,7 +372,15 @@ class FormatMyData {
         //     "";
         var childItemSubTitle = "";
 
-        List sources = childItem["lockupViewModel"]["contentImage"]["collectionThumbnailViewModel"]["primaryThumbnail"]["thumbnailViewModel"]["image"]["sources"] ?? [];
+        List sources = [];
+        try {
+          sources = childItem["lockupViewModel"]?["contentImage"]?["collectionThumbnailViewModel"]?["primaryThumbnail"]
+                  ?["thumbnailViewModel"]?["image"]?["sources"] ??
+              childItem["lockupViewModel"]?["contentImage"]?["thumbnailViewModel"]?["image"]?["sources"] ??
+              [];
+        } catch (e) {
+          AppLog.e("e:$e");
+        }
         if (sources.isEmpty) {
           AppLog.e("图片数据结构发生了变化：$childItem");
           continue;
@@ -379,14 +390,18 @@ class FormatMyData {
         var playlistId = childItem["lockupViewModel"]?["contentId"] ?? "";
 
         if (type.isNotEmpty) {
-          realChildList.add({
-            "title": childItemTitle,
-            "subtitle": childItemSubTitle,
-            "cover": childItemCover,
-            "type": type,
-            "browseId": "",
-            "playlistId": playlistId,
-          });
+          if(type == "LOCKUP_CONTENT_TYPE_VIDEO"){
+            realChildList.add({
+              "title": childItemTitle,
+              "subtitle": childItemSubTitle,
+              "cover": childItemCover,
+              "type": type,
+              "videoId": playlistId,
+            });
+          }else{
+
+          }
+
         }
       }
 

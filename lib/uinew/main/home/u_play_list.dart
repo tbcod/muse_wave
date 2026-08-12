@@ -92,61 +92,63 @@ class UserPlayListInfo extends GetView<UserPlayListInfoController> {
                   ],
                 ),
                 SliverToBoxAdapter(
-                  child: Container(
-                    height: 142.w,
-                    width: double.infinity,
-                    color: Color(0xfffafafa),
-                    padding: EdgeInsets.symmetric(horizontal: 12.w),
-                    child: Row(
-                      children: [
-                        //封面
-                        Container(
+                  child: controller.info["cover"] == null
+                      ? Center()
+                      : Container(
                           height: 142.w,
-                          width: 172.w,
-                          child: Stack(
+                          width: double.infinity,
+                          color: Color(0xfffafafa),
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: Row(
                             children: [
-                              //底部
-                              Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Container(
-                                      width: 128.w,
-                                      height: 128.w,
-                                      margin: EdgeInsets.only(right: 20.w),
-                                      decoration: BoxDecoration(
-                                          color: Color(0xffE0E0EF), borderRadius: BorderRadius.circular(8.w)))),
-
                               //封面
                               Container(
-                                  clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.w)),
-                                  child: NetImageView(
-                                      imgUrl: controller.info["cover"],
-                                      width: 142.w,
-                                      height: 142.w,
-                                      fit: BoxFit.cover,
-                                      errorAsset: Assets.oimgIconDItem)),
+                                height: 142.w,
+                                width: 172.w,
+                                child: Stack(
+                                  children: [
+                                    //底部
+                                    Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Container(
+                                            width: 128.w,
+                                            height: 128.w,
+                                            margin: EdgeInsets.only(right: 20.w),
+                                            decoration: BoxDecoration(
+                                                color: Color(0xffE0E0EF), borderRadius: BorderRadius.circular(8.w)))),
+
+                                    //封面
+                                    Container(
+                                        clipBehavior: Clip.hardEdge,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.w)),
+                                        child: NetImageView(
+                                            imgUrl: controller.info["cover"],
+                                            width: 142.w,
+                                            height: 142.w,
+                                            fit: BoxFit.cover,
+                                            errorAsset: Assets.oimgIconDItem)),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(controller.info["title"],
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 18.w, fontWeight: FontWeight.w500)),
+                                    SizedBox(height: 12.w),
+                                    Text(controller.info["songNumStr"],
+                                        style: TextStyle(fontSize: 12.w, color: Color(0xff121212))),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        SizedBox(width: 10.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(controller.info["title"],
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontSize: 18.w, fontWeight: FontWeight.w500)),
-                              SizedBox(height: 12.w),
-                              Text(controller.info["songNumStr"],
-                                  style: TextStyle(fontSize: 12.w, color: Color(0xff121212))),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
                 SliverPersistentHeader(
                   pinned: true,
@@ -1022,54 +1024,98 @@ class UserPlayListInfoController extends GetxController with StateMixin {
       //   // "browseId": browseId
       // };
 
-      //排行榜数据不一样
-      var cover = result
-          .data["header"]["pageHeaderRenderer"]["content"]["pageHeaderViewModel"]["heroImage"]
-              ["contentPreviewImageViewModel"]["image"]["sources"]
-          .last["url"];
-      var title = result.data["header"]["pageHeaderRenderer"]["pageTitle"];
+      try {
+        //排行榜数据不一样
+        var cover = result
+            .data["header"]?["pageHeaderRenderer"]["content"]?["pageHeaderViewModel"]["heroImage"]
+                ["contentPreviewImageViewModel"]["image"]["sources"]
+            .last["url"];
+        var title = result.data["header"]?["pageHeaderRenderer"]?["pageTitle"];
 
-      String subtitle = result.data["header"]["pageHeaderRenderer"]["content"]["pageHeaderViewModel"]["metadata"]
-          ["contentMetadataViewModel"]["metadataRows"][1]["metadataParts"][1]["text"]["content"];
+        String subtitle = result.data["header"]?["pageHeaderRenderer"]["content"]?["pageHeaderViewModel"]["metadata"]
+                ["contentMetadataViewModel"]["metadataRows"][1]["metadataParts"][1]["text"]["content"] ??
+            "";
 
-      info = {
-        "cover": cover,
-        "title": title,
-        "subtitle": subtitle,
-        // "description": description,
-        "songNumStr": subtitle,
-        // "browseId":"",
-        "playlistId": playlistId,
-        // "yearStr": yearStr,
-        // "browseId": browseId
-      };
+        info = {
+          "cover": cover,
+          "title": title,
+          "subtitle": subtitle,
+          // "description": description,
+          "songNumStr": subtitle,
+          // "browseId":"",
+          "playlistId": playlistId,
+          // "yearStr": yearStr,
+          // "browseId": browseId
+        };
+      } catch (e) {
+        AppLog.e(e);
+        change("", status: RxStatus.empty());
+        return;
+      }
     }
 
     var oldList = [];
     var newList = [];
+    // oldList = result.data["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+    // ["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"]?[0]
+    // ["playlistVideoListRenderer"]?["contents"] ??
+    try {
+      oldList = result.data["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                  ["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"]?[0]
+              ["playlistVideoListRenderer"]?["contents"] ??
+          [];
+      for (var item in oldList) {
+        try {
+          var cover = "";
+          var title = "";
+          var subtitle = "";
+          var timeStr = "";
+          var videoId = "";
+          title = item["playlistVideoRenderer"]["title"]["runs"][0]["text"];
+          subtitle = item["playlistVideoRenderer"]["shortBylineText"]["runs"][0]["text"];
+          cover = item["playlistVideoRenderer"]["thumbnail"]["thumbnails"][0]["url"] ?? [];
+          timeStr = item["playlistVideoRenderer"]["lengthText"]["simpleText"];
+          videoId = item["playlistVideoRenderer"]["videoId"];
 
-    oldList = result.data["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
-                ["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"][0]
-            ["playlistVideoListRenderer"]["contents"] ??
-        [];
+          newList.add({"cover": cover, "title": title, "subtitle": subtitle, "timeStr": timeStr, "videoId": videoId});
+        } catch (e) {
+          print(e);
+          AppLog.e(item);
+        }
+      }
+    } catch (e) {
+      AppLog.e(e.toString());
+    }
 
-    for (var item in oldList) {
+    if (oldList.isEmpty) {
       try {
-        var cover = "";
-        var title = "";
-        var subtitle = "";
-        var timeStr = "";
-        var videoId = "";
-        title = item["playlistVideoRenderer"]["title"]["runs"][0]["text"];
-        subtitle = item["playlistVideoRenderer"]["shortBylineText"]["runs"][0]["text"];
-        cover = item["playlistVideoRenderer"]["thumbnail"]["thumbnails"][0]["url"] ?? [];
-        timeStr = item["playlistVideoRenderer"]["lengthText"]["simpleText"];
-        videoId = item["playlistVideoRenderer"]["videoId"];
+        oldList = result.data["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                ["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"] ??
+            [];
+        for (var item in oldList) {
+          try {
+            var cover = "";
+            var title = "";
+            var subtitle = "";
+            var timeStr = "";
+            var videoId = "";
+            final lockupMetadataViewModel = item["lockupViewModel"]?["metadata"]?["lockupMetadataViewModel"];
+            title = lockupMetadataViewModel["title"]["content"];
+            subtitle = title;
+            cover = lockupMetadataViewModel["image"]["decoratedAvatarViewModel"]["avatar"]?["avatarViewModel"]?["image"]
+                    ?["sources"][0]?["url"] ??
+                [];
+            // timeStr = item["playlistVideoRenderer"]["lengthText"]["simpleText"];
+            videoId = item["lockupViewModel"]?["contentId"];
 
-        newList.add({"cover": cover, "title": title, "subtitle": subtitle, "timeStr": timeStr, "videoId": videoId});
+            newList.add({"cover": cover, "title": title, "subtitle": subtitle, "timeStr": timeStr, "videoId": videoId});
+          } catch (e) {
+            AppLog.e(e);
+            // AppLog.e(item);
+          }
+        }
       } catch (e) {
-        print(e);
-        AppLog.e(item);
+        AppLog.e(e.toString());
       }
     }
 

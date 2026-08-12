@@ -1518,9 +1518,10 @@ class UserPlayInfoController extends GetxController {
         // }
 
         if (nowPlayUrl.isEmpty) {
-          AppLog.e("获取url失败: ${result.data}");
 
           final reason = result.data?["playabilityStatus"]?["reason"];
+          AppLog.e("获取url失败，reason：$reason");
+
           EventUtils.instance.addEvent(
             "play_num",
             data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]},

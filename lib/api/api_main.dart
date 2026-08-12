@@ -105,7 +105,7 @@ class ApiMain extends BaseApi {
         await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: header);
     if (result.code == HttpCode.success) {
       //请求成功
-      // AppLog.i("请求首页数据成功: $url, header: $header, param：$body");
+      AppLog.i("请求首页数据成功: $url, header: $header, param：$body");
 
       if (nextData == null) {
         EventUtils.instance.addEvent("source_get");
@@ -169,7 +169,11 @@ class ApiMain extends BaseApi {
     //   "videoId": videoId
     // };
 
-    AppLog.i("request:$url");
+    // body["context"]["client"]["gl"] = _gl;
+    // body["context"]["client"]["hl"] = _hl;
+
+
+    // AppLog.i("request:$url，body:$body");
     BaseModel result =
         await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
 
@@ -516,7 +520,9 @@ class ApiMain extends BaseApi {
   }
 
   String get _hl {
-    return MyTranslations.locale.languageCode;
+    String hl = MyTranslations.locale.languageCode;
+    // if(hl == "zh") return "en";
+    return hl;
   }
 
   String get _gl {
