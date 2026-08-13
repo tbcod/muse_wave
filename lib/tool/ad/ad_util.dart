@@ -151,7 +151,7 @@ class AdUtils {
     }
     EventUtils.instance.addEvent("ad_request_total", data: {"ad_pos_id": adPosId.name});
     DateTime requestStartTime = DateTime.now();
-
+ 
     bool isLoadSuc = false;
     String ad_id = "";
     String type = "";
@@ -725,6 +725,11 @@ class AdUtils {
       if (onShow != null) {
         onShow.onShowFail!("", AdError(-1, "", "no network"));
       }
+      EventUtils.instance.addEvent("no_connectivity", data: {
+        "ad_pos_id": key,
+        "ad_sense": adSense.name,
+        "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name
+      });
       return false;
     }
 
@@ -761,6 +766,25 @@ class AdUtils {
 
       if (!loadedAdMap.containsKey(ad_id)) {
         //没有加载跳过
+        continue;
+      }
+
+      int timeMs = loadedAdMap[ad_id]["timeMs"] ?? 0;
+      int time = adPosId == AdPosId.open ? 1300 : 55; //分钟
+      if (timeMs < DateTime.now().subtract(Duration(minutes: time)).millisecondsSinceEpoch) {
+        //已过期,删除广告重新加载
+        //销毁广告后删除
+        // admob广告先销毁再删除
+        if (ad_id.startsWith("ca-app-pub")) {
+          final adView = loadedAdMap[ad_id]["admob_ad"];
+          if (adView is NativeAd) {
+            adView.dispose();
+          } else if (adView is AdWithoutView) {
+            adView.dispose();
+          }
+        }
+        loadedAdMap.remove(ad_id);
+        reason = "ad_expired";
         continue;
       }
 
