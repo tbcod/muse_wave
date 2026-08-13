@@ -151,7 +151,7 @@ class AdUtils {
     }
     EventUtils.instance.addEvent("ad_request_total", data: {"ad_pos_id": adPosId.name});
     DateTime requestStartTime = DateTime.now();
- 
+
     bool isLoadSuc = false;
     String ad_id = "";
     String type = "";

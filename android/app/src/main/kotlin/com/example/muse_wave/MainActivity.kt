@@ -7,6 +7,7 @@ import com.facebook.appevents.AppEventsLogger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin
+import android.app.ForegroundServiceStartNotAllowedException
 import android.os.Bundle
 import android.util.Log
 import com.example.muse_wave.MuseNativePageAd
@@ -60,6 +61,11 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
             result.success(true)
         } else if (call.method.equals("startSearchNotificationBarService")) {
             Log.i("MuseAndroid", "startSearchNotificationBarService")
+            if (!isAppForeground()) {
+                Log.w("MuseAndroid", "Skip startSearchNotificationBarService: app is background")
+                result.success(null)
+                return
+            }
             try {
                 val intent = Intent(this, MuseForegroundService::class.java)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -67,8 +73,10 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
                 } else {
                     startService(intent)
                 }
+            } catch (e: ForegroundServiceStartNotAllowedException) {
+                Log.e("MuseAndroid", "Foreground service start not allowed: ${e.message}")
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("MuseAndroid", "Failed to start search foreground service", e)
             }
             result.success(null)
         }else if (call.method.equals("facebookLogPurchase")) {

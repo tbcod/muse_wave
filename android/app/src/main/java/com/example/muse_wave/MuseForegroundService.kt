@@ -37,7 +37,17 @@ class MuseForegroundService : Service() {
         // 可以在这里更新通知
 //        updateNotification()
         val notification = buildNotification()
-        startForeground(MuseSearchBar.SEARCH_BAR_FOREGROUND_ID, notification)
+        try {
+            startForeground(MuseSearchBar.SEARCH_BAR_FOREGROUND_ID, notification)
+        } catch (e: ForegroundServiceStartNotAllowedException) {
+            Log.e("MuseAndroid", "startForeground not allowed: ${e.message}")
+            stopSelfResult(startId)
+            return START_NOT_STICKY
+        } catch (e: Exception) {
+            Log.e("MuseAndroid", "startForeground failed", e)
+            stopSelfResult(startId)
+            return START_NOT_STICKY
+        }
         return START_STICKY
     }
 
