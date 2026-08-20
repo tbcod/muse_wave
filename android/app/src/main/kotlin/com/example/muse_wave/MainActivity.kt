@@ -10,7 +10,7 @@ import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin
 import android.app.ForegroundServiceStartNotAllowedException
 import android.os.Bundle
 import android.util.Log
-import com.example.muse_wave.MuseNativePageAd
+//import com.example.muse_wave.MuseNativePageAd
 import com.example.muse_wave.MuseNativeAdmobAd
 import com.example.muse_wave.MuseSearchBar
 import android.content.ServiceConnection
@@ -42,11 +42,11 @@ class MainActivity : AudioServiceActivity(), MethodChannel.MethodCallHandler {
             "admob_full_native",
             MuseNativeAdmobAd(applicationContext)
         )
-        GoogleMobileAdsPlugin.registerNativeAdFactory(
-            flutterEngine,
-            "admob_page_native",
-            MuseNativePageAd(applicationContext)
-        )
+//        GoogleMobileAdsPlugin.registerNativeAdFactory(
+//            flutterEngine,
+//            "admob_page_native",
+//            MuseNativePageAd(applicationContext)
+//        )
         handleIntent(intent)
     }
 

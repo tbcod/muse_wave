@@ -119,7 +119,7 @@ class ApiMain extends BaseApi {
     var url = "https://music.youtube.com/youtubei/v1/player";
     // var url = "https://www.youtube.com/youtubei/v1/player";
 
-    initFirebaseData();
+    // initFirebaseData();
 
     if (blackVideoIds.split(";").contains(videoId)) {
       //在黑名单内，不允许下载、播放、缓存等
@@ -129,25 +129,15 @@ class ApiMain extends BaseApi {
       return BaseModel(code: -1, message: "playCopyrightStr".tr);
     }
 
-    // Map<String, dynamic> body = {
-    //   "context": {
-    //     "client": {
-    //       'clientName': 'ANDROID_VR',
-    //       'clientVersion': '1.56.21',
-    //     }
-    //   },
-    //   "videoId": videoId,
-    // };
-
     Map<String, dynamic> body = Map.of(playJsonData);
     body["videoId"] = videoId;
-
     // AppLog.i("request:$url,$body");
     BaseModel result =
         await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
 
     //判断是否有链接
-    String videoUrl = result.data?["streamingData"]?["formats"]?.first?["url"] ?? "";
+    List formats = result.data?["streamingData"]?["formats"] ?? [];
+    String videoUrl = formats.firstOrNull?["url"] ?? "";
     if ((result.code != HttpCode.success) || videoUrl.isEmpty) {
       return getVideoInfoYoutube(videoId);
     }
@@ -159,20 +149,8 @@ class ApiMain extends BaseApi {
 
     Map<String, dynamic> body = Map.of(playJsonData);
     body["videoId"] = videoId;
-    // Map<String, dynamic> body = {
-    //   "context": {
-    //     "client": {
-    //       'clientName': 'ANDROID_VR',
-    //       'clientVersion': '1.56.21',
-    //     }
-    //   },
-    //   "videoId": videoId
-    // };
-
     // body["context"]["client"]["gl"] = _gl;
     // body["context"]["client"]["hl"] = _hl;
-
-
     // AppLog.i("request:$url，body:$body");
     BaseModel result =
         await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);

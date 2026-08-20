@@ -22,12 +22,13 @@ class FullAdmobNativePage extends StatefulWidget {
 }
 
 class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
-  int maxSec = 0;
-  final _curSec = 0.obs;
-  Timer? _timer;
-  bool _isDarkMode = false;
-  StreamSubscription? _streamSubscription;
-  double closeBtnSize = 22;
+  // int maxSec = 0;
+  // final _curSec = 0.obs;
+  // Timer? _timer;
+  final bool _isDarkMode = false;
+
+  // StreamSubscription? _streamSubscription;
+  double closeBtnSize = 44;
 
   late NativeAd nativeAd;
 
@@ -36,48 +37,49 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
   @override
   void initState() {
     nativeAd = widget.ad;
-    maxSec = RemoteUtil.shareInstance.adNativeCountDown;
-    closeBtnSize = 1.0 * RemoteUtil.shareInstance.adNativeBtnSize;
-    _isDarkMode = true;
-    if (maxSec == 0) {
-      _curSec.value = -1;
-      _showCloseBtn();
-    } else {
-      _curSec.value = maxSec;
-      _timer?.cancel();
-      _timer = Timer.periodic(const Duration(seconds: 1), (t) {
-        _curSec.value = _curSec.value - 1;
-        if (_curSec.value < 0) {
-          _curSec.value = -1;
-          _timer?.cancel();
-          _timer = null;
-          _showCloseBtn();
-        }
-      });
-    }
-
-    _streamSubscription = AdUtils.instance.fullNativeAdClicked.listen((val) {
-      _closeType.value = CloseType.normal;
-      _curSec.value = -1;
-    });
+    // _closeType.value = CloseType.normal;
+    // maxSec = RemoteUtil.shareInstance.adNativeCountDown;
+    // closeBtnSize = 1.0 * RemoteUtil.shareInstance.adNativeBtnSize;
+    // _isDarkMode = true;
+    // if (maxSec == 0) {
+    //   _curSec.value = -1;
+    //   _showCloseBtn();
+    // } else {
+    //   _curSec.value = maxSec;
+    //   _timer?.cancel();
+    //   _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+    //     _curSec.value = _curSec.value - 1;
+    //     if (_curSec.value < 0) {
+    //       _curSec.value = -1;
+    //       _timer?.cancel();
+    //       _timer = null;
+    //       _showCloseBtn();
+    //     }
+    //   });
+    // }
+    //
+    // _streamSubscription = AdUtils.instance.fullNativeAdClicked.listen((val) {
+    //   _closeType.value = CloseType.normal;
+    //   _curSec.value = -1;
+    // });
     super.initState();
   }
 
-  _showCloseBtn() {
-    if (RemoteUtil.shareInstance.adNativeScreenClick == 0) {
-      _closeType.value = CloseType.normal;
-    } else {
-      int rate = RemoteUtil.shareInstance.adNativeScreenClick;
-      if (rate >= 100) {
-        _closeType.value = CloseType.disable;
-      } else {
-        final random = Random().nextInt(100);
-        bool result = random < rate;
-        AppLog.i("random=$random,rate=$rate, 跳转=$result");
-        _closeType.value = result ? CloseType.disable : CloseType.normal;
-      }
-    }
-  }
+  // _showCloseBtn() {
+  //   if (RemoteUtil.shareInstance.adNativeScreenClick == 0) {
+  //     _closeType.value = CloseType.normal;
+  //   } else {
+  //     int rate = RemoteUtil.shareInstance.adNativeScreenClick;
+  //     if (rate >= 100) {
+  //       _closeType.value = CloseType.disable;
+  //     } else {
+  //       final random = Random().nextInt(100);
+  //       bool result = random < rate;
+  //       AppLog.i("random=$random,rate=$rate, 跳转=$result");
+  //       _closeType.value = result ? CloseType.disable : CloseType.normal;
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -102,94 +104,132 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
                 top: 16,
                 child: StatefulBuilder(
                   builder: (context, a) {
-                    return Listener(
-                      onPointerDown: (e) {
-                        AppLog.i("广告被点击了");
-                        _closeType.value = CloseType.normal;
-                      },
-                      child: SizedBox(
-                        height: 620,
-                        child: Builder(
-                          builder: (_) {
-                            try {
-                              return AdWidget(ad: widget.ad);
-                            } catch (e) {
-                              AppLog.e("AdWidget报错了：${e.toString()}");
-                              _closeType.value = CloseType.normal;
-                              return const SizedBox.shrink();
-                            }
-                          },
-                        ),
+                    return SizedBox(
+                      height: 620,
+                      child: Builder(
+                        builder: (_) {
+                          try {
+                            return AdWidget(ad: widget.ad);
+                          } catch (e) {
+                            AppLog.e("AdWidget报错了：${e.toString()}");
+                            _closeType.value = CloseType.normal;
+                            return const SizedBox.shrink();
+                          }
+                        },
                       ),
                     );
+                    // return Listener(
+                    //   onPointerDown: (e) {
+                    //     AppLog.i("广告被点击了");
+                    //     _closeType.value = CloseType.normal;
+                    //   },
+                    //   child: SizedBox(
+                    //     height: 620,
+                    //     child: Builder(
+                    //       builder: (_) {
+                    //         try {
+                    //           return AdWidget(ad: widget.ad);
+                    //         } catch (e) {
+                    //           AppLog.e("AdWidget报错了：${e.toString()}");
+                    //           _closeType.value = CloseType.normal;
+                    //           return const SizedBox.shrink();
+                    //         }
+                    //       },
+                    //     ),
+                    //   ),
+                    // );
                   },
                 ),
               ),
-              Obx(() {
-                return Visibility(
-                  visible: _curSec.value >= 0,
-                  child: Positioned(
-                    right: 20,
-                    top: 24,
+              Positioned(
+                left: 24,
+                top: 28,
+                child: GestureDetector(
+                  onTap: () {
+                    AppLog.i("关闭点击广告");
+                    Get.back();
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    width: closeBtnSize,
+                    height: closeBtnSize,
+                    color: Colors.transparent,
+                    alignment: Alignment(0, 0),
                     child: Container(
-                      alignment: Alignment.center,
-                      width: 24,
-                      height: 24,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CircularProgressIndicator(
-                            strokeWidth: 1.5,
-                            value: 1 - _curSec.value / maxSec,
-                            backgroundColor: _isDarkMode ? Colors.white24 : Colors.black12,
-                            valueColor: AlwaysStoppedAnimation(_isDarkMode ? Colors.white : Colors.black45),
-                          ),
-                          Text("${max(_curSec.value, 0)}s",
-                              style: const TextStyle(fontSize: 10, color: Color(0xffbfbfbf))),
-                        ],
+                      decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(14)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Icon(Icons.close_rounded, size: 24, color: Colors.black38),
                       ),
                     ),
                   ),
-                );
-              }),
-              Obx(() {
-                return Positioned(
-                  left: 24,
-                  top: 28,
-                  child: Stack(
-                    alignment: Alignment(0, 0),
-                    children: [
-                      IgnorePointer(
-                        ignoring: true,
-                        child: Container(
-                          decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(12)),
-                          child: Padding(
-                              padding: EdgeInsets.all(2),
-                              child: Icon(Icons.close_rounded, size: 20, color: Colors.black38)),
-                        ),
-                      ),
-                      _closeType.value == CloseType.disable
-                          ? SizedBox.shrink()
-                          : GestureDetector(
-                              onTap: () {
-                                AppLog.i("关闭点击广告");
-                                // AppLog.i("关闭点击广告2 ${Get.currentRoute}, ${Get.previousRoute}, isBottomSheet:${Get.routing.isBottomSheet}, removed:${Get.routing.removed}");
-                                Get.back();
-                                if (Get.previousRoute == "LaunchLoad") {
-                                  Get.back();
-                                }
-                              },
-                              behavior: HitTestBehavior.opaque,
-                              child: Container(
-                                width: closeBtnSize,
-                                height: closeBtnSize,
-                                color: Colors.transparent,
-                              ),
-                            ),
-                    ],
-                  ),
-                );
-              }),
+                ),
+              ),
+              // Obx(() {
+              //   return Visibility(
+              //     visible: _curSec.value >= 0,
+              //     child: Positioned(
+              //       right: 20,
+              //       top: 24,
+              //       child: Container(
+              //         alignment: Alignment.center,
+              //         width: 24,
+              //         height: 24,
+              //         child: Stack(
+              //           alignment: Alignment.center,
+              //           children: [
+              //             CircularProgressIndicator(
+              //               strokeWidth: 1.5,
+              //               value: 1 - _curSec.value / maxSec,
+              //               backgroundColor: _isDarkMode ? Colors.white24 : Colors.black12,
+              //               valueColor: AlwaysStoppedAnimation(_isDarkMode ? Colors.white : Colors.black45),
+              //             ),
+              //             Text("${max(_curSec.value, 0)}s",
+              //                 style: const TextStyle(fontSize: 10, color: Color(0xffbfbfbf))),
+              //           ],
+              //         ),
+              //       ),
+              //     ),
+              //   );
+              // }),
+              // Obx(() {
+              //   return Positioned(
+              //     left: 24,
+              //     top: 28,
+              //     child: Stack(
+              //       alignment: Alignment(0, 0),
+              //       children: [
+              //         IgnorePointer(
+              //           ignoring: true,
+              //           child: Container(
+              //             decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(12)),
+              //             child: Padding(
+              //                 padding: EdgeInsets.all(2),
+              //                 child: Icon(Icons.close_rounded, size: 20, color: Colors.black38)),
+              //           ),
+              //         ),
+              //         _closeType.value == CloseType.disable
+              //             ? SizedBox.shrink()
+              //             : GestureDetector(
+              //                 onTap: () {
+              //                   AppLog.i("关闭点击广告");
+              //                   // AppLog.i("关闭点击广告2 ${Get.currentRoute}, ${Get.previousRoute}, isBottomSheet:${Get.routing.isBottomSheet}, removed:${Get.routing.removed}");
+              //                   Get.back();
+              //                   if (Get.previousRoute == "LaunchLoad") {
+              //                     Get.back();
+              //                   }
+              //                 },
+              //                 behavior: HitTestBehavior.opaque,
+              //                 child: Container(
+              //                   width: closeBtnSize,
+              //                   height: closeBtnSize,
+              //                   color: Colors.transparent,
+              //                 ),
+              //               ),
+              //       ],
+              //     ),
+              //   );
+              // }),
             ],
           ),
         ),
@@ -200,10 +240,10 @@ class _FullAdmobNativePageState extends State<FullAdmobNativePage> {
   @override
   Future<void> dispose() async {
     widget.onClose.call();
-    _streamSubscription?.cancel();
-    _streamSubscription = null;
-    _timer?.cancel();
-    _timer = null;
+    // _streamSubscription?.cancel();
+    // _streamSubscription = null;
+    // _timer?.cancel();
+    // _timer = null;
     AdUtils.instance.adIsShowing = false;
     super.dispose();
   }

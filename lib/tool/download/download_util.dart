@@ -322,15 +322,19 @@ class DownloadUtils {
         return;
       }
 
-      if (isRetry) {
-        EventUtils.instance.addEvent("download_exc",
-            data: {"song_id": videoId, "reason": "Http Exception, Retry finish!", "message": "1.${e.toString()}"});
+      EventUtils.instance.addEvent("download_exc",
+          data: {"song_id": videoId, "reason": "${e.response?.statusCode ?? "DioException"}", "message": "2.${e.toString()}"});
 
+      if (isRetry) {
         AppLog.e("下载失败Dio：${e.toString()}");
         ToastUtil.showToast(msg: "downloadFailed".tr);
         // EventUtils.instance.addEvent("save_click", data: {"station": station.name, "song_id": videoId});
-        EventUtils.instance.addEvent("save_fail",
-            data: {"song_id": videoId, "reason": "Http Exception", "message": "1.${e.toString()}"});
+        if (e.response?.statusCode == 403) {
+          EventUtils.instance.addEvent("save_succ", data: {"song_id": videoId});
+        } else {
+          EventUtils.instance.addEvent("save_fail",
+              data: {"song_id": videoId, "reason": "Http Exception", "message": "1.${e.toString()}"});
+        }
         //删除下载文件
         try {
           var fileName = allDownLoadingData[videoId]?["path"] ?? "";

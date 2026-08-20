@@ -136,20 +136,20 @@ class MuseNativeAdmobAd(private val context: Context) : GoogleMobileAdsPlugin.Na
         adView.callToActionView = actionButton
         container.addView(actionButton)
 
-        val priceV = TextView(context).apply {
-            text = nativeAd.price
-            gravity = Gravity.CENTER
-            textSize = 18f
-            maxLines = 1
-            layoutParams = FrameLayout.LayoutParams(
-                dpToPx(48),
-                dpToPx(48)
-            )
-            setTextColor(Color.TRANSPARENT)
-//            setBackgroundColor(Color.RED)
-        }
-        adView.priceView = priceV
-        adView.addView(priceV)
+//        val priceV = TextView(context).apply {
+//            text = nativeAd.price
+//            gravity = Gravity.CENTER
+//            textSize = 18f
+//            maxLines = 1
+//            layoutParams = FrameLayout.LayoutParams(
+//                dpToPx(48),
+//                dpToPx(48)
+//            )
+//            setTextColor(Color.TRANSPARENT)
+////            setBackgroundColor(Color.RED)
+//        }
+//        adView.priceView = priceV
+//        adView.addView(priceV)
         adView.setNativeAd(nativeAd)
         return adView
     }

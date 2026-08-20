@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
+import 'package:muse_wave/api/api_main.dart';
 import 'package:muse_wave/muse_config.dart';
 import 'package:muse_wave/static/data_config.dart';
 import 'package:muse_wave/tool/log.dart';
@@ -36,25 +37,22 @@ class RemoteUtil {
   String _adJsonAnd = "";
   String _adJsonRef = "";
 
-  String _bannerClickbait = "";
+  // String _bannerClickbait = "";
+  //
+  // String _pageNativeClickbait = "";
 
-  String _pageNativeClickbait = "";
-
-
-
-  // late SharedPreferences isp;
 
   String _listenNowRecom = "";
 
-  String _openAdStr = "";
-
+  // String _openAdStr = "";
+  //
   String _homeWebParams = "";
 
   String _referParams = ""; //包含字段认定为买量用户，未包含该字段则认定为非买量用户；
 
   int _rewardVideoCd = 0;
 
-  int _adNativeBtnSize = 0;//关闭按钮尺寸
+  // int _adNativeBtnSize = 0;//关闭按钮尺寸
 
   bool isInitSuc = false;
 
@@ -64,13 +62,13 @@ class RemoteUtil {
 
     _adJsonRef = museSp.getString(mmAdJsonRefKey) ?? "";
 
-    _bannerClickbait = museSp.getString(mmFullClickbait) ?? "";
-
-    _pageNativeClickbait = museSp.getString(mmPageNativeAdClickbait) ?? "";
+    // _bannerClickbait = museSp.getString(mmFullClickbait) ?? "";
+    //
+    // _pageNativeClickbait = museSp.getString(mmPageNativeAdClickbait) ?? "";
 
     _listenNowRecom = museSp.getString(museSongRecommonedKey) ?? "";
 
-    _openAdStr = museSp.getString(mmOpenAd) ?? "";
+    // _openAdStr = museSp.getString(mmOpenAd) ?? "";
 
     _homeWebParams = museSp.getString(mmHomeWebParams) ?? "";
 
@@ -78,7 +76,7 @@ class RemoteUtil {
 
     _rewardVideoCd = museSp.getInt(mmSetRewardVideoCd, def: 30);
 
-    _adNativeBtnSize = museSp.getInt(mmAdNativeBtnSize, def: 22);
+    // _adNativeBtnSize = museSp.getInt(mmAdNativeBtnSize, def: 22);
   }
 
   Future<void> initFirebaseRemoteSdk() async {
@@ -99,7 +97,7 @@ class RemoteUtil {
           }
         });
         isInitSuc = true;
-      } catch (e, s) {
+      } catch (e) {
         EventUtils.instance.addEvent("firebase_remote_fail", data: {"reason": e.toString(), "code_type": 2});
         AppLog.e("Remote Config error: $e");
       }
@@ -139,6 +137,7 @@ class RemoteUtil {
       _adJsonRef = adJsonRef;
     }
 
+    ApiMain.instance.initFirebaseData();
     // //使用json
     // var jsonString = FirebaseRemoteConfig.instance.getString("ad_json_and");
     // try {
@@ -154,25 +153,25 @@ class RemoteUtil {
     //   AppLog.e("Remote Config error: $e");
     // }
 
-    String bannerClickbait = FirebaseRemoteConfig.instance.getString("NVfull_Clickbait");
-    if (bannerClickbait.isNotEmpty) {
-      museSp.setString(mmFullClickbait, bannerClickbait);
-      _bannerClickbait = bannerClickbait;
-    }
-
-    String pageNativeClickbait = FirebaseRemoteConfig.instance.getString("NVPage_Clickbait");
-    if (pageNativeClickbait.isNotEmpty) {
-      museSp.setString(mmPageNativeAdClickbait, pageNativeClickbait);
-      _pageNativeClickbait = pageNativeClickbait;
-    }
+    // String bannerClickbait = FirebaseRemoteConfig.instance.getString("NVfull_Clickbait");
+    // if (bannerClickbait.isNotEmpty) {
+    //   museSp.setString(mmFullClickbait, bannerClickbait);
+    //   _bannerClickbait = bannerClickbait;
+    // }
+    //
+    // String pageNativeClickbait = FirebaseRemoteConfig.instance.getString("NVPage_Clickbait");
+    // if (pageNativeClickbait.isNotEmpty) {
+    //   museSp.setString(mmPageNativeAdClickbait, pageNativeClickbait);
+    //   _pageNativeClickbait = pageNativeClickbait;
+    // }
 
     String listenNowSongs = FirebaseRemoteConfig.instance.getString("muse_song_recom");
     museSp.setString(museSongRecommonedKey, listenNowSongs);
     _listenNowRecom = listenNowSongs;
 
-    String openAdStr = FirebaseRemoteConfig.instance.getString("wave_first_open_show");
-    museSp.setString(mmOpenAd, openAdStr);
-    _openAdStr = openAdStr;
+    // String openAdStr = FirebaseRemoteConfig.instance.getString("wave_first_open_show");
+    // museSp.setString(mmOpenAd, openAdStr);
+    // _openAdStr = openAdStr;
 
     String homeWebParams = FirebaseRemoteConfig.instance.getString("musewave_web_params");
     if (homeWebParams.isNotEmpty) {
@@ -189,11 +188,11 @@ class RemoteUtil {
       _rewardVideoCd = 0;
     }
 
-    int adNativeBtnSize = FirebaseRemoteConfig.instance.getInt("muse_nato_size");
-    if(adNativeBtnSize > 0) {
-      museSp.setInt(mmAdNativeBtnSize, adNativeBtnSize);
-      _adNativeBtnSize = adNativeBtnSize;
-    }
+    // int adNativeBtnSize = FirebaseRemoteConfig.instance.getInt("muse_nato_size");
+    // if(adNativeBtnSize > 0) {
+    //   museSp.setInt(mmAdNativeBtnSize, adNativeBtnSize);
+    //   _adNativeBtnSize = adNativeBtnSize;
+    // }
 
   }
 
@@ -202,27 +201,27 @@ class RemoteUtil {
   //   // if (bus.isFirstAppLaunch) return MuseConfig.adJsonIos;
   //   return _adJson;
   // }
-
-  //参数值：0、10、20、30……100 参数值=10：有10%的概率跳转
-  int get adNativeScreenClick {
-    if (_bannerClickbait.isEmpty) return 0;
-    final Map<String, dynamic> config = jsonDecode(_bannerClickbait);
-    return config["ScreenClick"] ?? 0;
-  }
-
-  //0、1、2、3……10  参数值=0，广告左上角直接展示正常关闭按钮
-  int get adNativeCountDown {
-    if (_bannerClickbait.isEmpty) return 0;
-    final Map<String, dynamic> config = jsonDecode(_bannerClickbait);
-    return config["Countdown"] ?? 0;
-  }
-
-  //参数值：0、10、20、30……100 参数值=10：有10%的概率跳转
-  int get adPageNativeScreenClick {
-    if (_pageNativeClickbait.isEmpty) return 0;
-    final Map<String, dynamic> config = jsonDecode(_pageNativeClickbait);
-    return config["ScreenClick"] ?? 0;
-  }
+  //
+  // //参数值：0、10、20、30……100 参数值=10：有10%的概率跳转
+  // int get adNativeScreenClick {
+  //   if (_bannerClickbait.isEmpty) return 0;
+  //   final Map<String, dynamic> config = jsonDecode(_bannerClickbait);
+  //   return config["ScreenClick"] ?? 0;
+  // }
+  //
+  // //0、1、2、3……10  参数值=0，广告左上角直接展示正常关闭按钮
+  // int get adNativeCountDown {
+  //   if (_bannerClickbait.isEmpty) return 0;
+  //   final Map<String, dynamic> config = jsonDecode(_bannerClickbait);
+  //   return config["Countdown"] ?? 0;
+  // }
+  //
+  // //参数值：0、10、20、30……100 参数值=10：有10%的概率跳转
+  // int get adPageNativeScreenClick {
+  //   if (_pageNativeClickbait.isEmpty) return 0;
+  //   final Map<String, dynamic> config = jsonDecode(_pageNativeClickbait);
+  //   return config["ScreenClick"] ?? 0;
+  // }
 
   List<Map> get listenNowRecommend {
     if (_listenNowRecom.isNotEmpty) {
@@ -319,8 +318,8 @@ class RemoteUtil {
     return _rewardVideoCd;
   }
 
-  int get adNativeBtnSize {
-    return _adNativeBtnSize;
-  }
+  // int get adNativeBtnSize {
+  //   return _adNativeBtnSize;
+  // }
 
 }
