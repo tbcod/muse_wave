@@ -121,13 +121,13 @@ class ApiMain extends BaseApi {
 
     // initFirebaseData();
 
-    if (blackVideoIds.split(";").contains(videoId)) {
-      //在黑名单内，不允许下载、播放、缓存等
-      if (toastBlack) {
-        ToastUtil.showToast(msg: "playCopyrightStr".tr);
-      }
-      return BaseModel(code: -1, message: "playCopyrightStr".tr);
-    }
+    // if (blackVideoIds.split(";").contains(videoId)) {
+    //   //在黑名单内，不允许下载、播放、缓存等
+    //   if (toastBlack) {
+    //     ToastUtil.showToast(msg: "playCopyrightStr".tr);
+    //   }
+    //   return BaseModel(code: -1, message: "playCopyrightStr".tr);
+    // }
 
     Map<String, dynamic> body = Map.of(playJsonData);
     body["videoId"] = videoId;

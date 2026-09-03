@@ -36,6 +36,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 import 'lang/my_tr.dart';
 import 'muse_config.dart';
+import 'tool/ad/max_util.dart';
 import 'tool/log.dart';
 import 'tool/native_utils.dart';
 
@@ -258,6 +259,7 @@ class Application extends GetxService {
     await Firebase.initializeApp();
 
     AdmobUtils.instance.init();
+    MaxUtils.instance.init();
 
     RemoteUtil.shareInstance.initFirebaseRemoteSdk();
 

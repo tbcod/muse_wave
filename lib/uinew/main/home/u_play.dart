@@ -876,17 +876,17 @@ class UserPlayInfoController extends GetxController {
     TbaUtils.instance.checkUnFinishedEvent();
   }
 
-  _startTimer() {
-    if (timer != null) {
-      return;
-    }
-    timer?.cancel();
-    timer = Timer.periodic(const Duration(milliseconds: 31580), (Timer t) {
-      if (player?.value.isPlaying == true) {
-        ApiMain.instance.postYoutubePlaybackInfo(isWatchOnly: true);
-      }
-    });
-  }
+  // _startTimer() {
+  //   if (timer != null) {
+  //     return;
+  //   }
+  //   timer?.cancel();
+  //   timer = Timer.periodic(const Duration(milliseconds: 31580), (Timer t) {
+  //     if (player?.value.isPlaying == true) {
+  //       ApiMain.instance.postYoutubePlaybackInfo(isWatchOnly: true);
+  //     }
+  //   });
+  // }
 
   var isShowDownloadGuide = false.obs;
 
@@ -1659,7 +1659,7 @@ class UserPlayInfoController extends GetxController {
     }
 
     ApiMain.instance.postYoutubePlaybackInfo(isWatchOnly: false);
-    _startTimer();
+    // _startTimer();
   }
 
   _playerReset() {
