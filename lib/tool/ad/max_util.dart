@@ -18,8 +18,9 @@ class MaxUtils {
 
   static final MaxUtils _instance = MaxUtils._internal();
 
-  // static bool isInited = false;
   late Completer<bool> initCompleter;
+  final Map<String, _MaxLoadCallbacks> _pendingLoadCallbacks = {};
+  final Map<String, _MaxShowCallbacks> _pendingShowCallbacks = {};
 
   static MaxUtils get instance {
     return _instance;
@@ -35,12 +36,24 @@ class MaxUtils {
     EventUtils.instance.addEvent("ad_init",
         data: {"ad_source_client": "max", "start_time": DateTime.now().difference(bus.appLaunchTime).inMilliseconds});
 
+    //IDFA或gaid
+    if (!MuseConfig.isUser) {
+      String? gaid = await Adjust.getGoogleAdId();
+      if (gaid != null) {
+        AppLog.i("max设置测试设备gaid:$gaid");
+        AppLovinMAX.setTestDeviceAdvertisingIds([gaid]);
+      }
+    }
+
+    _addAppOpenAdListener();
+    _addInterstitialListener();
+    _addRewardedAdListener();
+
     DateTime start = DateTime.now();
     String slatKey = "_2026_";
     String maxKey =
         "_2026_POzCPzJAQ_vi7vlPr0v6dpTw1gi_2026_LvT2HKZcyQJ27U_0hDMdIeOgvScokaDvmqrXg8AogImcyxb9QMKF5TXSf8U_2026_";
     MaxConfiguration? sdkConfiguration = await AppLovinMAX.initialize(maxKey.replaceAll(slatKey, ""));
-    // AppLog.e("max初始化结束");
     AppLovinMAX.setMuted(true);
     AppLog.i("max初始化完成 isTestModeEnabled:${sdkConfiguration?.isTestModeEnabled}");
 
@@ -49,17 +62,192 @@ class MaxUtils {
       "ad_init_time": DateTime.now().difference(start).inMilliseconds,
     });
 
-    // isInited = true;
     if (!initCompleter.isCompleted) {
       initCompleter.complete(true);
     }
-    //IDFA或gaid
-    if (!MuseConfig.isUser) {
-      String? gaid = await Adjust.getGoogleAdId();
-      if (gaid != null) {
-        AppLovinMAX.setTestDeviceAdvertisingIds([gaid]);
-      }
-    }
+  }
+
+  _addAppOpenAdListener() {
+    AppLovinMAX.setAppOpenAdListener(
+      AppOpenAdListener(
+        onAdLoadedCallback: (ad) {
+          final loadCallbacks = _consumeLoadCallbacks("open", ad.adUnitId);
+          AdUtils.instance.loadedAdMap[ad.adUnitId] = {
+            "admob_ad": ad,
+            "timeMs": DateTime.now().millisecondsSinceEpoch,
+          };
+          loadCallbacks?.onLoaded(ad);
+        },
+        onAdLoadFailedCallback: (adId, e) {
+          final loadCallbacks = _consumeLoadCallbacks("open", adId);
+          loadCallbacks?.onLoadFailed(adId, e);
+        },
+        onAdDisplayedCallback: (ad) {
+          final showCallbacks = _peekShowCallbacks("open", ad.adUnitId);
+          showCallbacks?.onDisplayed?.call(ad);
+        },
+        onAdDisplayFailedCallback: (ad, e) {
+          final showCallbacks = _consumeShowCallbacks("open", ad.adUnitId);
+          showCallbacks?.onDisplayFailed?.call(ad, e);
+        },
+        onAdClickedCallback: (ad) {
+          final showCallbacks = _peekShowCallbacks("open", ad.adUnitId);
+          showCallbacks?.onClicked?.call(ad);
+        },
+        onAdHiddenCallback: (ad) {
+          final showCallbacks = _consumeShowCallbacks("open", ad.adUnitId);
+          showCallbacks?.onHidden?.call(ad);
+        },
+        onAdRevenuePaidCallback: (ad) {
+          final showCallbacks = _peekShowCallbacks("open", ad.adUnitId);
+          showCallbacks?.onRevenuePaid?.call(ad);
+        },
+      ),
+    );
+  }
+
+  _addInterstitialListener() {
+    AppLovinMAX.setInterstitialListener(
+      InterstitialListener(
+        onAdLoadedCallback: (ad) {
+          final loadCallbacks = _consumeLoadCallbacks("interstitial", ad.adUnitId);
+          AdUtils.instance.loadedAdMap[ad.adUnitId] = {
+            "admob_ad": ad,
+            "timeMs": DateTime.now().millisecondsSinceEpoch,
+          };
+          loadCallbacks?.onLoaded(ad);
+        },
+        onAdLoadFailedCallback: (adId, e) {
+          final loadCallbacks = _consumeLoadCallbacks("interstitial", adId);
+          loadCallbacks?.onLoadFailed(adId, e);
+        },
+        onAdDisplayedCallback: (ad) {
+          final showCallbacks = _peekShowCallbacks("interstitial", ad.adUnitId);
+          showCallbacks?.onDisplayed?.call(ad);
+        },
+        onAdDisplayFailedCallback: (ad, e) {
+          final showCallbacks = _consumeShowCallbacks("interstitial", ad.adUnitId);
+          showCallbacks?.onDisplayFailed?.call(ad, e);
+        },
+        onAdClickedCallback: (ad) {
+          final showCallbacks = _peekShowCallbacks("interstitial", ad.adUnitId);
+          showCallbacks?.onClicked?.call(ad);
+        },
+        onAdHiddenCallback: (ad) {
+          final showCallbacks = _consumeShowCallbacks("interstitial", ad.adUnitId);
+          showCallbacks?.onHidden?.call(ad);
+        },
+        onAdRevenuePaidCallback: (ad) {
+          final showCallbacks = _peekShowCallbacks("interstitial", ad.adUnitId);
+          showCallbacks?.onRevenuePaid?.call(ad);
+        },
+      ),
+    );
+  }
+
+  _addRewardedAdListener() {
+    AppLovinMAX.setRewardedAdListener(
+      RewardedAdListener(
+        onAdLoadedCallback: (ad) {
+          final loadCallbacks = _consumeLoadCallbacks("rewarded", ad.adUnitId);
+          AdUtils.instance.loadedAdMap[ad.adUnitId] = {
+            "admob_ad": ad,
+            "timeMs": DateTime.now().millisecondsSinceEpoch,
+          };
+          loadCallbacks?.onLoaded(ad);
+        },
+        onAdLoadFailedCallback: (adId, e) {
+          final loadCallbacks = _consumeLoadCallbacks("rewarded", adId);
+          loadCallbacks?.onLoadFailed(adId, e);
+        },
+        onAdDisplayedCallback: (ad) {
+          final showCallbacks = _peekShowCallbacks("rewarded", ad.adUnitId);
+          showCallbacks?.onDisplayed?.call(ad);
+        },
+        onAdDisplayFailedCallback: (ad, e) {
+          final showCallbacks = _consumeShowCallbacks("rewarded", ad.adUnitId);
+          showCallbacks?.onDisplayFailed?.call(ad, e);
+        },
+        onAdClickedCallback: (ad) {
+          final showCallbacks = _peekShowCallbacks("rewarded", ad.adUnitId);
+          showCallbacks?.onClicked?.call(ad);
+        },
+        onAdHiddenCallback: (ad) {
+          final showCallbacks = _consumeShowCallbacks("rewarded", ad.adUnitId);
+          showCallbacks?.onHidden?.call(ad);
+        },
+        onAdRevenuePaidCallback: (ad) {
+          final showCallbacks = _peekShowCallbacks("rewarded", ad.adUnitId);
+          showCallbacks?.onRevenuePaid?.call(ad);
+        },
+        onAdReceivedRewardCallback: (MaxAd ad, MaxReward reward) {
+          final showCallbacks = _peekShowCallbacks("rewarded", ad.adUnitId);
+          showCallbacks?.onReceivedReward?.call(ad, reward);
+        },
+      ),
+    );
+  }
+
+  String _slotKey(String adType, String adUnitId) {
+    return "$adType::$adUnitId";
+  }
+
+  void bindLoadCallbacks({
+    required String adType,
+    required String adUnitId,
+    required void Function(MaxAd ad) onLoaded,
+    required void Function(String adUnitId, MaxError error) onLoadFailed,
+  }) {
+    _pendingLoadCallbacks[_slotKey(adType, adUnitId)] = _MaxLoadCallbacks(
+      onLoaded: onLoaded,
+      onLoadFailed: onLoadFailed,
+    );
+  }
+
+  void clearLoadCallbacks({
+    required String adType,
+    required String adUnitId,
+  }) {
+    _pendingLoadCallbacks.remove(_slotKey(adType, adUnitId));
+  }
+
+  _MaxLoadCallbacks? _consumeLoadCallbacks(String adType, String adUnitId) {
+    return _pendingLoadCallbacks.remove(_slotKey(adType, adUnitId));
+  }
+
+  void bindShowCallbacks({
+    required String adType,
+    required String adUnitId,
+    void Function(MaxAd ad)? onDisplayed,
+    void Function(MaxAd ad, MaxError error)? onDisplayFailed,
+    void Function(MaxAd ad)? onClicked,
+    void Function(MaxAd ad)? onHidden,
+    void Function(MaxAd ad)? onRevenuePaid,
+    void Function(MaxAd ad, MaxReward reward)? onReceivedReward,
+  }) {
+    _pendingShowCallbacks[_slotKey(adType, adUnitId)] = _MaxShowCallbacks(
+      onDisplayed: onDisplayed,
+      onDisplayFailed: onDisplayFailed,
+      onClicked: onClicked,
+      onHidden: onHidden,
+      onRevenuePaid: onRevenuePaid,
+      onReceivedReward: onReceivedReward,
+    );
+  }
+
+  void clearShowCallbacks({
+    required String adType,
+    required String adUnitId,
+  }) {
+    _pendingShowCallbacks.remove(_slotKey(adType, adUnitId));
+  }
+
+  _MaxShowCallbacks? _peekShowCallbacks(String adType, String adUnitId) {
+    return _pendingShowCallbacks[_slotKey(adType, adUnitId)];
+  }
+
+  _MaxShowCallbacks? _consumeShowCallbacks(String adType, String adUnitId) {
+    return _pendingShowCallbacks.remove(_slotKey(adType, adUnitId));
   }
 
   Future<bool> loadNativeAd(String adId, String key, AdSense adSense, Rx<Widget> adView) async {
@@ -281,4 +469,32 @@ class MaxUtils {
     adView.value = isSmall ? adC : getAdCloseView(adC);
     return completer.future;
   }
+}
+
+class _MaxLoadCallbacks {
+  final void Function(MaxAd ad) onLoaded;
+  final void Function(String adUnitId, MaxError error) onLoadFailed;
+
+  _MaxLoadCallbacks({
+    required this.onLoaded,
+    required this.onLoadFailed,
+  });
+}
+
+class _MaxShowCallbacks {
+  final void Function(MaxAd ad)? onDisplayed;
+  final void Function(MaxAd ad, MaxError error)? onDisplayFailed;
+  final void Function(MaxAd ad)? onClicked;
+  final void Function(MaxAd ad)? onHidden;
+  final void Function(MaxAd ad)? onRevenuePaid;
+  final void Function(MaxAd ad, MaxReward reward)? onReceivedReward;
+
+  _MaxShowCallbacks({
+    this.onDisplayed,
+    this.onDisplayFailed,
+    this.onClicked,
+    this.onHidden,
+    this.onRevenuePaid,
+    this.onReceivedReward,
+  });
 }

@@ -397,76 +397,57 @@ class AdUtils {
           //加载max广告
           AppLog.i("加载max广告：$key， $source, $type, $ad_id");
           if (type == "open") {
-            AppLovinMAX.setAppOpenAdListener(
-              AppOpenAdListener(
-                onAdLoadedCallback: (ad) {
-                  AdUtils.instance.loadedAdMap[ad.adUnitId] = {
-                    "data": item,
-                    "admob_ad": ad,
-                    // "load_pos": positionKey,
-                    "timeMs": DateTime.now().millisecondsSinceEpoch,
-                    "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
-                  };
-                  if (!isCompleter.isCompleted) isCompleter.complete(true);
-                },
-                onAdLoadFailedCallback: (adId, e) {
-                  reason = "${e.code},${e.message}";
-                  if (!isCompleter.isCompleted) isCompleter.complete(false);
-                },
-                onAdDisplayedCallback: (ad) {},
-                onAdDisplayFailedCallback: (ad, e) {},
-                onAdClickedCallback: (ad) {},
-                onAdHiddenCallback: (ad) {},
-              ),
+            MaxUtils.instance.bindLoadCallbacks(
+              adType: "open",
+              adUnitId: ad_id,
+              onLoaded: (ad) {
+                AdUtils.instance.loadedAdMap[ad.adUnitId] = {
+                  "data": item,
+                  "admob_ad": ad,
+                  "timeMs": DateTime.now().millisecondsSinceEpoch,
+                };
+                if (!isCompleter.isCompleted) isCompleter.complete(true);
+              },
+              onLoadFailed: (adId, e) {
+                reason = "${e.code},${e.message}";
+                if (!isCompleter.isCompleted) isCompleter.complete(false);
+              },
             );
             AppLovinMAX.loadAppOpenAd(ad_id);
           } else if (type == "interstitial") {
-            AppLovinMAX.setInterstitialListener(
-              InterstitialListener(
-                onAdLoadedCallback: (ad) {
-                  AdUtils.instance.loadedAdMap[ad_id] = {
-                    "data": item,
-                    "admob_ad": ad,
-                    // "load_pos": positionKey,
-                    "timeMs": DateTime.now().millisecondsSinceEpoch,
-                    "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
-                  };
-                  if (!isCompleter.isCompleted) isCompleter.complete(true);
-                },
-                onAdLoadFailedCallback: (adId, e) {
-                  reason = "${e.code},${e.message}";
-                  if (!isCompleter.isCompleted) isCompleter.complete(false);
-                },
-                onAdDisplayedCallback: (ad) {},
-                onAdDisplayFailedCallback: (ad, e) {},
-                onAdClickedCallback: (ad) {},
-                onAdHiddenCallback: (ad) {},
-              ),
+            MaxUtils.instance.bindLoadCallbacks(
+              adType: "interstitial",
+              adUnitId: ad_id,
+              onLoaded: (ad) {
+                AdUtils.instance.loadedAdMap[ad.adUnitId] = {
+                  "data": item,
+                  "admob_ad": ad,
+                  "timeMs": DateTime.now().millisecondsSinceEpoch,
+                };
+                if (!isCompleter.isCompleted) isCompleter.complete(true);
+              },
+              onLoadFailed: (adId, e) {
+                reason = "${e.code},${e.message}";
+                if (!isCompleter.isCompleted) isCompleter.complete(false);
+              },
             );
             AppLovinMAX.loadInterstitial(ad_id);
           } else if (type == "rewarded") {
-            AppLovinMAX.setRewardedAdListener(
-              RewardedAdListener(
-                onAdLoadedCallback: (ad) {
-                  AdUtils.instance.loadedAdMap[ad_id] = {
-                    "data": item,
-                    "admob_ad": ad,
-                    // "load_pos": positionKey,
-                    "timeMs": DateTime.now().millisecondsSinceEpoch,
-                    "orientation": Get.mediaQuery.orientation == Orientation.portrait ? 1 : 2,
-                  };
-                  if (!isCompleter.isCompleted) isCompleter.complete(true);
-                },
-                onAdLoadFailedCallback: (adId, e) {
-                  reason = "${e.code},${e.message}";
-                  if (!isCompleter.isCompleted) isCompleter.complete(false);
-                },
-                onAdDisplayedCallback: (ad) {},
-                onAdDisplayFailedCallback: (ad, e) {},
-                onAdClickedCallback: (ad) {},
-                onAdHiddenCallback: (ad) {},
-                onAdReceivedRewardCallback: (MaxAd ad, MaxReward reward) {},
-              ),
+            MaxUtils.instance.bindLoadCallbacks(
+              adType: "rewarded",
+              adUnitId: ad_id,
+              onLoaded: (ad) {
+                AdUtils.instance.loadedAdMap[ad.adUnitId] = {
+                  "data": item,
+                  "admob_ad": ad,
+                  "timeMs": DateTime.now().millisecondsSinceEpoch,
+                };
+                if (!isCompleter.isCompleted) isCompleter.complete(true);
+              },
+              onLoadFailed: (adId, e) {
+                reason = "${e.code},${e.message}";
+                if (!isCompleter.isCompleted) isCompleter.complete(false);
+              },
             );
             AppLovinMAX.loadRewardedAd(ad_id);
           } else {
@@ -547,9 +528,12 @@ class AdUtils {
           if (!isCompleter.isCompleted) isCompleter.complete(false);
         }
 
+        isLoadSuc = await isCompleter.future;
         loadTimer.cancel();
         loadTimer = null;
-        isLoadSuc = await isCompleter.future;
+        if (source == "max" && (type == "open" || type == "interstitial" || type == "rewarded")) {
+          MaxUtils.instance.clearLoadCallbacks(adType: type, adUnitId: ad_id);
+        }
         if (isLoadSuc) {
           EventUtils.instance.addEvent(
             "ad_return_sucess",
@@ -608,11 +592,11 @@ class AdUtils {
           },
         );
       }
-      AppLog.i("广告加载结束1：$key,$isLoadSuc, $_adLoadingMap");
+      // AppLog.i("广告加载结束1：$key,$isLoadSuc, $_adLoadingMap");
       return isLoadSuc;
     } finally {
       _adLoadingMap[key] = false; // 无论正常/异常都会执行
-      AppLog.i("广告加载结束2：$key, $_adLoadingMap");
+      AppLog.i("广告加载结束：$key, $_adLoadingMap");
     }
   }
 
@@ -1091,215 +1075,10 @@ class AdUtils {
           var isReady = await AppLovinMAX.isAppOpenAdReady(ad_id);
 
           if (isReady ?? false) {
-            //重新设置显示监听
-            AppLovinMAX.setAppOpenAdListener(
-              AppOpenAdListener(
-                onAdLoadedCallback: (ad) {},
-                onAdLoadFailedCallback: (adId, e) {},
-                onAdDisplayedCallback: (ad) {
-                  adIsShowing = true;
-                  if (adSense == AdSense.cold || adSense == AdSense.first) {
-                    EventUtils.instance.addEvent(
-                      "open_ad_show",
-                      data: {
-                        "en_time": bus.getTimeDiffNow(bus.appLaunchTime),
-                        "appearance": bus.isFirstAppLaunch ? "first" : "cold",
-                        "type": type
-                      },
-                    );
-                  }
-                },
-                onAdDisplayFailedCallback: (ad, e) {
-                  loadedAdMap.remove(ad.adUnitId);
-                  reason = e.message;
-                  if (!isCompleter.isCompleted) isCompleter.complete(false);
-                },
-                onAdClickedCallback: (ad) {
-                  EventUtils.instance.addEvent(
-                    "ad_click",
-                    data: {
-                      "ad_format": type,
-                      "ad_source_client": source,
-                      "ad_code_id": ad_id,
-                      "ad_pos_id": adPosId.name,
-                      "ad_sense": adSense.name
-                    },
-                  );
-                  if (adSense == AdSense.cold || adSense == AdSense.first) {
-                    EventUtils.instance.addEvent("open_ad_click", data: {
-                      "appearance": bus.isFirstAppLaunch ? "first" : "cold",
-                      "kid": "ad_click",
-                    });
-                  }
-                },
-                onAdHiddenCallback: (ad) {
-                  EventUtils.instance.addEvent(
-                    "ad_close",
-                    data: {
-                      "ad_format": type,
-                      "ad_source_client": source,
-                      "ad_code_id": ad_id,
-                      "ad_pos_id": adPosId.name,
-                      "ad_sense": adSense.name
-                    },
-                  );
-                  if (adSense == AdSense.cold || adSense == AdSense.first) {
-                    EventUtils.instance.addEvent("open_ad_click", data: {
-                      "appearance": bus.isFirstAppLaunch ? "first" : "cold",
-                      "kid": "close",
-                    });
-                  }
-                  adIsShowing = false;
-                  loadedAdMap.remove(ad.adUnitId);
-                  setShowTime();
-                  if (!isCompleter.isCompleted) isCompleter.complete(true);
-                },
-                onAdRevenuePaidCallback: (ad) {
-                  //收益上报
-                  TbaUtils.instance.postAd(
-                    ad_network: ad.networkName,
-                    adSense: adSense.name,
-                    ad_source: "max",
-                    ad_unit_id: ad.adUnitId,
-                    ad_format: "open",
-                    ad_pre_ecpm: ad.revenue.toString(),
-                    currency: "USD",
-                    adPosName: key,
-                    adFunction: adFunction == AdFunction.unknown ? "" : adFunction.name,
-                  );
-                },
-              ),
-            );
-            isShowAd = true;
-            AppLovinMAX.showAppOpenAd(ad_id);
-            break;
-          } else {
-            reason = "notPrepared";
-            isShowAd = false;
-            adIsShowing = false;
-            if (!isCompleter.isCompleted) isCompleter.complete(false);
-          }
-        } else if (type == "interstitial") {
-          var isReady = await AppLovinMAX.isInterstitialReady(ad_id);
-
-          if (isReady ?? false) {
-            //重新设置显示监听
-            AppLovinMAX.setInterstitialListener(
-              InterstitialListener(
-                onAdLoadedCallback: (ad) {
-                  //已经加载成功，无需回调此方法
-                },
-                onAdLoadFailedCallback: (adId, e) {
-                  AppLog.e("广告加载失败:$key, $source,  $type, $adId, ${e.toString()} ");
-                },
-                onAdDisplayedCallback: (ad) {
-                  adIsShowing = true;
-                  if (adSense == AdSense.cold || adSense == AdSense.first) {
-                    EventUtils.instance.addEvent(
-                      "open_ad_show",
-                      data: {
-                        "en_time": bus.getTimeDiffNow(bus.appLaunchTime),
-                        "appearance": bus.isFirstAppLaunch ? "first" : "cold",
-                        "type": type
-                      },
-                    );
-                  }
-                },
-                onAdDisplayFailedCallback: (ad, e) {
-                  loadedAdMap.remove(ad.adUnitId);
-                  reason = e.message;
-                  if (!isCompleter.isCompleted) isCompleter.complete(false);
-                },
-                onAdClickedCallback: (ad) {
-                  EventUtils.instance.addEvent(
-                    "ad_click",
-                    data: {
-                      "ad_format": type,
-                      "ad_source_client": source,
-                      "ad_code_id": ad_id,
-                      "ad_pos_id": adPosId.name,
-                      "ad_sense": adSense.name
-                    },
-                  );
-                  if (adSense == AdSense.cold || adSense == AdSense.first) {
-                    EventUtils.instance.addEvent("open_ad_click", data: {
-                      "appearance": bus.isFirstAppLaunch ? "first" : "cold",
-                      "kid": "ad_click",
-                    });
-                  }
-                },
-                onAdHiddenCallback: (ad) {
-                  EventUtils.instance.addEvent(
-                    "ad_close",
-                    data: {
-                      "ad_format": type,
-                      "ad_source_client": source,
-                      "ad_code_id": ad_id,
-                      "ad_pos_id": adPosId.name,
-                      "ad_sense": adSense.name
-                    },
-                  );
-                  if (adSense == AdSense.cold || adSense == AdSense.first) {
-                    EventUtils.instance.addEvent("open_ad_click", data: {
-                      "appearance": bus.isFirstAppLaunch ? "first" : "cold",
-                      "kid": "close",
-                    });
-                  }
-
-                  adIsShowing = false;
-                  //广告关闭
-                  //删除缓存
-                  loadedAdMap.remove(ad.adUnitId);
-                  //设置显示时间以判断广告间隔
-                  setShowTime();
-                  //重新加载一轮广告
-                  // loadAd(adPosId,
-                  //     adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
-                  //
-                  if (!isCompleter.isCompleted) isCompleter.complete(true);
-                },
-                onAdRevenuePaidCallback: (ad) {
-                  //收益上报
-                  TbaUtils.instance.postAd(
-                    ad_network: ad.networkName,
-                    adSense: adSense.name,
-                    ad_source: "max",
-                    ad_unit_id: ad.adUnitId,
-                    ad_format: "interstitial",
-                    ad_pre_ecpm: ad.revenue.toString(),
-                    currency: "",
-                    adPosName: key,
-                    adFunction: adFunction == AdFunction.unknown ? "" : adFunction.name,
-                  );
-                },
-              ),
-            );
-
-            AppLovinMAX.showInterstitial(ad_id);
-            // loadedAdMap.remove(ad_id);
-            isShowAd = true;
-            break;
-          } else {
-            reason = "notPrepared";
-            isShowAd = false;
-            adIsShowing = false;
-            if (!isCompleter.isCompleted) isCompleter.complete(false);
-          }
-        }
-      } else if (type == "rewarded") {
-        var isReady = await AppLovinMAX.isRewardedAdReady(ad_id);
-
-        if (isReady ?? false) {
-          //重新设置显示监听
-          AppLovinMAX.setRewardedAdListener(
-            RewardedAdListener(
-              onAdLoadedCallback: (ad) {
-                //已经加载成功，无需回调此方法
-              },
-              onAdLoadFailedCallback: (adId, e) {
-                AppLog.e("广告加载失败:$key, $source,  $type, $adId, ${e.toString()} ");
-              },
-              onAdDisplayedCallback: (ad) {
+            MaxUtils.instance.bindShowCallbacks(
+              adType: "open",
+              adUnitId: ad_id,
+              onDisplayed: (ad) {
                 adIsShowing = true;
                 if (adSense == AdSense.cold || adSense == AdSense.first) {
                   EventUtils.instance.addEvent(
@@ -1312,12 +1091,12 @@ class AdUtils {
                   );
                 }
               },
-              onAdDisplayFailedCallback: (ad, e) {
+              onDisplayFailed: (ad, e) {
                 loadedAdMap.remove(ad.adUnitId);
                 reason = e.message;
                 if (!isCompleter.isCompleted) isCompleter.complete(false);
               },
-              onAdClickedCallback: (ad) {
+              onClicked: (ad) {
                 EventUtils.instance.addEvent(
                   "ad_click",
                   data: {
@@ -1335,7 +1114,7 @@ class AdUtils {
                   });
                 }
               },
-              onAdHiddenCallback: (ad) {
+              onHidden: (ad) {
                 EventUtils.instance.addEvent(
                   "ad_close",
                   data: {
@@ -1347,8 +1126,99 @@ class AdUtils {
                   },
                 );
                 if (adSense == AdSense.cold || adSense == AdSense.first) {
-                  EventUtils.instance.addEvent("open_ad_click",
-                      data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
+                  EventUtils.instance.addEvent("open_ad_click", data: {
+                    "appearance": bus.isFirstAppLaunch ? "first" : "cold",
+                    "kid": "close",
+                  });
+                }
+                adIsShowing = false;
+                loadedAdMap.remove(ad.adUnitId);
+                setShowTime();
+                if (!isCompleter.isCompleted) isCompleter.complete(true);
+              },
+              onRevenuePaid: (ad) {
+                //收益上报
+                TbaUtils.instance.postAd(
+                  ad_network: ad.networkName,
+                  adSense: adSense.name,
+                  ad_source: "max",
+                  ad_unit_id: ad.adUnitId,
+                  ad_format: "open",
+                  ad_pre_ecpm: ad.revenue.toString(),
+                  currency: "USD",
+                  adPosName: key,
+                  adFunction: adFunction == AdFunction.unknown ? "" : adFunction.name,
+                );
+              },
+            );
+            isShowAd = true;
+            AppLovinMAX.showAppOpenAd(ad_id);
+            break;
+          } else {
+            reason = "notPrepared";
+            isShowAd = false;
+            adIsShowing = false;
+            if (!isCompleter.isCompleted) isCompleter.complete(false);
+          }
+        } else if (type == "interstitial") {
+          var isReady = await AppLovinMAX.isInterstitialReady(ad_id);
+
+          if (isReady ?? false) {
+            MaxUtils.instance.bindShowCallbacks(
+              adType: "interstitial",
+              adUnitId: ad_id,
+              onDisplayed: (ad) {
+                adIsShowing = true;
+                if (adSense == AdSense.cold || adSense == AdSense.first) {
+                  EventUtils.instance.addEvent(
+                    "open_ad_show",
+                    data: {
+                      "en_time": bus.getTimeDiffNow(bus.appLaunchTime),
+                      "appearance": bus.isFirstAppLaunch ? "first" : "cold",
+                      "type": type
+                    },
+                  );
+                }
+              },
+              onDisplayFailed: (ad, e) {
+                loadedAdMap.remove(ad.adUnitId);
+                reason = e.message;
+                if (!isCompleter.isCompleted) isCompleter.complete(false);
+              },
+              onClicked: (ad) {
+                EventUtils.instance.addEvent(
+                  "ad_click",
+                  data: {
+                    "ad_format": type,
+                    "ad_source_client": source,
+                    "ad_code_id": ad_id,
+                    "ad_pos_id": adPosId.name,
+                    "ad_sense": adSense.name
+                  },
+                );
+                if (adSense == AdSense.cold || adSense == AdSense.first) {
+                  EventUtils.instance.addEvent("open_ad_click", data: {
+                    "appearance": bus.isFirstAppLaunch ? "first" : "cold",
+                    "kid": "ad_click",
+                  });
+                }
+              },
+              onHidden: (ad) {
+                EventUtils.instance.addEvent(
+                  "ad_close",
+                  data: {
+                    "ad_format": type,
+                    "ad_source_client": source,
+                    "ad_code_id": ad_id,
+                    "ad_pos_id": adPosId.name,
+                    "ad_sense": adSense.name
+                  },
+                );
+                if (adSense == AdSense.cold || adSense == AdSense.first) {
+                  EventUtils.instance.addEvent("open_ad_click", data: {
+                    "appearance": bus.isFirstAppLaunch ? "first" : "cold",
+                    "kid": "close",
+                  });
                 }
 
                 adIsShowing = false;
@@ -1356,32 +1226,129 @@ class AdUtils {
                 //删除缓存
                 loadedAdMap.remove(ad.adUnitId);
                 //设置显示时间以判断广告间隔
-                if (adPosId != AdPosId.muse_local_reward) {
-                  setShowTime();
-                }
+                setShowTime();
                 //重新加载一轮广告
                 // loadAd(adPosId,
                 //     adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
+                //
                 if (!isCompleter.isCompleted) isCompleter.complete(true);
               },
-              onAdRevenuePaidCallback: (ad) {
-                // 收益上报
+              onRevenuePaid: (ad) {
+                //收益上报
                 TbaUtils.instance.postAd(
                   ad_network: ad.networkName,
                   adSense: adSense.name,
                   ad_source: "max",
                   ad_unit_id: ad.adUnitId,
-                  ad_format: "rewarded",
+                  ad_format: "interstitial",
                   ad_pre_ecpm: ad.revenue.toString(),
-                  currency: "USD",
+                  currency: "",
                   adPosName: key,
                   adFunction: adFunction == AdFunction.unknown ? "" : adFunction.name,
                 );
               },
-              onAdReceivedRewardCallback: (MaxAd ad, MaxReward reward) {
-                //用户看完激励视频
-              },
-            ),
+            );
+
+            AppLovinMAX.showInterstitial(ad_id);
+            // loadedAdMap.remove(ad_id);
+            isShowAd = true;
+            break;
+          } else {
+            reason = "notPrepared";
+            isShowAd = false;
+            adIsShowing = false;
+            if (!isCompleter.isCompleted) isCompleter.complete(false);
+          }
+        }
+      } else if (type == "rewarded") {
+        var isReady = await AppLovinMAX.isRewardedAdReady(ad_id);
+
+        if (isReady ?? false) {
+          MaxUtils.instance.bindShowCallbacks(
+            adType: "rewarded",
+            adUnitId: ad_id,
+            onDisplayed: (ad) {
+              adIsShowing = true;
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
+                EventUtils.instance.addEvent(
+                  "open_ad_show",
+                  data: {
+                    "en_time": bus.getTimeDiffNow(bus.appLaunchTime),
+                    "appearance": bus.isFirstAppLaunch ? "first" : "cold",
+                    "type": type
+                  },
+                );
+              }
+            },
+            onDisplayFailed: (ad, e) {
+              loadedAdMap.remove(ad.adUnitId);
+              reason = e.message;
+              if (!isCompleter.isCompleted) isCompleter.complete(false);
+            },
+            onClicked: (ad) {
+              EventUtils.instance.addEvent(
+                "ad_click",
+                data: {
+                  "ad_format": type,
+                  "ad_source_client": source,
+                  "ad_code_id": ad_id,
+                  "ad_pos_id": adPosId.name,
+                  "ad_sense": adSense.name
+                },
+              );
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
+                EventUtils.instance.addEvent("open_ad_click", data: {
+                  "appearance": bus.isFirstAppLaunch ? "first" : "cold",
+                  "kid": "ad_click",
+                });
+              }
+            },
+            onHidden: (ad) {
+              EventUtils.instance.addEvent(
+                "ad_close",
+                data: {
+                  "ad_format": type,
+                  "ad_source_client": source,
+                  "ad_code_id": ad_id,
+                  "ad_pos_id": adPosId.name,
+                  "ad_sense": adSense.name
+                },
+              );
+              if (adSense == AdSense.cold || adSense == AdSense.first) {
+                EventUtils.instance.addEvent("open_ad_click",
+                    data: {"appearance": bus.isFirstAppLaunch ? "first" : "cold", "kid": "close"});
+              }
+
+              adIsShowing = false;
+              //广告关闭
+              //删除缓存
+              loadedAdMap.remove(ad.adUnitId);
+              //设置显示时间以判断广告间隔
+              if (adPosId != AdPosId.muse_local_reward) {
+                setShowTime();
+              }
+              //重新加载一轮广告
+              // loadAd(adPosId,
+              //     adSense: (adSense == AdSense.cold || adSense == AdSense.first) ? AdSense.hot : adSense);
+              if (!isCompleter.isCompleted) isCompleter.complete(true);
+            },
+            onRevenuePaid: (ad) {
+              // 收益上报
+              TbaUtils.instance.postAd(
+                ad_network: ad.networkName,
+                adSense: adSense.name,
+                ad_source: "max",
+                ad_unit_id: ad.adUnitId,
+                ad_format: "rewarded",
+                ad_pre_ecpm: ad.revenue.toString(),
+                currency: "USD",
+                adPosName: key,
+                adFunction: adFunction == AdFunction.unknown ? "" : adFunction.name,
+              );
+            },
+            onReceivedReward: (ad, reward) {
+              //用户看完激励视频
+            },
           );
           isShowAd = true;
           AppLovinMAX.showRewardedAd(ad_id);
@@ -1575,6 +1542,9 @@ class AdUtils {
       if (!isCompleter.isCompleted) isCompleter.complete(false);
     }
     bool isSuc = await isCompleter.future;
+    if (source == "max" && (type == "open" || type == "interstitial" || type == "rewarded")) {
+      MaxUtils.instance.clearShowCallbacks(adType: type, adUnitId: ad_id);
+    }
     if (!isSuc) {
       AppLog.e("广告显示失败:$key, reason: $reason");
       EventUtils.instance.addEvent(
