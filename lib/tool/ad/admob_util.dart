@@ -98,10 +98,10 @@ class AdmobUtils {
               EventUtils.instance.addEvent(
                 "ad_return_sucess",
                 data: {
+                  "ad_pos_id": key,
                   "ad_format": "banner",
                   // "ad_sense": adSense.name,
                   "ad_source_client": "admob",
-                  "ad_pos_id": key,
                   "ad_code_id": adId,
                 },
               );
@@ -210,10 +210,10 @@ class AdmobUtils {
               EventUtils.instance.addEvent(
                 "ad_return_sucess",
                 data: {
+                  "ad_pos_id": key,
                   "ad_format": "native",
                   // "ad_sense": adSense.name,
                   "ad_source_client": "admob",
-                  "ad_pos_id": key,
                   "ad_code_id": adId,
                 },
               );

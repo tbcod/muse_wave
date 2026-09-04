@@ -52,7 +52,7 @@ class LaunchPageController extends GetxController {
       await _userCheck();
       await showAd();
     } on TimeoutException catch (e) {
-      AppLog.e("loadAd time out: ${e.duration?.inSeconds}s");
+      AppLog.e("load Ad time out");
     } catch (e) {
       AppLog.e("加载广告失败: $e");
     }
@@ -131,6 +131,8 @@ class LaunchPageController extends GetxController {
     if (isA) {
       //A面不展示冷启动广告
     } else {
+      //预加载广告
+      AdUtils.instance.loadAd(AdPosId.behavior, adSense: AdSense.play_page, forceLocalJson: bus.isFirstAppLaunch);
       AppLog.i("准备展示开屏广告(B展示open)");
       await AdUtils.instance.showAd(
         AdPosId.open,
@@ -162,8 +164,8 @@ class LaunchPageController extends GetxController {
     progress.value = 1;
     if (isB) {
       Get.off(const UserMain(), routeName: "/UserMain");
-      //预加载广告
-      AdUtils.instance.loadAd(AdPosId.behavior, adSense: AdSense.play_page, forceLocalJson: bus.isFirstAppLaunch);
+      // //预加载广告
+      // AdUtils.instance.loadAd(AdPosId.behavior, adSense: AdSense.play_page, forceLocalJson: bus.isFirstAppLaunch);
     } else {
       Get.off(const MainPage(), routeName: "/MainPage");
     }

@@ -454,7 +454,7 @@ class UserHome extends GetView<UserHomeController> {
                                           //有添加过下载
                                           var state = DownloadUtils.instance.allDownLoadingData[videoId]["state"];
                                           double progress =
-                                              DownloadUtils.instance.allDownLoadingData[videoId]["progress"];
+                                              DownloadUtils.instance.allDownLoadingData[videoId]["progress"] * 1.0;
 
                                           // AppLog.e(
                                           //     "videoId==$videoId,url==${controller.nowPlayUrl}\n\n,--state==$state,progress==$progress");

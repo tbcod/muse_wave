@@ -105,7 +105,7 @@ class ApiMain extends BaseApi {
         await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: header);
     if (result.code == HttpCode.success) {
       //请求成功
-      AppLog.i("请求首页数据成功: $url, header: $header, param：$body");
+      AppLog.i("请求首页数据成功"); //: $url, header: $header, param：$body
 
       if (nextData == null) {
         EventUtils.instance.addEvent("source_get");
@@ -116,8 +116,8 @@ class ApiMain extends BaseApi {
   }
 
   Future<BaseModel> getVideoInfo(String videoId, {bool toastBlack = true}) async {
-    var url = "https://music.youtube.com/youtubei/v1/player";
-    // var url = "https://www.youtube.com/youtubei/v1/player";
+    // var url = "https://music.youtube.com/youtubei/v1/player";
+    var url = "https://www.youtube.com/youtubei/v1/player";
 
     // initFirebaseData();
 
@@ -133,7 +133,7 @@ class ApiMain extends BaseApi {
     body["videoId"] = videoId;
     // AppLog.i("request:$url,$body");
     BaseModel result =
-        await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+        await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: {});
 
     //判断是否有链接
     List formats = result.data?["streamingData"]?["formats"] ?? [];
@@ -144,22 +144,23 @@ class ApiMain extends BaseApi {
     return result;
   }
 
+
   Future<BaseModel> getVideoInfoYoutube(String videoId, {int retryCount = 0}) async {
     var url = "https://www.youtube.com/youtubei/v1/player";
 
     Map<String, dynamic> body = Map.of(playJsonData);
     body["videoId"] = videoId;
-    // body["context"]["client"]["gl"] = _gl;
-    // body["context"]["client"]["hl"] = _hl;
+    body["context"]["client"]["gl"] = _gl;
+    body["context"]["client"]["hl"] = _hl;
     // AppLog.i("request:$url，body:$body");
     BaseModel result =
-        await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: _header);
+        await httpRequest(url, method: HttpMethod.post, contentType: "application/json", body: body, headers: {});
 
     String videoUrl = result.data?["streamingData"]?["formats"]?.first?["url"] ?? "";
 
     if (videoUrl.isEmpty && retryCount < 1) {
       AppLog.e("获取url失败:$url,重试");
-      await Future.delayed(Duration(seconds: retryCount + 1));
+      await Future.delayed(Duration(seconds: 2));
       return getVideoInfoYoutube(videoId, retryCount: retryCount + 1);
     }
     return result;

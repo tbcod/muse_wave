@@ -146,10 +146,10 @@ class BannerNativeAdViewController extends GetxController {
       EventUtils.instance.addEvent(
         "ad_impression_fail",
         data: {
+          "ad_pos_id": adPosId.name,
           "ad_format": "",
           "ad_source_client": "",
           "ad_code_id": "",
-          "ad_pos_id": adPosId.name,
           "ad_sense": adSense.name,
           "reason": "ad_nocache",
           "ad_function": "",

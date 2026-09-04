@@ -58,25 +58,6 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
             ),
             child: Scaffold(
               backgroundColor: Colors.transparent,
-              // appBar: AppBar(
-              //   leading: IconButton(
-              //     onPressed: () {
-              //       Get.back();
-              //       controller.showFloatingWidget();
-              //     },
-              //     icon: Icon(Icons.expand_more),
-              //   ),
-              //   actions: [
-              //     IconButton(
-              //         onPressed: () {
-              //           MoreSheetUtil.instance.showVideoMoreSheet(
-              //               controller.nowData,
-              //               isPlayPage: true,
-              //               clickType: "play");
-              //         },
-              //         icon: Icon(Icons.more_vert))
-              //   ],
-              // ),
               body: Column(
                 children: [
                   SizedBox(height: Get.mediaQuery.padding.top),
@@ -116,13 +97,16 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                 Positioned.fill(
                                   child: Obx(() {
                                     if (!controller.isLoaded.value) {
-                                      return SizedBox(
+                                      return Container(
                                         width: double.infinity,
                                         height: double.infinity,
-                                        child: Center(child: CircularProgressIndicator(strokeWidth: 3)),
+                                        alignment: Alignment.center,
+                                        child: NetImageView(
+                                            imgUrl: controller.nowData["cover"] ?? "", fit: BoxFit.contain),
+                                        // child: Center(child: CircularProgressIndicator(strokeWidth: 3)),
                                       );
                                     }
-                                    if (controller.player != null) {
+                                    if (controller.player != null && controller.player!.value.isInitialized) {
                                       return Container(
                                         width: double.infinity,
                                         height: double.infinity,
@@ -136,26 +120,11 @@ class UserPlayInfo extends GetView<UserPlayInfoController> {
                                     return SizedBox(
                                       width: double.infinity,
                                       height: double.infinity,
+                                      // color: Colors.white,
                                       child: NetImageView(imgUrl: controller.nowData["cover"] ?? "", fit: BoxFit.cover),
                                     );
                                   }),
                                 ),
-
-                                // child: Obx(
-                                //   () =>
-                                //       controller.isLoaded.value && controller.player != null
-                                //           ? Container(
-                                //             width: double.infinity,
-                                //             height: double.infinity,
-                                //             alignment: Alignment.center,
-                                //             //设置最高高度
-                                //             child: AspectRatio(aspectRatio: controller.videoAspectRatio, child: Container(child: VideoPlayer(controller.player!))),
-                                //           )
-                                //           : Container(width: double.infinity, height: double.infinity, child: Center(child: CircularProgressIndicator())),
-                                // ),
-                                //广告
-                                // if (!Get.isRegistered<UserMainController>() ||
-                                //     (Get.isRegistered<UserMainController>() && Get.find<UserMainController>().nowIndex.value != 1))
                                 Obx(() {
                                   if ((Get.isRegistered<UserMainController>() &&
                                       Get.find<UserMainController>().nowIndex.value != 1)) {
@@ -1340,13 +1309,16 @@ class UserPlayInfoController extends GetxController {
   int _playNextCount = 0;
   final int _allowMaxNextCount = 5;
 
-  realPlay(int index,
-      {bool isAutoNext = false,
-      bool isOpenShowBar = false,
-      bool clickNext = false,
-      AdSense adSense = AdSense.play_page}) async {
+  Future realPlay(
+    int index, {
+    bool isAutoNext = false,
+    bool isOpenShowBar = false,
+    bool clickNext = false,
+    bool isRetry = false,
+    AdSense adSense = AdSense.play_page,
+  }) async {
     //上报上个视频的时长
-    if (player != null && player?.value.duration != null && isOpenShowBar == false) {
+    if (player != null && player?.value.duration != null && isOpenShowBar == false && !isRetry) {
       var lastp = player?.value.position ?? Duration.zero;
       var lastd = player?.value.duration ?? Duration(milliseconds: 1);
       var playP = lastp.inMilliseconds / lastd.inMilliseconds;
@@ -1369,7 +1341,7 @@ class UserPlayInfoController extends GetxController {
       EventUtils.instance.addEvent("play_time", data: {"song_time": timeNum});
     }
 
-    if (!isAutoNext && !isOpenShowBar) {
+    if (!isAutoNext && !isOpenShowBar && !isRetry) {
       AdUtils.instance.showAd(AdPosId.behavior, adSense: adSense, adFunction: AdFunction.play);
       Future.delayed(Duration(milliseconds: 500)).then((_) {
         //延迟后显示好评引导
@@ -1377,8 +1349,8 @@ class UserPlayInfoController extends GetxController {
       });
     }
 
-    timer?.cancel();
-    timer = null;
+    // timer?.cancel();
+    // timer = null;
 
     isLoaded.value = false;
 
@@ -1445,7 +1417,6 @@ class UserPlayInfoController extends GetxController {
             videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
       } else {
         //请求播放数据
-
         //加载和播放
         if (player != null) {
           player?.removeListener(playListener);
@@ -1466,22 +1437,27 @@ class UserPlayInfoController extends GetxController {
           if (lasthttpvideoId == nowData["videoId"]) {
             //判断是否无网络
             final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
-            hasNetwork = connectivityResult.contains(ConnectivityResult.wifi) ||
-                connectivityResult.contains(ConnectivityResult.mobile);
+            hasNetwork = !connectivityResult.contains(ConnectivityResult.none);
 
-            EventUtils.instance.addEvent(
-              "play_num",
-              data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]},
-            );
-            EventUtils.instance.addEvent(
-              "play_fail",
-              data: {
-                "song_id": nowData["videoId"],
-                "song_name": nowData["title"],
-                "artist_name": nowData["subtitle"],
-                "reason": hasNetwork ? result.message ?? "url http fail" : "no network",
-              },
-            );
+            if (!isOpenShowBar) {
+              EventUtils.instance.addEvent(
+                "play_num",
+                data: {
+                  "song_id": nowData["videoId"],
+                  "song_name": nowData["title"],
+                  "artist_name": nowData["subtitle"]
+                },
+              );
+              EventUtils.instance.addEvent(
+                "play_fail",
+                data: {
+                  "song_id": nowData["videoId"],
+                  "song_name": nowData["title"],
+                  "artist_name": nowData["subtitle"],
+                  "reason": hasNetwork ? result.message ?? "url http fail" : "no network",
+                },
+              );
+            }
 
             //如果是首页初始化，不播放下一首
             if (!isOpenShowBar && hasNetwork && isAutoNext) {
@@ -1516,28 +1492,29 @@ class UserPlayInfoController extends GetxController {
         //   player?.removeListener(playListener);
         //   player?.dispose();
         // }
+        // nowPlayUrl =
+        //     "https://rr2---sn-ipoxu-un5ed.googlevideo.com/videoplayback?expire=1788441359&ei=rx6ZavaeEuiSvcAPrdWYwAY&ip=36.227.232.112&id=o-AOtJW_DmvlESDqDS-EWOGbQxa1JqQd45IoHQOW_kBQYc&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%253D%253D&cps=220&met=1788419759%252C&mh=Kc&mm=31%252C26&mn=sn-ipoxu-un5ed%252Csn-ojhoai-5i&ms=au%252Conr&mv=m&mvi=2&pl=24&rms=au%252Cau&gcr=tw&initcwndbps=3158750&bui=AR3QkAmLYVVYKEmtqLllf-wV_uhnsf3n_EPae6ZIkOOXCNsF4tC7S_qTLIL4PeGRqGYTNUZueKy5oFvy&spc=I-rgIT0ZIOwzoaV51R5pPq-E7jlFJ6-Bt4aDOb1BYC-Bu4hQBraaaVek3BLQehUR&vprv=1&svpuc=1&xtags=heaudio%253Dtrue&mime=video%252Fmp4&rqh=1&cnr=14&ratebypass=yes&dur=197.604&lmt=1664163092702501&mt=1788419078&fvip=5&epbp=1&fexp=51565116%252C52135441&c=ANDROID&txp=5538434&sparams=expire%252Cei%252Cip%252Cid%252Citag%252Csource%252Crequiressl%252Cxpc%252Cgcr%252Cbui%252Cspc%252Cvprv%252Csvpuc%252Cxtags%252Cmime%252Crqh%252Ccnr%252Cratebypass%252Cdur%252Clmt&sig=AE0s2JYwRgIhAJ3_03Y5BgQBKD28Tz0aZ7AC1Mx-3BfOV8ZWamCYlPzHAiEArhrUAR9hnxINUjnd2U2cFqvxk4sy1HV1ruIJeTJSREw%253D&lsparams=cps%25";
 
         if (nowPlayUrl.isEmpty) {
-
           final reason = result.data?["playabilityStatus"]?["reason"];
           AppLog.e("获取url失败，reason：$reason");
 
-          EventUtils.instance.addEvent(
-            "play_num",
-            data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]},
-          );
-          EventUtils.instance.addEvent(
-            "play_fail",
-            data: {
-              "song_id": nowData["videoId"],
-              "song_name": nowData["title"],
-              "artist_name": nowData["subtitle"],
-              "reason": reason ?? "Get url error",
-            },
-          );
-
           //播放下一个
           if (!isOpenShowBar) {
+            EventUtils.instance.addEvent(
+              "play_num",
+              data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]},
+            );
+            EventUtils.instance.addEvent(
+              "play_fail",
+              data: {
+                "song_id": nowData["videoId"],
+                "song_name": nowData["title"],
+                "artist_name": nowData["subtitle"],
+                "reason": reason ?? "Get url error",
+              },
+            );
+
             if (isAutoNext) {
               if (_playNextCount < _allowMaxNextCount - 1) {
                 _playNextCount++;
@@ -1574,9 +1551,18 @@ class UserPlayInfoController extends GetxController {
 
     // await player?.initialize();
     _playNextCount = 0;
+    String? errorInfo;
     await player?.initialize().catchError((e) {
-      final errorCode = player?.value.errorDescription ?? 'initialize error';
+      errorInfo = player?.value.errorDescription;
+    });
+
+    if (errorInfo != null) {
       if (!isOpenShowBar) {
+        if (!isRetry) {
+          AppLog.e("initialize error:$errorInfo, 重试...");
+          return realPlay(index, isAutoNext: isAutoNext, isOpenShowBar: false, clickNext: false, isRetry: true);
+        }
+
         EventUtils.instance.addEvent(
           "play_num",
           data: {"song_id": nowData["videoId"], "song_name": nowData["title"], "artist_name": nowData["subtitle"]},
@@ -1588,7 +1574,7 @@ class UserPlayInfoController extends GetxController {
             "song_name": nowData["title"],
             "artist_name": nowData["subtitle"],
             "reason": "initialize error",
-            "detail": errorCode,
+            "detail": errorInfo ?? "",
           },
         );
         if (!isAutoNext) {
@@ -1596,21 +1582,14 @@ class UserPlayInfoController extends GetxController {
         }
       }
       _playerReset();
-      AppLog.e("initialize error:${e.toString()}");
-    });
+      AppLog.e("initialize error:$errorInfo");
+      return;
+    }
 
     videoAspectRatio = player?.value.aspectRatio ?? 1;
 
     player?.addListener(playListener);
     isLoaded.value = true;
-
-    // if (isOpenShowBar) {
-    //   //更新播放
-    //   var item = MediaItem(id: nowData["videoId"], title: nowData["title"], duration: player?.value.duration, artUri: Uri.parse(nowData["cover"] ?? ""));
-    //   myHandler?.showItem(item);
-    //   myHandler?._updateState();
-    //   return;
-    // }
 
     player?.play();
     //保存播放列表和当前播放数据，下次打开app显示
@@ -1648,15 +1627,18 @@ class UserPlayInfoController extends GetxController {
     }
 
     //缓存歌曲
-    DownloadUtils.instance.cacheSong(nowData["videoId"], Map.of(nowData));
-    //缓存下一首
-    if (canNext.value) {
-      try {
-        DownloadUtils.instance.cacheSong(playList[nowIndex + 1]["videoId"], Map.of(playList[nowIndex + 1]));
-      } catch (e) {
-        AppLog.e("缓冲出错：$e");
+    AppLog.i("准备缓存歌曲：${nowData["title"]}");
+    DownloadUtils.instance.cacheSong(nowData["videoId"], Map.of(nowData)).then((v) {
+      //缓存下一首
+      if (canNext.value) {
+        try {
+          AppLog.i("准备缓存下一曲：${playList[nowIndex + 1]["title"]}");
+          DownloadUtils.instance.cacheSong(playList[nowIndex + 1]["videoId"], Map.of(playList[nowIndex + 1]));
+        } catch (e) {
+          AppLog.e("缓冲出错：$e");
+        }
       }
-    }
+    });
 
     ApiMain.instance.postYoutubePlaybackInfo(isWatchOnly: false);
     // _startTimer();

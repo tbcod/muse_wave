@@ -138,6 +138,9 @@ class AdUtils {
 
     if (_adLoadingMap[key] == true) {
       AppLog.e("广告位：$key 正在请求");
+      Future.delayed(Duration(seconds: 12)).then((v) {
+        _adLoadingMap[key] = false;
+      });
       return;
     }
     _adLoadingMap[key] = true;
@@ -208,7 +211,6 @@ class AdUtils {
           "ad_request",
           data: {
             "ad_pos_id": adPosId.name,
-            // "ad_sense": adPosId == AdPosId.open ? adSense.name : "",
             "ad_format": type == "native" ? "fullnative" : type,
             "ad_source_client": source,
             "ad_code_id": ad_id
@@ -393,11 +395,12 @@ class AdUtils {
         } else if (source == "max") {
           await MaxUtils.instance.initCompleter.future;
           //加载max广告
+          AppLog.i("加载max广告：$key， $source, $type, $ad_id");
           if (type == "open") {
             AppLovinMAX.setAppOpenAdListener(
               AppOpenAdListener(
                 onAdLoadedCallback: (ad) {
-                  AdUtils.instance.loadedAdMap[ad_id] = {
+                  AdUtils.instance.loadedAdMap[ad.adUnitId] = {
                     "data": item,
                     "admob_ad": ad,
                     // "load_pos": positionKey,
@@ -605,9 +608,11 @@ class AdUtils {
           },
         );
       }
+      AppLog.i("广告加载结束1：$key,$isLoadSuc, $_adLoadingMap");
       return isLoadSuc;
     } finally {
       _adLoadingMap[key] = false; // 无论正常/异常都会执行
+      AppLog.i("广告加载结束2：$key, $_adLoadingMap");
     }
   }
 
@@ -1575,10 +1580,10 @@ class AdUtils {
       EventUtils.instance.addEvent(
         "ad_impression_fail",
         data: {
+          "ad_pos_id": adPosId.name,
           "ad_format": type,
           "ad_source_client": source,
           "ad_code_id": ad_id,
-          "ad_pos_id": adPosId.name,
           "ad_sense": adSense.name,
           "reason": reason ?? "ad_nocache",
           "ad_function": adFunction == AdFunction.unknown ? "" : adFunction.name,

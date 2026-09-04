@@ -96,9 +96,9 @@ class MaxUtils {
                       adLoaded.value = true;
                       completer.complete(true);
                       EventUtils.instance.addEvent("ad_return_sucess", data: {
+                        "ad_pos_id": key,
                         "ad_format": "native",
                         "ad_source_client": "max",
-                        "ad_pos_id": key,
                         "ad_sense": adSense.name,
                         "ad_code_id": adId,
                         "ad_request_time": DateTime.now().difference(now).inMilliseconds
